@@ -4,22 +4,63 @@ Copyright (c) 2025–26 by Fred George
 author: Fred George fredgeorge@acm.org  
 Licensed under the MIT License; see LICENSE file in root.
 
-## Purpose
+### Concepts
 
-This is a starting template for a Kotlin project using Gradle.
-Included is also support for persistence 
-using _kotlin-serialization_ and the _Memento Pattern_.
-Code behavior is in the _engine_ package. 
-Tests are in the _tests_ package to encourage testing 
+The _Dialog_ model represents the solicitation of information
+between a system and a target user. Given a particular need,
+a _Question_ can be presented to the user. An _Answer_ determines
+the next action:
+
+- Success, returning the _Answer_ to the system,
+- Failure, usually with specifics on why the _Answer_   
+was not satisfactory
+- Ask another _Question_
+
+A __Context__ component is used to track the _Answers_
+for a _Dialog_. This facilitates the user going back
+and "changing their mind" about a _Question_, and even
+"changing their mind again" back to the original 
+_Answer_. The Context also allows suspension of a 
+_Dialgo_, and being able resume later.
+
+The system triggers different _Dialogs_ based on its
+needs. Needs will be expressed using the __Issue__ 
+component. Possible _Issues_ would include:
+
+- Invalid Situation indicating that changes or additional  
+information is required for Success
+- Missing Information indicating that new information is  
+needed for Success
+
+### Using the Dialog Model
+
+_Dialogs_ are constructed with a Kotlin DSL. The DSL
+specifies the _Question_, possible _Answers_, and the
+next action associated with each _Answer_ (Success, Failure,
+or next _Question_).
+
+A _Dialog_ is associated with a particular _Issue_ that 
+can resolve it. The user may be presented with multiple
+_Dialogs_ if multiple _Issues_ arise.
+
+### Project Structure
+
+Code behavior is in the __engine__ package. 
+Tests are in the __tests__ package to encourage testing 
 only the public behavior of the engine.
-Similarly, the persistence layer is in the _persistence_ package.
+Similarly, the persistence layer is in the 
+__persistence__ package.
+Included is also support for persistence
+using _kotlin-serialization_ and the _Memento Pattern_.
 The persistence package stops with encoding and decoding the
 engine classes; interfaces to the outside world (databases,
 REST APIs, or event buses) should be in yet other packages.
+Some common test setup is in a separate 
+__test_support__ package.
 
 More on persistence is below.
 
-## Starting template for a Kotlin project using Gradle
+## Building this Kotlin project using Gradle
 
 Kotlin is relatively easy to set up with IntelliJ IDEA. 
 Gradle is used for building and testing the project and is a 
@@ -53,21 +94,12 @@ necessary libraries exist). From a terminal window:
 ```bash
 ./gradlew clean build test
 ```
-There is a sample class, Rectangle, with a corresponding
-test, RectangleTest. The test should run successfully
-from the Gradle __test__ task.
 
 Several settings may need to be manually changed if using IntelliJ IDEA:
 
 - In File - Project Structure - Project Settings - Project, set SDK to 25 (or whatever you earlier SDK)
 - In File - Settings - Build, Execution, Deployment - Compiler - Kotlin Compiler, set the Target JVM version to 25
 - In File - Settings - Build, Execution, Deployment - Build Tools - Gradle, set Gradle JVM to JAVA_HOME or explicitly and select the latest Kotlin versions
-
-Update the following: 
-
-- In settings.gradle.kts, change the rootProject.name
-- In both engine and tests, choose your domain name for your code under the kotlin directory
-- Consider renaming the <engine>, <tests>, and <persistence> package names to your domain-specific convention.
 
 ## Persistence
 
