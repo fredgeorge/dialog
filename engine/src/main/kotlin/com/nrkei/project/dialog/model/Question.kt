@@ -10,9 +10,9 @@ import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion
 
 // Understands a specific nugget of desired information
 interface Question {
-    val id: QuestionIdentifier
+    val id: QuestionId
     fun status(): DialogStatus
-    fun questionOrNull(id: QuestionIdentifier): Question?
+    fun questionOrNull(id: QuestionId): Question?
     fun nextQuestion(): Question?
     fun be(value: Any)
     fun reset()
@@ -20,7 +20,7 @@ interface Question {
     fun accept(visitor: QuestionVisitor)
 }
 
-internal fun Iterable<Question>.question(id: QuestionIdentifier): Question? = this
+internal fun Iterable<Question>.question(id: QuestionId): Question? = this
     .mapNotNull { it.questionOrNull(id) }
     .let {
         when {

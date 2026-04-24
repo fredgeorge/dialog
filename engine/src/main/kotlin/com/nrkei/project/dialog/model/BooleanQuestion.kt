@@ -10,13 +10,13 @@ import com.nrkei.project.dialog.model.DialogStatus.Companion.NOT_STARTED
 import com.nrkei.project.dialog.model.DialogStatus.Companion.STARTED
 
 
-class BooleanQuestion(override val id: QuestionIdentifier, private val choices: Choices) : Question {
+class BooleanQuestion(override val id: QuestionId, private val choices: Choices) : Question {
     init {
         require(choices.size == 2) { "Exactly two choices (true and false) are required for a true/false question" }
         require(choices.keys.all { it in listOf(true, false) }) { "Invalid values for a true/false question" }
     }
 
-    constructor(idLabel: String, choices: Choices) : this(QuestionIdentifier(idLabel), choices)
+    constructor(idLabel: String, choices: Choices) : this(QuestionId(idLabel), choices)
 
     private var answer: Boolean? = null
 
@@ -27,7 +27,7 @@ class BooleanQuestion(override val id: QuestionIdentifier, private val choices: 
         }
         ?: NOT_STARTED
 
-    override fun questionOrNull(id: QuestionIdentifier) =
+    override fun questionOrNull(id: QuestionId) =
         if (this.id == id) this else choices.values.question(id)
 
     override fun nextQuestion() = answer

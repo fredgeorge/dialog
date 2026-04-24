@@ -9,7 +9,7 @@ package com.nrkei.project.dialog.model
 import com.nrkei.project.dialog.dsl.Dialog
 
 // Understands a set of responses to Questions in a Dialog
-class AnswerSet(private val answers: Map<QuestionIdentifier, Any>) {
+class AnswerSet(private val answers: Map<QuestionId, Any>) {
 
     internal fun applyTo(dialog: Dialog) {
         dialog.reset()

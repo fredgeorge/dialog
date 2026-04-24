@@ -20,14 +20,14 @@ import org.junit.jupiter.api.assertThrows
 
 class MultiLevelDialogTest {
 
-    private val b_1_id = QuestionIdentifier("b_1")
-    private val b_1_true_b_id = QuestionIdentifier("b_1_true_b")
-    private val b_1_false_b_id = QuestionIdentifier("b_1_false_b")
-    private val b_1_true_b_true_b_id = QuestionIdentifier("b_1_true_b_true_b")
-    private val b_1_true_b_false_b_id = QuestionIdentifier("b_1_true_b_false_b")
-    private val b_2_id = QuestionIdentifier("b_2")
-    private val b_2_true_b_id = QuestionIdentifier("b_2_true_b")
-    private val b_2_false_b_id = QuestionIdentifier("b_2_false_b")
+    private val b_1_id = QuestionId("b_1")
+    private val b_1_true_b_id = QuestionId("b_1_true_b")
+    private val b_1_false_b_id = QuestionId("b_1_false_b")
+    private val b_1_true_b_true_b_id = QuestionId("b_1_true_b_true_b")
+    private val b_1_true_b_false_b_id = QuestionId("b_1_true_b_false_b")
+    private val b_2_id = QuestionId("b_2")
+    private val b_2_true_b_id = QuestionId("b_2_true_b")
+    private val b_2_false_b_id = QuestionId("b_2_false_b")
     private val b_1 = { choices: Choices -> BooleanQuestion(b_1_id, choices) }
     private val b_1_true_b = { choices: Choices -> BooleanQuestion(b_1_true_b_id, choices) }
     private val b_1_false_b = { choices: Choices -> BooleanQuestion(b_1_false_b_id, choices) }

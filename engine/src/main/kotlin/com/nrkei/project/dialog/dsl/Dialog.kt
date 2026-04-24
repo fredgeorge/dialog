@@ -42,7 +42,7 @@ class Dialog internal constructor() {
             }
         }
 
-    fun question(id: QuestionIdentifier) = questions.question(id)
+    fun question(id: QuestionId) = questions.question(id)
         ?: throw IllegalArgumentException("Question with id $id does not exist")
 
     fun nextQuestionOrNull() = questions.nextQuestion()
@@ -50,7 +50,7 @@ class Dialog internal constructor() {
     fun nextQuestion() = nextQuestionOrNull()
         ?: throw NoUnansweredQuestionsException(this)
 
-    fun apply(vararg answers: Pair<QuestionIdentifier, Any>) {
+    fun apply(vararg answers: Pair<QuestionId, Any>) {
         apply(AnswerSet(answers.toMap()))
     }
 

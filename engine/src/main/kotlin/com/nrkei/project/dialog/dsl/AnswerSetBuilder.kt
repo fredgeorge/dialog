@@ -9,7 +9,7 @@ package com.nrkei.project.dialog.dsl
 import com.nrkei.project.dialog.model.*
 
 class AnswerSetBuilder(dialog: Dialog) : QuestionVisitor {
-    val results = mutableMapOf<QuestionIdentifier, Any>()
+    val results = mutableMapOf<QuestionId, Any>()
 
     init {
         dialog.accept(this)

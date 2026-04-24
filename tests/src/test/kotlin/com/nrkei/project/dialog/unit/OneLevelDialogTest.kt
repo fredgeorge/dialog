@@ -14,15 +14,15 @@ import com.nrkei.project.dialog.model.DialogStatus.Companion.STARTED
 import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.FAILED
 import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.SUCCEEDED
 import com.nrkei.project.dialog.model.NoUnansweredQuestionsException
-import com.nrkei.project.dialog.model.QuestionIdentifier
+import com.nrkei.project.dialog.model.QuestionId
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 // Ensures that a true/false question works
 class OneLevelDialogTest {
-    private val trueFalseId1 = QuestionIdentifier("trueFalse1")
-    private val trueFalseId2 = QuestionIdentifier("trueFalse2")
+    private val trueFalseId1 = QuestionId("trueFalse1")
+    private val trueFalseId2 = QuestionId("trueFalse2")
     private val trueFalse1 = { choices: Choices -> BooleanQuestion(trueFalseId1, choices) }
     private val trueFalse2 = { choices: Choices -> BooleanQuestion(trueFalseId2, choices) }
 
@@ -122,7 +122,7 @@ class OneLevelDialogTest {
                 on answer false conclude FAILED
             }
         }.also { dialog ->
-            assertThrows<IllegalStateException> { dialog.question(QuestionIdentifier("trueFalse1")) }
+            assertThrows<IllegalStateException> { dialog.question(QuestionId("trueFalse1")) }
         }
     }
 }

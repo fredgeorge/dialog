@@ -7,14 +7,14 @@
 package com.nrkei.project.dialog.model
 
 open class DialogStatus private constructor(idLabel: String) : Question {
-    override val id = QuestionIdentifier("<$idLabel>")
+    override val id = QuestionId("<$idLabel>")
 
     companion object {
         val NOT_STARTED = DialogStatus("NOT_STARTED")
         val STARTED = DialogStatus("STARTED")
     }
 
-    override fun questionOrNull(id: QuestionIdentifier) =
+    override fun questionOrNull(id: QuestionId) =
         if (this.id == id) this else null
 
     override fun nextQuestion() = this

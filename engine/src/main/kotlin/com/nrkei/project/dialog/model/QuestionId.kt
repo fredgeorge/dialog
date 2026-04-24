@@ -6,9 +6,9 @@
 
 package com.nrkei.project.dialog.model
 
-data class QuestionIdentifier(private val label: String) : Comparable<QuestionIdentifier> {
+data class QuestionId(private val label: String) : Comparable<QuestionId> {
 
-    override fun compareTo(other: QuestionIdentifier) = label.compareTo(other.label)
+    override fun compareTo(other: QuestionId) = label.compareTo(other.label)
 
     override fun toString() = "<< $label >>"
 }
