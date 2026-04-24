@@ -21,16 +21,38 @@ for a _Dialog_. This facilitates the user going back
 and "changing their mind" about a _Question_, and even
 "changing their mind again" back to the original 
 _Answer_. The Context also allows suspension of a 
-_Dialgo_, and being able resume later.
+_Dialog_, and being able to resume later.
 
 The system triggers different _Dialogs_ based on its
 needs. Needs will be expressed using the __Issue__ 
 component. Possible _Issues_ would include:
 
-- Invalid Situation indicating that changes or additional  
+- _Invalid Situation_ indicating that changes or additional  
 information is required for Success
-- Missing Information indicating that new information is  
+- _Missing Information_ indicating that new information is  
 needed for Success
+
+### Capabilities
+
+- Various types of Question formats
+  - Multiple choice
+  - Single text input
+  - True/false
+  - Integer value
+  - Floating point value
+- A DSL (domain-specific language) to specify questions and answers
+- Ability to change the Answer to a Question and pursue that path
+- Ability to change the Answer back and keep the original Answers
+  in that chain
+- Roles associated with various Questions, including
+  - Who is allowed to answer
+  - Who is allowed to see an answer
+- Dialog blocks that can be plugged into other
+  Dialog chains
+- Tentative Answers that can allow the flow to continue, but
+  are subject to review by a different Role
+- Templates to generate multiple copies of a Dialog Block 
+  to support a Dialog for each item in a collection
 
 ### Using the Dialog Model
 
@@ -124,14 +146,14 @@ The example injects _memento_ creation with an extension method
 into the Rectangle class. It further injects restoration of the
 class into the Companion object of Rectangle.
 
-The base Rectangle class, to support the Memento Pattern,
+Each class, to support the Memento Pattern,
 defines a properly populated DTO in response to toDto(), and
 must have a Companion object as a target for the restoration
 injection. If JSON serialization is to be supported in creating
 the memento, _@Serializable_ must be tagged on the DTO.
 
 The creation of the _memento_ is done in the 
-RectanglePersistence helper functions in the
+Persistence helper functions in the
 persistence package, including the injection of the creation and
 restoration functions. This helper class is solely 
 responsible for the format and content of the _memento_.
