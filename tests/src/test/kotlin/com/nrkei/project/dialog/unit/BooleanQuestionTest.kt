@@ -12,6 +12,9 @@ import com.nrkei.project.dialog.model.BooleanQuestion
 import com.nrkei.project.dialog.model.Choices
 import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.FAILED
 import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.SUCCEEDED
+import com.nrkei.project.dialog.model.NoUnansweredQuestionsException
+import com.nrkei.project.dialog.model.QuestionId
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 
 class BooleanQuestionTest {
@@ -74,6 +77,26 @@ class BooleanQuestionTest {
                     on answer false conclude FAILED
                 }
             }
+        }
+    }
+
+    @Test
+    fun `Execute simple dialog with minus operator`() {
+        dialog {
+            first ask trueFalse answers {
+                -true conclude SUCCEEDED
+                -false conclude FAILED
+            }
+        }.also { dialog ->
+            dialog.nextQuestion().be(true)
+            assertEquals(SUCCEEDED, dialog.status())
+            assertThrows<NoUnansweredQuestionsException> { dialog.nextQuestion() }
+
+            dialog.reset()
+            dialog.nextQuestion().be(false)
+            assertEquals(FAILED, dialog.status())
+            dialog.question(QuestionId("trueFalse")).be(true)
+            assertEquals(SUCCEEDED, dialog.status())
         }
     }
 }

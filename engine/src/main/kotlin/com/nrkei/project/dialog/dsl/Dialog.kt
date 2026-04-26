@@ -88,6 +88,8 @@ class AnswersBuilder internal constructor() {
 
     infix fun answer(value: Any) = this.also { answerValue = value }
 
+    operator fun Boolean.unaryMinus() = this@AnswersBuilder.also { answerValue = this }
+
     infix fun conclude(status: DialogConclusion) {
         choices.add(Choice(answerValue, status))
     }
