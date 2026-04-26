@@ -18,7 +18,7 @@ import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.SU
 fun dialog(block: Dialog.() -> Unit) =
     Dialog().also { it.block() }
 
-// A series of questions to ascertain a conclusion
+// A series of questions to figure out a conclusion
 class Dialog internal constructor() {
     private val questions = mutableListOf<Question>()
 

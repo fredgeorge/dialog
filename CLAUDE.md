@@ -1,10 +1,10 @@
-# CLAUDE.md — kotlin_gradle_template
+# CLAUDE.md — dialog
 
 Project context for AI-assisted development. Keep this file updated as the project evolves.
 
 ## Purpose
 
-A Kotlin multi-project Gradle template demonstrating clean architectural separation, modern Gradle conventions, and the Memento pattern for persistence. Intended as a starting point for new Kotlin projects. Author: Fred George (MIT License).
+A Kotlin dialog framework for gathering and refining financial information through structured sequences of questions and answers. Supports financial situations such as car loans, credit cards, and mortgages. An external analyzer system evaluates collected answers and triggers follow-up Dialogs to request corrections, clarifications, or additional information. The framework manages Dialog execution; answer accumulation and persistence between Dialog sessions are delegated to the `Context` framework (a separate project, published to mavenLocal). Author: Fred George (MIT License).
 
 ## Technology Stack
 
@@ -17,51 +17,70 @@ A Kotlin multi-project Gradle template demonstrating clean architectural separat
 | kotlinx-serialization | 1.8.1                         |
 | Target IDE            | IntelliJ IDEA 2026.1 Ultimate |
 
+## External Dependencies (mavenLocal)
+
+| Artifact                              | Provides                                                      |
+|---------------------------------------|---------------------------------------------------------------|
+| `com.nrkei.project.context:context-engine`      | `Context`, `ContextLabel`, `ContextLabelRegistry`, `ValueCodec` |
+| `com.nrkei.project.context:context-persistence` | `Context.toMemento()` / `Context.Companion.fromMemento()` extension functions |
+
+Both artifacts are published from the sibling `context` project and must be present in mavenLocal before building.
+
 ## Project Structure
 
 ```
-kotlin_gradle_template/
+dialog/
 ├── build.gradle.kts          # Root build — allprojects group/version, subprojects Kotlin+JUnit+toolchain
 ├── settings.gradle.kts       # Module includes, centralized repo management
 ├── gradle.properties         # javaVersion=25, config cache, Kotlin style
 ├── gradle/
 │   ├── libs.versions.toml    # Version catalog (single source of truth for versions)
 │   └── wrapper/              # Gradle 9.4.1
-├── engine/                   # Core domain logic
-├── test_support/             # Shared test fixtures
-├── tests/                    # Behavior tests (separate module, not inside engine)
-└── persistence/              # Serialization layer (Memento pattern)
+├── engine/                   # Core domain: Dialog, Question, Answer, FinancialSituation, AnalyzerFeedback
+├── test_support/             # Shared test fixtures (sample Dialogs, Answers, populated Contexts)
+└── tests/                    # Behavior tests (separate module, not inside engine)
 ```
 
 ## Module Responsibilities
 
 ### engine
-Pure domain logic. No test code, no serialization concerns. Publishes to mavenLocal as `template-engine`. Contains `Rectangle` as the sample domain class, with an inner `RectangleDto` (`@Serializable`) for DTO conversion.
+Pure domain logic. No test code, no serialization concerns. Publishes to mavenLocal as `dialog-engine`. Depends on `context-engine` from mavenLocal. Key domain classes:
+
+- `Dialog` — a structured conversation; may be a flat list of `Question`s, a decision tree, or a hybrid. Composite pattern: a `Dialog` node may contain `Question`s (leaves) or nested `Dialog`s (subtrees).
+- `Question` — a single question with a prompt and an expected answer type. Each `Question` is associated with a `ContextLabel` so its answer can be stored into a `Context`.
+- `FinancialSituation` — sealed class representing `CarLoan`, `CreditCard`, and `Mortgage`. Each situation owns its initial `Dialog`.
+- `AnalyzerFeedback` — models the output of the external analyzer: correction required, clarification required, or additional information needed. Each feedback type maps to a follow-up `Dialog` to execute.
+
+`Context` (from `context-engine`) is the state object passed into and out of each `Dialog` execution. Answers are stored into it using `ContextLabel` keys. Persistence between sessions is provided by `context-persistence` and requires no code in this project.
 
 ### test_support
-Shared test fixtures consumed by `tests` and `persistence`. Contains sample objects like `TestShapes` (reference `Rectangle` instances) under `com.nrkei.project.template.util`. Depends on `:engine`. No publication; consumed via `testImplementation(project(":test_support"))`.
+Shared test fixtures consumed by `tests`. Contains sample `Question`s, pre-built `Dialog` structures, and pre-populated `Context` instances for each `FinancialSituation`. Depends on `:engine` and `context-engine`. No publication; consumed via `testImplementation(project(":test_support"))`.
 
 ### tests
-Dedicated module for behavior verification. Depends on `:engine` and `:test_support` (test scope). Uses JUnit Jupiter. Kept separate from the engine to enforce testing of public interfaces only.
+Dedicated module for behavior verification. Depends on `:engine` and `:test_support` (test scope). Tests Dialog traversal, Context accumulation across sessions, and feedback-driven Dialog selection. Kept separate from `engine` to enforce testing of public interfaces only.
 
-### persistence
-Serialization layer using the **Memento pattern**. Injects behavior via **extension functions** on domain classes and their companion objects — keeping the domain model clean. Depends on `:engine` (and on `:test_support` for tests). Publishes to mavenLocal.
+## Key Domain Concepts
+
+**Dialog:** The central abstraction. A `Dialog` presents `Question`s to a user and collects `Answer`s into a `Context`. Structure may be a flat list, a tree (branching based on `Answer` values), or a combination. Each `FinancialSituation` provides an initial `Dialog`; the external analyzer may trigger additional `Dialog`s.
+
+**Context:** Provided by `context-engine`. A typed `ContextLabel<*> → Any` map that accumulates answers across one or more `Dialog` sessions for a given financial situation. Passed into each `Dialog` at the start of execution and updated as answers arrive. Serialized between sessions via `context-persistence` (`toMemento` / `fromMemento`) so state survives across runs.
+
+**AnalyzerFeedback:** The integration boundary between this framework and the external analyzer. The analyzer consumes a `Context` and returns one or more feedback items — correction required, clarification required, or additional information needed — each of which triggers a new `Dialog`.
+
+**FinancialSituation:** `CarLoan`, `CreditCard`, `Mortgage` — sealed subclasses that define the domain-specific initial `Dialog` and may carry situation-specific validation rules or question sets.
 
 ## Key Architectural Patterns
 
-**Memento Pattern (GoF):** Domain objects expose `toMemento(): String` and `Companion.fromMemento(memento: String)` extension functions in the persistence module. The domain model itself has no serialization dependencies.
+**Composite Pattern (GoF):** `Dialog` is a composite. It uniformly treats a single `Question` (leaf) and a nested `Dialog` (branch) so that trees, lists, and hybrids are expressed with the same interface.
 
-**DTO Pattern:** Domain classes convert to inner `@Serializable` DTO classes for serialization. Example: `Rectangle.toDto(): RectangleDto`.
-
-**Extension functions for persistence injection:** `RectanglePersistence.kt` adds persistence capability to `Rectangle` and `Rectangle.Companion` without modifying the domain class.
-
-**Encoding utilities:** `Encoding.kt` (persistence module) provides generic JSON + Base64 encode/decode utilities. Key instance: `defaultJson` with `prettyPrint=false`, `ignoreUnknownKeys=true`, `classDiscriminator="type"`. Supports polymorphic serialization via `SerializersModule`.
+**Memento Pattern (GoF):** Provided by `context-persistence`. `Context` exposes `toMemento(): String` and `Companion.fromMemento(memento: String)` as extension functions. The dialog project consumes this capability but does not implement it.
 
 ## Gradle Conventions
 
 - **Version catalog:** All dependency versions declared in `gradle/libs.versions.toml`. Reference as `libs.xyz` in build files.
 - **Java toolchain:** Configured via the `javaVersion` property (`gradle.properties`), read in the root build with `providers.gradleProperty(...)` and applied inside `subprojects { ... }` so every Kotlin/Java module inherits the same toolchain.
-- **Group / version:** `group = "com.nrkei.project.template"`, `version = "0.1.0"` set in `allprojects {}` in the root build.
+- **Group / version:** `group = "com.nrkei.project.dialog"`, `version = "0.1.0"` set in `allprojects {}` in the root build.
+- **mavenLocal dependencies:** `context-engine` and `context-persistence` must be published from the `context` project before building (`./gradlew publishToMavenLocal` in that project).
 - **Configuration cache:** Enabled (`org.gradle.configuration-cache=true`). Avoid build script side effects that break cache compatibility.
 - **Kotlin code style:** `official` (enforced via `kotlin.code.style=official`).
 - **Incremental compilation:** Enabled.
@@ -81,7 +100,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.nrkei.project.template"
+    group = "com.nrkei.project.dialog"
     version = "0.1.0"
 }
 
@@ -116,15 +135,15 @@ Configurations are referenced by name (`"testImplementation"`) inside `subprojec
 ## Testing Conventions
 
 - JUnit Jupiter (JUnit 5) with `useJUnitPlatform()` configured once in the root `subprojects {}` block.
-- JUnit BOM + engine/launcher dependencies are injected by the root build into every subproject's `testImplementation` / `testRuntimeOnly`.
+- JUnit BOM + engine/launcher dependencies injected by the root build into every subproject's `testImplementation` / `testRuntimeOnly`.
 - Backtick test method names (Kotlin style).
 - Test module is a sibling of the engine, not nested inside it — deliberate design to test public API only.
-- Persistence module has its own tests for round-trip serialization verification.
+- Context persistence is tested in the `context` project; no round-trip serialization tests needed here.
 - Shared fixtures live in `:test_support` and are consumed via `testImplementation(project(":test_support"))`.
 
 ## Domain Package
 
-`com.nrkei.project.template` — replace with actual domain package when using as a template.
+`com.nrkei.project.dialog`
 
 ## No CI Configured
 
