@@ -6,7 +6,10 @@
 
 package com.nrkei.project.dialog.model
 
-// Understands a specific response to a Question
-interface Answer {
-    val name: String
+// Understands current state of a Dialog
+enum class DialogStatus2 {
+    NOT_STARTED,
+    IN_PROGRESS,
+    SUCCESS,
+    PROBLEMS,
 }

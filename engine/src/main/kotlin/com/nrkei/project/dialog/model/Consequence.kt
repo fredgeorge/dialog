@@ -6,12 +6,18 @@
 
 package com.nrkei.project.dialog.model
 
-// Understands SOMETHING_DUMMY
+import com.nrkei.project.dialog.model.DialogStatus2.PROBLEMS
+import com.nrkei.project.dialog.model.DialogStatus2.SUCCESS
+
+// Understands next action (or no next action) for an Answer
 interface Consequence {
+    fun status(): DialogStatus2
 }
 
 object Acceptable: Consequence {
+    override fun status() = SUCCESS
 }
 
 object Unacceptable: Consequence {
+    override fun status() = PROBLEMS
 }

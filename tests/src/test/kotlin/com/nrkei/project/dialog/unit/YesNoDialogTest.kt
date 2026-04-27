@@ -7,16 +7,16 @@
 package com.nrkei.project.dialog.unit
 
 import com.nrkei.project.dialog.dsl.dialog2
-import com.nrkei.project.dialog.model.Acceptable
-import com.nrkei.project.dialog.model.Unacceptable
-import com.nrkei.project.dialog.model.YesNoQuestion
+import com.nrkei.project.dialog.model.*
+import com.nrkei.project.dialog.model.DialogStatus2.*
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-// Understands SOMETHING_DUMMY
+// Ensures YesNoQuestion works correctly
 internal class YesNoDialogTest {
     private val haveSpouse = YesNoQuestion("Have Spouse")
     private val haveCoApplicant = YesNoQuestion("Have Co-applicant")
@@ -24,19 +24,56 @@ internal class YesNoDialogTest {
     @Test fun `Simple valid dialog`() {
         dialog2 {
             first ask haveSpouse answers {
-                -YES conclude Acceptable
-                -NO conclude Unacceptable
+                -YES conclude Unacceptable
+                -NO conclude Acceptable
             }
             then ask haveCoApplicant answers {
                 -YES conclude Acceptable
                 -NO conclude Unacceptable
             }
         }.also { dialog ->
+            assertEquals(NOT_STARTED, dialog.status())
+
             assertEquals(haveSpouse, dialog.nextQuestionOrNull())
             haveSpouse.answer(YES)
+            assertEquals(PROBLEMS, dialog.status())
+            haveSpouse.answer(NO)
+            assertEquals(IN_PROGRESS, dialog.status())
+
             assertEquals(haveCoApplicant, dialog.nextQuestionOrNull())
+            haveCoApplicant.answer(YES)
+            assertEquals(SUCCESS, dialog.status())
             haveCoApplicant.answer(NO)
+            assertEquals(PROBLEMS, dialog.status())
+
             assertNull(dialog.nextQuestionOrNull())
+        }
+    }
+
+    @Test fun `Must handle all possible answers`() {
+        assertThrows<IllegalArgumentException> {
+            dialog2 {
+                first ask haveSpouse answers {
+                    -YES conclude Unacceptable // To few answers
+                }
+            }
+        }
+        assertThrows<IllegalArgumentException> {
+            dialog2 {
+                first ask haveSpouse answers {
+                    -YES conclude Unacceptable
+                    -YES conclude Acceptable    // Duplicate answer
+                }
+            }
+        }
+        assertThrows<IllegalArgumentException> {
+            dialog2 {
+                first ask haveSpouse answers {
+                    -YES conclude Unacceptable
+                    -NO conclude Acceptable
+                    -YES conclude Unacceptable  // Too many answers
+                }
+            }
         }
     }
 }

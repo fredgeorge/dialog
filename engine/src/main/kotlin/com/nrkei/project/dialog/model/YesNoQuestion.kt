@@ -9,10 +9,10 @@ package com.nrkei.project.dialog.model
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
 
-// Understands SOMETHING_DUMMY
+// Understands a single boolean solicitation
 class YesNoQuestion(label: String): Question2 {
     val label = QuestionLabel(label)
-    val possibleAnswers: List<Answer> = listOf(YES, NO)
+    override val possibleAnswers: List<Answer> = listOf(YES, NO)
     override val consequences = mutableMapOf<Answer, Consequence>()
     private var answer: Answer? = null
 
@@ -21,7 +21,15 @@ class YesNoQuestion(label: String): Question2 {
         this.answer = answer
     }
 
+    override fun status(): DialogStatus2 {
+        return consequences[answer]?.status() ?: DialogStatus2.NOT_STARTED
+    }
+
     override fun nextQuestionOrNull() = if (answer == null) this else null
+
+    override fun validateConsequences() {
+        require(consequences.keys == possibleAnswers.toSet()) { "Must have a consequence for each possible answer" }
+    }
 
     enum class YesNoChoice: Answer { YES, NO }
 }
