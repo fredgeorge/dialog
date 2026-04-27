@@ -16,6 +16,7 @@ fun dialog2(block: Dialog2.() -> Unit) =
 // A series of questions to figure out a conclusion
 class Dialog2 internal constructor() : Question2 {
     private val questions = mutableListOf<Question2>()
+    override val consequences = mutableMapOf<Answer, Consequence>()
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
@@ -48,23 +49,21 @@ class Dialog2 internal constructor() : Question2 {
 
     inner class QuestionBuilder internal constructor(private val question: Question2) {
 
-        infix fun answers(block: AnswersBuilder2.() -> Unit): Dialog2 =
-            AnswersBuilder2()
-                .let { it.block() }
-                .also { questions.add(question) }
-                .let { this@Dialog2 }
+        infix fun answers(block: ConsequencesBuilder.() -> Unit): Dialog2 =
+            this@Dialog2.also {
+                it.questions.add(question)
+                ConsequencesBuilder(question).block()
+            }
     }
 }
 
-class AnswersBuilder2 internal constructor() {
-    private val choices = mutableMapOf<Answer, Consequence>()
+class ConsequencesBuilder internal constructor(private val question: Question2) {
     private lateinit var answer: Answer
 
-
-    operator fun Answer.unaryMinus() = this@AnswersBuilder2.also { answer = this }
+    operator fun Answer.unaryMinus() = this@ConsequencesBuilder.also { answer = this }
 
     infix fun conclude(consequence: Consequence) {
-        choices[answer] = consequence
+        question.consequences[answer] = consequence
     }
 
     infix fun ask(question: Question2) = QuestionBuilder(question)
@@ -72,7 +71,6 @@ class AnswersBuilder2 internal constructor() {
     inner class QuestionBuilder internal constructor(private val question: Question2) {
 
         infix fun answers(block: AnswersBuilder.() -> Question2) =
-            AnswersBuilder()
-                .let { it.block() }
+            AnswersBuilder().block()
     }
 }

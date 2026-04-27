@@ -13,7 +13,7 @@ import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
 class YesNoQuestion(label: String): Question2 {
     val label = QuestionLabel(label)
     val possibleAnswers: List<Answer> = listOf(YES, NO)
-    private val consequences = mutableMapOf<Answer, Consequence>()
+    override val consequences = mutableMapOf<Answer, Consequence>()
     private lateinit var answer: Answer
 
     override fun answer(answer: Answer) {

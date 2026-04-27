@@ -10,4 +10,5 @@ package com.nrkei.project.dialog.model
 interface Question2 : Consequence {
     fun answer(answer: Answer)
     fun nextQuestionOrNull(): Question2?
+    val consequences: MutableMap<Answer, Consequence>
 }
