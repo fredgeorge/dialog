@@ -12,20 +12,31 @@ import com.nrkei.project.dialog.model.Unacceptable
 import com.nrkei.project.dialog.model.YesNoQuestion
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 // Understands SOMETHING_DUMMY
 internal class YesNoDialogTest {
-    private val HAVE_SPOUSE = YesNoQuestion("Have Spouse")
+    private val haveSpouse = YesNoQuestion("Have Spouse")
+    private val haveCoApplicant = YesNoQuestion("Have Co-applicant")
 
     @Test fun `Simple valid dialog`() {
         dialog2 {
-            first ask HAVE_SPOUSE answers {
+            first ask haveSpouse answers {
+                -YES conclude Acceptable
+                -NO conclude Unacceptable
+            }
+            then ask haveCoApplicant answers {
                 -YES conclude Acceptable
                 -NO conclude Unacceptable
             }
         }.also { dialog ->
-            dialog.nextQuestionOrNull()
+            assertEquals(haveSpouse, dialog.nextQuestionOrNull())
+            haveSpouse.answer(YES)
+            assertEquals(haveCoApplicant, dialog.nextQuestionOrNull())
+            haveCoApplicant.answer(NO)
+            assertNull(dialog.nextQuestionOrNull())
         }
     }
 }

@@ -14,16 +14,14 @@ class YesNoQuestion(label: String): Question2 {
     val label = QuestionLabel(label)
     val possibleAnswers: List<Answer> = listOf(YES, NO)
     override val consequences = mutableMapOf<Answer, Consequence>()
-    private lateinit var answer: Answer
+    private var answer: Answer? = null
 
     override fun answer(answer: Answer) {
         require(answer in possibleAnswers) { "Invalid answer of $answer for question $label" }
         this.answer = answer
     }
 
-    override fun nextQuestionOrNull(): Question2? {
-        return null
-    }
+    override fun nextQuestionOrNull() = if (answer == null) this else null
 
     enum class YesNoChoice: Answer { YES, NO }
 }
