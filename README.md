@@ -6,15 +6,29 @@ Licensed under the MIT License; see LICENSE file in root.
 
 ### Concepts
 
-The _Dialog_ model represents the solicitation of information
-between a system and a target user. Given a particular need,
-a _Question_ can be presented to the user. An _Answer_ determines
-the next action:
+The __Dialog Model__ represents the solicitation of information
+between a system and target users. Basic concepts are:
 
-- Success, returning the _Answer_ to the system,
-- Failure, usually with specifics on why the _Answer_   
-was not satisfactory
-- Ask another _Question_
+- __Question__ – the solicitation of a single piece of information
+- __Choice__ – one of the possible answers to a _Question_
+- __Dialog__ – one or more related _Questions_
+- __Party__ – a target user for a _Dialog_
+- __Answer__ – the current response to a _Question_
+- __Need__ – a requirement for information from a _Party_
+- __Context__ – the current state of the system represented by all the current _Answers_
+- __Conversation__ – a sequence of _Dialogs_ between _Parties_ 
+  and the system for a particular goal
+
+Given a particular _Need_, a _Dialog_ is initiated with a _Party_.
+Each _Question_ of a _Dialog_ will be presented to the _Party_. 
+An _Answer_ from the possible _Choices_ determines the next action:
+
+- _Success_, indicating a valid response consistent with 
+  the overall goal of the _Conversation_
+- _Failure_, usually with specifics on why the _Answer_   
+  was not satisfactory, and inconsistent with the overall goal
+- Progressing to another _Question_
+- Creating another _Need_ to be satisfied, possibly by another _Party_
 
 A __Context__ component is used to track the _Answers_
 for a _Dialog_. This facilitates the user going back
@@ -25,30 +39,28 @@ _Dialog_, and being able to resume later.
 
 The system triggers different _Dialogs_ based on its
 needs. Needs will be expressed using the __Issue__ 
-component. Possible _Issues_ would include:
+component. Possible _Needs_ would include:
 
-- _Invalid Situation_ indicating that changes or additional  
-information is required for Success
+- _Failure Situation_ indicating that changes or additional  
+information is required for overall success
 - _Missing Information_ indicating that new information is  
 needed for Success
 
 ### Capabilities
 
-- Various types of Question formats
+- Various types of Question formats, including
   - Multiple choice
   - Single text input
   - True/false
-  - Integer value
-  - Floating point value
-- A DSL (domain-specific language) to specify questions and answers
-- Ability to change the Answer to a Question and pursue that path
+  - Integer value with next actions based on ranges
+  - Floating point value with next actions based on ranges
+- A DSL (domain-specific language) to specify _Dialogs_
+- Ability to change the Answer to a Question and pursue 
+  an alternative path
 - Ability to change the Answer back and keep the original Answers
   in that chain
-- Roles associated with various Questions, including
-  - Who is allowed to answer
-  - Who is allowed to see an answer
 - Dialog blocks that can be plugged into other
-  Dialog chains
+  Dialog chains supporting reuse
 - Tentative Answers that can allow the flow to continue, but
   are subject to review by a different Role
 - Templates to generate multiple copies of a Dialog Block 
@@ -57,19 +69,21 @@ needed for Success
 ### Using the Dialog Model
 
 _Dialogs_ are constructed with a Kotlin DSL. The DSL
-specifies the _Question_, possible _Answers_, and the
+specifies the _Question_, possible _Choices_, and the
 next action associated with each _Answer_ (Success, Failure,
-or next _Question_).
+next _Question_, or new _Need_).
 
-A _Dialog_ is associated with a particular _Issue_ that 
-can resolve it. The user may be presented with multiple
-_Dialogs_ if multiple _Issues_ arise.
+A _Dialog_ is associated with a particular _Need_ that 
+can resolve it. A _Party_ may be presented with multiple
+_Dialogs_ if multiple _Needs_ arise.
 
 ### Project Structure
 
 Code behavior is in the __engine__ package. 
+
 Tests are in the __tests__ package to encourage testing 
 only the public behavior of the engine.
+
 Similarly, the persistence layer is in the 
 __persistence__ package.
 Included is also support for persistence
@@ -78,7 +92,8 @@ The persistence package stops with encoding and decoding the
 engine classes; interfaces to the outside world (databases,
 REST APIs, or event buses) should be in yet other packages.
 Some common test setup is in a separate 
-__test_support__ package.
+
+__test_support__ package for 
 
 More on persistence is below.
 
@@ -141,10 +156,6 @@ model for persistence. The pattern suggests an object can
 present a binary representation of itself that can only 
 be reinterpreted by the object's class itself. It can't be 
 used as an _encapsulation_ bypass.
-
-The example injects _memento_ creation with an extension method
-into the Rectangle class. It further injects restoration of the
-class into the Companion object of Rectangle.
 
 Each class, to support the Memento Pattern,
 defines a properly populated DTO in response to toDto(), and

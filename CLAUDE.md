@@ -4,7 +4,7 @@ Project context for AI-assisted development. Keep this file updated as the proje
 
 ## Purpose
 
-A Kotlin dialog framework for gathering and refining financial information through structured sequences of questions and answers. Supports financial situations such as car loans, credit cards, and mortgages. An external analyzer system evaluates collected answers and triggers follow-up Dialogs to request corrections, clarifications, or additional information. The framework manages Dialog execution; answer accumulation and persistence between Dialog sessions are delegated to the `Context` framework (a separate project, published to mavenLocal). Author: Fred George (MIT License).
+A Kotlin dialog framework for gathering and refining information through structured sequences of questions and answers. A `Conversation` sequences one or more `Dialog`s between `Party` instances (target users) and the system. Each `Dialog` is triggered by a `Need`; a back-end server expresses unmet needs as `Issue`s (failure situations or missing information), each of which triggers a follow-up `Dialog`. The framework manages Dialog execution; answer accumulation and persistence between Dialog sessions are delegated to the `Context` framework (a separate project, published to mavenLocal). Financial situations (car loans, credit cards, mortgages) are one expected use of the framework but are not part of this project. Author: Fred George (MIT License).
 
 ## Technology Stack
 
@@ -36,7 +36,7 @@ dialog/
 ├── gradle/
 │   ├── libs.versions.toml    # Version catalog (single source of truth for versions)
 │   └── wrapper/              # Gradle 9.4.1
-├── engine/                   # Core domain: Dialog, Question, Answer, FinancialSituation, AnalyzerFeedback
+├── engine/                   # Core domain: Dialog, Question, Choice, Answer, Party, Need, Conversation, Issue
 ├── test_support/             # Shared test fixtures (sample Dialogs, Answers, populated Contexts)
 └── tests/                    # Behavior tests (separate module, not inside engine)
 ```
@@ -46,32 +46,51 @@ dialog/
 ### engine
 Pure domain logic. No test code, no serialization concerns. Publishes to mavenLocal as `dialog-engine`. Depends on `context-engine` from mavenLocal. Key domain classes:
 
-- `Dialog` — a structured conversation; may be a flat list of `Question`s, a decision tree, or a hybrid. Composite pattern: a `Dialog` node may contain `Question`s (leaves) or nested `Dialog`s (subtrees).
-- `Question` — a single question with a prompt and an expected answer type. Each `Question` is associated with a `ContextLabel` so its answer can be stored into a `Context`.
-- `FinancialSituation` — sealed class representing `CarLoan`, `CreditCard`, and `Mortgage`. Each situation owns its initial `Dialog`.
-- `AnalyzerFeedback` — models the output of the external analyzer: correction required, clarification required, or additional information needed. Each feedback type maps to a follow-up `Dialog` to execute.
+- `Dialog` — a structured conversation; may be a flat list of `Question`s, a decision tree, or a hybrid. Composite pattern: a `Dialog` node may contain `Question`s (leaves) or nested `Dialog`s (subtrees). Associated with a `Need` that it resolves.
+- `Question` — the solicitation of a single piece of information. Offers a set of `Choice`s and is associated with a `ContextLabel` so its `Answer` can be stored into a `Context`. Supported types: multiple choice, single text input, true/false, integer (with range-based next actions), floating point (with range-based next actions).
+- `Choice` — one possible answer to a `Question`. Each `Choice` carries the next action: Success, Failure (with reason), proceed to another `Question`, or create a new `Need`.
+- `Answer` — the current response to a `Question`; selected from the available `Choice`s. Supports revision: a `Party` may change an `Answer` and pursue the alternative path, or revert and restore the original answer chain.
+- `Party` — a target user for a `Dialog`. A single `Conversation` may involve multiple `Party` instances (e.g., tentative answers pending review by a different role).
+- `Need` — a requirement for information from a `Party`. Triggers a `Dialog`. Expressed externally as an `Issue`.
+- `Conversation` — a sequence of `Dialog`s between `Party` instances and the system for a particular goal (e.g., evaluating a financial situation).
+- `Issue` — models an unmet `Need` raised by the back-end server. Two subtypes: `FailureSituation` (changes or additional information required) and `MissingInformation` (new information needed). Each `Issue` maps to a follow-up `Dialog`.
 
 `Context` (from `context-engine`) is the state object passed into and out of each `Dialog` execution. Answers are stored into it using `ContextLabel` keys. Persistence between sessions is provided by `context-persistence` and requires no code in this project.
 
 ### test_support
-Shared test fixtures consumed by `tests`. Contains sample `Question`s, pre-built `Dialog` structures, and pre-populated `Context` instances for each `FinancialSituation`. Depends on `:engine` and `context-engine`. No publication; consumed via `testImplementation(project(":test_support"))`.
+Shared test fixtures consumed by `tests`. Contains sample `Question`s, `Choice`s, pre-built `Dialog` structures, and pre-populated `Context` instances. Depends on `:engine` and `context-engine`. No publication; consumed via `testImplementation(project(":test_support"))`.
 
 ### tests
-Dedicated module for behavior verification. Depends on `:engine` and `:test_support` (test scope). Tests Dialog traversal, Context accumulation across sessions, and feedback-driven Dialog selection. Kept separate from `engine` to enforce testing of public interfaces only.
+Dedicated module for behavior verification. Depends on `:engine` and `:test_support` (test scope). Tests Dialog traversal, Answer revision and reversion, Context accumulation across sessions, and Issue-driven Dialog selection. Kept separate from `engine` to enforce testing of public interfaces only.
 
 ## Key Domain Concepts
 
-**Dialog:** The central abstraction. A `Dialog` presents `Question`s to a user and collects `Answer`s into a `Context`. Structure may be a flat list, a tree (branching based on `Answer` values), or a combination. Each `FinancialSituation` provides an initial `Dialog`; the external analyzer may trigger additional `Dialog`s.
+**Question / Choice / Answer:** A `Question` solicits one piece of information by presenting a set of `Choice`s to a `Party`. Each `Choice` carries its next action — Success, Failure (with reason), proceed to another `Question`, or create a new `Need`. The selected `Choice` becomes the `Answer`. A `Party` may revise an `Answer` and follow the alternative path, or revert to restore the original answer chain.
 
-**Context:** Provided by `context-engine`. A typed `ContextLabel<*> → Any` map that accumulates answers across one or more `Dialog` sessions for a given financial situation. Passed into each `Dialog` at the start of execution and updated as answers arrive. Serialized between sessions via `context-persistence` (`toMemento` / `fromMemento`) so state survives across runs.
+**Dialog:** A structured conversation; may be a flat list of `Question`s, a decision tree (branching based on `Answer`), or a combination. Associated with the `Need` it satisfies. Dialog blocks support reuse by plugging into other Dialog chains. Templates can generate multiple copies of a Dialog block for each item in a collection.
 
-**AnalyzerFeedback:** The integration boundary between this framework and the external analyzer. The analyzer consumes a `Context` and returns one or more feedback items — correction required, clarification required, or additional information needed — each of which triggers a new `Dialog`.
+**Conversation:** A sequence of `Dialog`s between one or more `Party` instances and the system toward a particular goal (e.g., completing a financial situation assessment). A `Party` may be presented with multiple `Dialog`s if multiple `Need`s arise.
 
-**FinancialSituation:** `CarLoan`, `CreditCard`, `Mortgage` — sealed subclasses that define the domain-specific initial `Dialog` and may carry situation-specific validation rules or question sets.
+**Party:** A target user for a `Dialog`. Multiple roles may participate in a `Conversation` — for example, a tentative `Answer` may be submitted by one `Party` and reviewed by another.
+
+**Need / Issue:** A `Need` is a requirement for information from a `Party` and is the trigger for a `Dialog`. The external analyzer expresses unmet needs as `Issue`s: `FailureSituation` (changes or additional information required) or `MissingInformation` (new information needed). Each `Issue` resolves to a follow-up `Dialog`.
+
+**Context:** Provided by `context-engine`. A typed `ContextLabel<*> → Any` map that accumulates answers across one or more `Dialog` sessions for a given financial situation. Passed into each `Dialog` at the start of execution and updated as answers arrive. Also supports suspension and resumption of a `Dialog` mid-session. Serialized between sessions via `context-persistence` (`toMemento` / `fromMemento`) so state survives across runs.
+
+## Capabilities
+
+- Multiple question formats: multiple choice, single text input, true/false, integer with range-based branching, floating point with range-based branching
+- Kotlin DSL for specifying `Dialog` structure: `Question`s, `Choice`s, and next actions
+- Answer revision: change an `Answer` and pursue the alternative path, or revert and restore the original chain
+- Reusable Dialog blocks: plug a `Dialog` subtree into other Dialog chains
+- Tentative answers: allow flow to continue while flagging an `Answer` for review by another `Party`
+- Dialog templates: generate multiple copies of a Dialog block for each item in a collection
 
 ## Key Architectural Patterns
 
-**Composite Pattern (GoF):** `Dialog` is a composite. It uniformly treats a single `Question` (leaf) and a nested `Dialog` (branch) so that trees, lists, and hybrids are expressed with the same interface.
+**Composite Pattern (GoF):** `Dialog` is a composite. It uniformly treats a single `Question` (leaf) and a nested `Dialog` (branch) so that trees, lists, and hybrids are expressed with the same interface. Reusable Dialog blocks plug into other chains via the same interface.
+
+**DSL (internal Kotlin DSL):** `Dialog` structures are specified using a Kotlin DSL. The DSL expresses `Question`s, their `Choice`s, and the next action for each `Choice` (Success, Failure, next `Question`, or new `Need`).
 
 **Memento Pattern (GoF):** Provided by `context-persistence`. `Context` exposes `toMemento(): String` and `Companion.fromMemento(memento: String)` as extension functions. The dialog project consumes this capability but does not implement it.
 
