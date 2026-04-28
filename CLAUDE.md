@@ -36,7 +36,8 @@ dialog/
 ├── gradle/
 │   ├── libs.versions.toml    # Version catalog (single source of truth for versions)
 │   └── wrapper/              # Gradle 9.4.1
-├── engine/                   # Core domain: Dialog, Question, Choice, Answer, Party, Need, Conversation, Issue
+├── engine/                   # Core domain: Dialog, Question, Answer, Consequence, Party, Need, Conversation, Issue
+├── persistence/              # JSON/Base64 encoding utilities for serialization
 ├── test_support/             # Shared test fixtures (sample Dialogs, Answers, populated Contexts)
 └── tests/                    # Behavior tests (separate module, not inside engine)
 ```
@@ -46,10 +47,10 @@ dialog/
 ### engine
 Pure domain logic. No test code, no serialization concerns. Publishes to mavenLocal as `dialog-engine`. Depends on `context-engine` from mavenLocal. Key domain classes:
 
-- `Dialog` — a structured conversation; may be a flat list of `Question`s, a decision tree, or a hybrid. Composite pattern: a `Dialog` node may contain `Question`s (leaves) or nested `Dialog`s (subtrees). Associated with a `Need` that it resolves.
-- `Question` — the solicitation of a single piece of information. Offers a set of `Choice`s and is associated with a `ContextLabel` so its `Answer` can be stored into a `Context`. Supported types: multiple choice, single text input, true/false, integer (with range-based next actions), floating point (with range-based next actions).
-- `Choice` — one possible answer to a `Question`. Each `Choice` carries the next action: Success, Failure (with reason), proceed to another `Question`, or create a new `Need`.
-- `Answer` — the current response to a `Question`; selected from the available `Choice`s. Supports revision: a `Party` may change an `Answer` and pursue the alternative path, or revert and restore the original answer chain.
+- `Dialog` — a structured conversation; may be a flat list of `Question`s, a decision tree, or a hybrid. Composite pattern: a `Dialog` node may contain `Question`s (leaves) or nested `Dialog`s (subtrees). Lives in the `dsl/` subpackage. Associated with a `Need` that it resolves.
+- `Question` — the solicitation of a single piece of information. Each concrete type defines its own inner `Answer` enum and is associated with a `ContextLabel` so its answer can be stored into a `Context`. Concrete types: `YesNoQuestion` (YES/NO), `TextQuestion` (text with minimum length validation), `IntRangeQuestion` (integer mapped to caller-defined range enum via `IntRangeAnswer`).
+- `Answer` — an interface implemented by inner enums within each `Question` type (e.g. `YesNoChoice`, `TextAnswer`, `IntRangeAnswer`). Represents a possible response value. Supports revision: a `Party` may change an `Answer` and pursue the alternative path, or revert and restore the original answer chain.
+- `Consequence` — the interface for what follows a given `Answer`. Concrete terminals: `Acceptable` (SUCCESS) and `Unacceptable` (PROBLEMS). A `Question` is itself a `Consequence`, enabling chained and nested questions via the DSL.
 - `Party` — a target user for a `Dialog`. A single `Conversation` may involve multiple `Party` instances (e.g., tentative answers pending review by a different role).
 - `Need` — a requirement for information from a `Party`. Triggers a `Dialog`. Expressed externally as an `Issue`.
 - `Conversation` — a sequence of `Dialog`s between `Party` instances and the system for a particular goal (e.g., evaluating a financial situation).
@@ -57,15 +58,18 @@ Pure domain logic. No test code, no serialization concerns. Publishes to mavenLo
 
 `Context` (from `context-engine`) is the state object passed into and out of each `Dialog` execution. Answers are stored into it using `ContextLabel` keys. Persistence between sessions is provided by `context-persistence` and requires no code in this project.
 
+### persistence
+JSON and Base64 encoding utilities (`Encoding`) for serializing/deserializing domain objects. Uses `kotlinx-serialization`. Depends on `context-engine`. Publishes to mavenLocal as `dialog-persistence`.
+
 ### test_support
-Shared test fixtures consumed by `tests`. Contains sample `Question`s, `Choice`s, pre-built `Dialog` structures, and pre-populated `Context` instances. Depends on `:engine` and `context-engine`. No publication; consumed via `testImplementation(project(":test_support"))`.
+Shared test fixtures consumed by `tests`. Contains sample `Question`s, pre-built `Dialog` structures, and pre-populated `Context` instances. Depends on `:engine` and `context-engine`. No publication; consumed via `testImplementation(project(":test_support"))`.
 
 ### tests
 Dedicated module for behavior verification. Depends on `:engine` and `:test_support` (test scope). Tests Dialog traversal, Answer revision and reversion, Context accumulation across sessions, and Issue-driven Dialog selection. Kept separate from `engine` to enforce testing of public interfaces only.
 
 ## Key Domain Concepts
 
-**Question / Choice / Answer:** A `Question` solicits one piece of information by presenting a set of `Choice`s to a `Party`. Each `Choice` carries its next action — Success, Failure (with reason), proceed to another `Question`, or create a new `Need`. The selected `Choice` becomes the `Answer`. A `Party` may revise an `Answer` and follow the alternative path, or revert to restore the original answer chain.
+**Question / Answer / Consequence:** A `Question` solicits one piece of information from a `Party`. Each concrete `Question` type declares its own inner `Answer` enum. Selecting an `Answer` triggers its associated `Consequence` — either a terminal (`Acceptable` / `Unacceptable`) or another `Question` (enabling chained and nested dialogs). A `Party` may revise an `Answer` and follow the alternative path, or revert to restore the original answer chain.
 
 **Dialog:** A structured conversation; may be a flat list of `Question`s, a decision tree (branching based on `Answer`), or a combination. Associated with the `Need` it satisfies. Dialog blocks support reuse by plugging into other Dialog chains. Templates can generate multiple copies of a Dialog block for each item in a collection.
 
@@ -79,8 +83,8 @@ Dedicated module for behavior verification. Depends on `:engine` and `:test_supp
 
 ## Capabilities
 
-- Multiple question formats: multiple choice, single text input, true/false, integer with range-based branching, floating point with range-based branching
-- Kotlin DSL for specifying `Dialog` structure: `Question`s, `Choice`s, and next actions
+- Three question formats: `YesNoQuestion` (boolean), `TextQuestion` (string with minimum length), `IntRangeQuestion` (integer mapped to caller-defined range enum)
+- Kotlin DSL for specifying `Dialog` structure: `Question`s, `Answer`s, and `Consequence`s
 - Answer revision: change an `Answer` and pursue the alternative path, or revert and restore the original chain
 - Reusable Dialog blocks: plug a `Dialog` subtree into other Dialog chains
 - Tentative answers: allow flow to continue while flagging an `Answer` for review by another `Party`
@@ -90,7 +94,7 @@ Dedicated module for behavior verification. Depends on `:engine` and `:test_supp
 
 **Composite Pattern (GoF):** `Dialog` is a composite. It uniformly treats a single `Question` (leaf) and a nested `Dialog` (branch) so that trees, lists, and hybrids are expressed with the same interface. Reusable Dialog blocks plug into other chains via the same interface.
 
-**DSL (internal Kotlin DSL):** `Dialog` structures are specified using a Kotlin DSL. The DSL expresses `Question`s, their `Choice`s, and the next action for each `Choice` (Success, Failure, next `Question`, or new `Need`).
+**DSL (internal Kotlin DSL):** `Dialog` structures are specified using a Kotlin DSL (in the `dsl/` subpackage). The DSL expresses `Question`s, their `Answer`s, and the `Consequence` for each `Answer` (`Acceptable`, `Unacceptable`, or a chained `Question`).
 
 **Memento Pattern (GoF):** Provided by `context-persistence`. `Context` exposes `toMemento(): String` and `Companion.fromMemento(memento: String)` as extension functions. The dialog project consumes this capability but does not implement it.
 
