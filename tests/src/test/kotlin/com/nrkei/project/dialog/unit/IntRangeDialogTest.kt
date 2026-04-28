@@ -15,6 +15,9 @@ import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.ADULT
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.INVALID
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.SENIOR
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.UNDER_18
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.ACCEPTABLE
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.POOR
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.WEALTHY
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,14 +25,16 @@ import org.junit.jupiter.api.Test
 // Ensures that IntQuestions work as expected
 internal class IntRangeDialogTest {
     private lateinit var age: IntRangeQuestion<AgeRange>
+    private lateinit var netWorth: IntRangeQuestion<NetWorthRange>
 
     @BeforeEach
     fun setup() {
         ContextLabelRegistry.reset()
         age = IntRangeQuestion("Age", AgeRange::class)
+        netWorth = IntRangeQuestion("Net Worth", NetWorthRange::class)
     }
 
-    @Test fun `Simple valid dialog`() {
+    @Test fun `Simple valid dialog for age`() {
         dialog {
             first ask age answers {
                 -INVALID conclude Unacceptable
@@ -55,6 +60,28 @@ internal class IntRangeDialogTest {
         }
     }
 
+    @Test fun `Simple valid dialog for net worth`() {
+        dialog {
+            first ask netWorth answers {
+                -POOR conclude Unacceptable
+                -ACCEPTABLE conclude Acceptable
+                -WEALTHY conclude Acceptable
+            }
+        }.also { dialog ->
+            assertEquals(NOT_STARTED, dialog.status())
+
+            assertEquals(netWorth, dialog.nextQuestionOrNull())
+            netWorth.answer(-500_000)
+            assertEquals(PROBLEMS, dialog.status())
+
+            netWorth.answer(666_666)
+            assertEquals(SUCCESS, dialog.status())
+
+            netWorth.answer(7_400_000)
+            assertEquals(SUCCESS, dialog.status())
+        }
+    }
+
     enum class AgeRange(
         override val minimum: Int,
         override val maximum: Int,
@@ -63,5 +90,14 @@ internal class IntRangeDialogTest {
         UNDER_18(0, 17),
         ADULT(18, 64),
         SENIOR(65, Int.MAX_VALUE)
+    }
+
+    enum class NetWorthRange(
+        override val minimum: Int,
+        override val maximum: Int,
+    ) : IntRangeAnswer {
+        POOR(Int.MIN_VALUE, 99_999),
+        ACCEPTABLE(100_000, 999_999),
+        WEALTHY(1_000_000, Int.MAX_VALUE)
     }
 }
