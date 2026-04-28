@@ -30,6 +30,6 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     interface DoubleRangeAnswer : Answer {
         val minimum: Double
         val maximum: Double
-        fun inRange(value: Double) = value in minimum..maximum
+        fun inRange(value: Double) = value >= minimum && value < maximum
     }
 }

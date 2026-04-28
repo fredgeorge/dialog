@@ -60,6 +60,23 @@ internal class DoubleRangeDialogTest {
         }
     }
 
+    @Test fun `Temperature boundary values are unambiguous`() {
+        dialog {
+            first ask temperature answers {
+                -COLD conclude Unacceptable
+                -WARM conclude Acceptable
+                -HOT conclude Unacceptable
+            }
+        }.also { dialog ->
+            assertEquals(temperature, dialog.nextQuestionOrNull())
+            temperature.answer(15.0)                // exactly at COLD/WARM boundary → WARM
+            assertEquals(SUCCESS, dialog.status())
+
+            temperature.answer(28.0)                // exactly at WARM/HOT boundary → HOT
+            assertEquals(PROBLEMS, dialog.status())
+        }
+    }
+
     @Test fun `Temperature accepts Int answer without explicit cast`() {
         dialog {
             first ask temperature answers {
@@ -104,25 +121,52 @@ internal class DoubleRangeDialogTest {
         }
     }
 
+    @Test fun `BMI boundary values are unambiguous`() {
+        dialog {
+            first ask bmi answers {
+                -UNDERWEIGHT    conclude Unacceptable
+                -NORMAL         conclude Acceptable
+                -OVERWEIGHT     conclude Unacceptable
+                -OBESE          conclude Unacceptable
+                -MORBIDLY_OBESE conclude Unacceptable
+            }
+        }.also { dialog ->
+            assertEquals(bmi, dialog.nextQuestionOrNull())
+            bmi.answer(18.5)                        // exactly at UNDERWEIGHT/NORMAL boundary → NORMAL
+            assertEquals(SUCCESS, dialog.status())
+
+            bmi.answer(25.0)                        // exactly at NORMAL/OVERWEIGHT boundary → OVERWEIGHT
+            assertEquals(PROBLEMS, dialog.status())
+
+            bmi.answer(30.0)                        // exactly at OVERWEIGHT/OBESE boundary → OBESE
+            assertEquals(PROBLEMS, dialog.status())
+
+            bmi.answer(40.0)                        // exactly at OBESE/MORBIDLY_OBESE boundary → MORBIDLY_OBESE
+            assertEquals(PROBLEMS, dialog.status())
+        }
+    }
+
     // Celsius temperature ranges; supports negative values
+    // Ranges are half-open [minimum, maximum) — boundary values belong to the higher tier
     enum class TemperatureRange(
         override val minimum: Double,
         override val maximum: Double,
     ) : DoubleRangeAnswer {
-        COLD(-Double.MAX_VALUE, 14.9),
-        WARM(15.0, 27.9),
+        COLD(-Double.MAX_VALUE, 15.0),
+        WARM(15.0, 28.0),
         HOT(28.0, Double.MAX_VALUE)
     }
 
     // WHO Body Mass Index tiers (kg/m²)
+    // Ranges are half-open [minimum, maximum) — boundary values belong to the higher tier
     enum class BmiRange(
         override val minimum: Double,
         override val maximum: Double,
     ) : DoubleRangeAnswer {
-        UNDERWEIGHT(-Double.MAX_VALUE, 18.4),
-        NORMAL(18.5, 24.9),
-        OVERWEIGHT(25.0, 29.9),
-        OBESE(30.0, 39.9),
+        UNDERWEIGHT(-Double.MAX_VALUE, 18.5),
+        NORMAL(18.5, 25.0),
+        OVERWEIGHT(25.0, 30.0),
+        OBESE(30.0, 40.0),
         MORBIDLY_OBESE(40.0, Double.MAX_VALUE)
     }
 }
