@@ -6,16 +6,18 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.context.EnumCodec
 import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
 import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
 import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
 import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
+import com.nrkei.project.context.label
 
 // Understands a single boolean solicitation
 class YesNoQuestion(label: String) : Question {
-    val label = QuestionLabel(label)
+    val label = label(label, EnumCodec<YesNoChoice>(YesNoChoice::class.java))
     override val possibleAnswers: List<Answer> = listOf(YES, NO)
     override val consequences = mutableMapOf<Answer, Consequence>()
     private var answer: Answer? = null

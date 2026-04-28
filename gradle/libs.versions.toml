@@ -6,7 +6,7 @@
 junit = "6.0.3"
 kotlin = "2.3.20"
 serialization = "1.8.1"
-context = "1.2.1"
+context = "1.2.2"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

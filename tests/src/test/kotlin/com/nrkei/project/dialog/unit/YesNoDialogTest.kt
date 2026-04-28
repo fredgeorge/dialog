@@ -6,23 +6,32 @@
 
 package com.nrkei.project.dialog.unit
 
+import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog2
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 // Ensures YesNoQuestion works correctly
 internal class YesNoDialogTest {
-    private val haveSpouse = YesNoQuestion("Have Spouse")
-    private val haveCoApplicant = YesNoQuestion("Have Co-applicant")
-    private val haveChildren = YesNoQuestion("Have Children")
+    private lateinit var haveSpouse: YesNoQuestion
+    private lateinit var haveCoApplicant: YesNoQuestion
+    private lateinit var haveChildren: YesNoQuestion
 
-    @Test fun `Simple valid dialog`() {
+    @BeforeEach
+    fun setup() {
+        ContextLabelRegistry.reset()
+        haveSpouse = YesNoQuestion("Have Spouse")
+        haveCoApplicant = YesNoQuestion("Have Co-applicant")
+        haveChildren = YesNoQuestion("Have Children")
+    }
+
+    @Test
+    fun `Simple valid dialog`() {
         dialog2 {
             first ask haveSpouse answers {
                 -YES conclude Unacceptable
@@ -51,7 +60,8 @@ internal class YesNoDialogTest {
         }
     }
 
-    @Test fun `Must handle all possible answers`() {
+    @Test
+    fun `Must handle all possible answers`() {
         assertThrows<IllegalArgumentException> {
             dialog2 {
                 first ask haveSpouse answers {
@@ -78,7 +88,8 @@ internal class YesNoDialogTest {
         }
     }
 
-    @Test fun `2-level valid dialog`() {
+    @Test
+    fun `2-level valid dialog`() {
         dialog2 {
             first ask haveSpouse answers {
                 -YES ask haveCoApplicant answers {
@@ -106,7 +117,8 @@ internal class YesNoDialogTest {
         }
     }
 
-    @Test fun `3-level valid dialog`() {
+    @Test
+    fun `3-level valid dialog`() {
         dialog2 {
             first ask haveSpouse answers {
                 -YES ask haveCoApplicant answers {

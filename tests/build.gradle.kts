@@ -7,4 +7,5 @@
 dependencies {
     implementation(project(":engine"))
     testImplementation(project(":test_support"))
+    testImplementation(libs.context.engine)
 }
