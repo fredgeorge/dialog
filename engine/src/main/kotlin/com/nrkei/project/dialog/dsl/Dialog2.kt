@@ -62,7 +62,7 @@ class Dialog2 internal constructor() : Question2 {
                 ConsequencesBuilder(question).also { builder ->
                     builder.block()
                     require(builder.consequenceCount == question.possibleAnswers.size)
-                    { "Expected question.possibleAnswers.size consequences, but got ${builder.consequenceCount}" }
+                    { "Expected ${question.possibleAnswers.size} consequences, but got ${builder.consequenceCount}" }
                 }
                 question.validateConsequences()
             }
@@ -79,11 +79,19 @@ class ConsequencesBuilder internal constructor(private val question: Question2) 
         question.consequences[answer] = consequence.also { consequenceCount++ }
     }
 
-    infix fun ask(question: Question2) = QuestionBuilder(question)
+    infix fun ask(innerQuestion: Question2) = QuestionBuilder(innerQuestion).also {
+        question.consequences[answer] = innerQuestion.also { consequenceCount++ }
+    }
 
     inner class QuestionBuilder internal constructor(private val question: Question2) {
 
-        infix fun answers(block: AnswersBuilder.() -> Question2) =
-            AnswersBuilder().block()
+        infix fun answers(block: ConsequencesBuilder.() -> Unit) = this@ConsequencesBuilder.also {
+            ConsequencesBuilder(question).also { builder ->
+                builder.block()
+                require(builder.consequenceCount == question.possibleAnswers.size)
+                { "Expected question.possibleAnswers.size consequences, but got ${builder.consequenceCount}" }
+            }
+            question.validateConsequences()
+        }
     }
 }

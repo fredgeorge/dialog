@@ -6,11 +6,15 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.dialog.model.DialogStatus2.IN_PROGRESS
+import com.nrkei.project.dialog.model.DialogStatus2.NOT_STARTED
+import com.nrkei.project.dialog.model.DialogStatus2.PROBLEMS
+import com.nrkei.project.dialog.model.DialogStatus2.SUCCESS
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
 
 // Understands a single boolean solicitation
-class YesNoQuestion(label: String): Question2 {
+class YesNoQuestion(label: String) : Question2 {
     val label = QuestionLabel(label)
     override val possibleAnswers: List<Answer> = listOf(YES, NO)
     override val consequences = mutableMapOf<Answer, Consequence>()
@@ -22,14 +26,23 @@ class YesNoQuestion(label: String): Question2 {
     }
 
     override fun status(): DialogStatus2 {
-        return consequences[answer]?.status() ?: DialogStatus2.NOT_STARTED
+        return consequences[answer]?.let {
+            when (it.status()) {
+                NOT_STARTED, IN_PROGRESS -> IN_PROGRESS
+                SUCCESS -> SUCCESS
+                PROBLEMS -> PROBLEMS
+            }
+        } ?: NOT_STARTED
     }
 
-    override fun nextQuestionOrNull() = if (answer == null) this else null
+    override fun nextQuestionOrNull() : Question2? {
+        if (answer == null) return this
+        return consequences[answer]?.nextQuestionOrNull()
+    }
 
     override fun validateConsequences() {
         require(consequences.keys == possibleAnswers.toSet()) { "Must have a consequence for each possible answer" }
     }
 
-    enum class YesNoChoice: Answer { YES, NO }
+    enum class YesNoChoice : Answer { YES, NO }
 }

@@ -9,7 +9,6 @@ package com.nrkei.project.dialog.model
 // Understands solicitation of information
 interface Question2 : Consequence {
     fun answer(answer: Answer)
-    fun nextQuestionOrNull(): Question2?
     fun validateConsequences() {}
 
     val possibleAnswers: List<Answer>
