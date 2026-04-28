@@ -16,7 +16,7 @@ import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 import com.nrkei.project.dialog.model.Question
 
 // DSL syntax to specify a series of questions
-fun dialog2(block: Dialog.() -> Unit) =
+fun dialog(block: Dialog.() -> Unit) =
     Dialog().also { it.block() }
 
 // Understands a series of questions to satify a need
@@ -31,7 +31,7 @@ class Dialog internal constructor() : Question {
 
     infix fun ask(question: Question) = QuestionBuilder(question)
 
-    override fun answer(answer: Answer) {
+    override fun answer(answer: Any) {
         throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
     }
 

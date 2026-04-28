@@ -7,13 +7,10 @@
 package com.nrkei.project.dialog.model
 
 import com.nrkei.project.context.EnumCodec
-import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
-import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
-import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
-import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
+import com.nrkei.project.context.label
+import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
-import com.nrkei.project.context.label
 
 // Understands a single boolean solicitation
 class YesNoQuestion(label: String) : Question {
@@ -22,8 +19,9 @@ class YesNoQuestion(label: String) : Question {
     override val consequences = mutableMapOf<Answer, Consequence>()
     private var answer: Answer? = null
 
-    override fun answer(answer: Answer) {
-        require(answer in possibleAnswers) { "Invalid answer of $answer for question $label" }
+    override fun answer(answer: Any) {
+        require(answer is YesNoChoice && answer in possibleAnswers)
+        { "Invalid answer of $answer for question $label" }
         this.answer = answer
     }
 

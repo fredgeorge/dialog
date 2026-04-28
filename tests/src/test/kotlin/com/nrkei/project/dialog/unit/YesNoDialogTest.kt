@@ -7,7 +7,7 @@
 package com.nrkei.project.dialog.unit
 
 import com.nrkei.project.context.ContextLabelRegistry
-import com.nrkei.project.dialog.dsl.dialog2
+import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
@@ -32,7 +32,7 @@ internal class YesNoDialogTest {
 
     @Test
     fun `Simple valid dialog`() {
-        dialog2 {
+        dialog {
             first ask haveSpouse answers {
                 -YES conclude Unacceptable
                 -NO conclude Acceptable
@@ -63,14 +63,14 @@ internal class YesNoDialogTest {
     @Test
     fun `Must handle all possible answers`() {
         assertThrows<IllegalArgumentException> {
-            dialog2 {
+            dialog {
                 first ask haveSpouse answers {
                     -YES conclude Unacceptable // To few answers
                 }
             }
         }
         assertThrows<IllegalArgumentException> {
-            dialog2 {
+            dialog {
                 first ask haveSpouse answers {
                     -YES conclude Unacceptable
                     -YES conclude Acceptable    // Duplicate answer
@@ -78,7 +78,7 @@ internal class YesNoDialogTest {
             }
         }
         assertThrows<IllegalArgumentException> {
-            dialog2 {
+            dialog {
                 first ask haveSpouse answers {
                     -YES conclude Unacceptable
                     -NO conclude Acceptable
@@ -90,7 +90,7 @@ internal class YesNoDialogTest {
 
     @Test
     fun `2-level valid dialog`() {
-        dialog2 {
+        dialog {
             first ask haveSpouse answers {
                 -YES ask haveCoApplicant answers {
                     -YES conclude Acceptable
@@ -119,7 +119,7 @@ internal class YesNoDialogTest {
 
     @Test
     fun `3-level valid dialog`() {
-        dialog2 {
+        dialog {
             first ask haveSpouse answers {
                 -YES ask haveCoApplicant answers {
                     -YES conclude Acceptable
