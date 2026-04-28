@@ -1,0 +1,61 @@
+/*
+ * Copyright (c) 2025-26 by Fred George
+ * @author Fred George  fredgeorge@acm.org
+ * Licensed under the MIT License; see LICENSE file in root.
+ */
+
+package com.nrkei.project.dialog.unit
+
+import com.nrkei.project.context.ContextLabelRegistry
+import com.nrkei.project.dialog.dsl.dialog
+import com.nrkei.project.dialog.model.*
+import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
+import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
+import com.nrkei.project.dialog.model.TextQuestion.TextAnswer.SUFFICIENT
+import com.nrkei.project.dialog.model.TextQuestion.TextAnswer.TOO_SHORT
+import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
+import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+
+// Ensures that TextQuestions work
+internal class TextDialogTest {
+    private lateinit var serviceRequest: TextQuestion
+    private lateinit var isApproved: YesNoQuestion
+
+    @BeforeEach
+    fun setup() {
+        ContextLabelRegistry.reset()
+        serviceRequest = TextQuestion("Service Request", minLength = 10)
+        isApproved = YesNoQuestion("Is Approved")
+    }
+
+    @Test fun `Text with approval`() {
+        dialog {
+            first ask serviceRequest answers {
+                -TOO_SHORT conclude Unacceptable
+                -SUFFICIENT ask isApproved answers {
+                    -YES conclude Acceptable
+                    -NO conclude Unacceptable
+                }
+            }
+        }.also { dialog ->
+            assertEquals(NOT_STARTED, dialog.status())
+
+            assertEquals(serviceRequest, dialog.nextQuestionOrNull())
+            serviceRequest.answer("lazy")
+            assertEquals(DialogStatus.PROBLEMS, dialog.status())
+
+            serviceRequest.answer("This is a very long service request that is sufficient")
+            assertEquals(DialogStatus.IN_PROGRESS, dialog.status())
+
+            assertEquals(isApproved, dialog.nextQuestionOrNull())
+            isApproved.answer(YES)
+            assertEquals(SUCCESS, dialog.status())
+
+            assertNull(dialog.nextQuestionOrNull())
+        }
+    }
+}
