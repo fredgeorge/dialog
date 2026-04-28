@@ -24,6 +24,7 @@ class Dialog internal constructor() : Question {
     private val questions = mutableListOf<Question>()
     override val possibleAnswers = emptyList<Answer>() // n/a
     override val consequences = mutableMapOf<Answer, Consequence>() // n/a
+    override var answer: Answer? = null
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
