@@ -6,6 +6,6 @@
 
 package com.nrkei.project.dialog.model
 
-// Understands SOMETHING_DUMMY
+// Understands a unique identifier for a Question
 class QuestionLabel(private val label: String) {
 }

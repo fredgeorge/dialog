@@ -1,110 +1,97 @@
 /*
- * Copyright (c) 2025 by Fred George
- * @author: Fred George  fredgeorge@acm.org
+ * Copyright (c) 2025-26 by Fred George
+ * @author Fred George  fredgeorge@acm.org
  * Licensed under the MIT License; see LICENSE file in root.
  */
 
 package com.nrkei.project.dialog.dsl
 
-import com.nrkei.project.dialog.model.*
-import com.nrkei.project.dialog.model.Choice.Companion.map
-import com.nrkei.project.dialog.model.DialogStatus.Companion.NOT_STARTED
-import com.nrkei.project.dialog.model.DialogStatus.Companion.STARTED
-import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion
-import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.FAILED
-import com.nrkei.project.dialog.model.DialogStatus.DialogConclusion.Companion.SUCCEEDED
+import com.nrkei.project.dialog.model.Answer
+import com.nrkei.project.dialog.model.Consequence
+import com.nrkei.project.dialog.model.DialogStatus
+import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
+import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
+import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
+import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
+import com.nrkei.project.dialog.model.Question
 
 // DSL syntax to specify a series of questions
-fun dialog(block: Dialog.() -> Unit) =
+fun dialog2(block: Dialog.() -> Unit) =
     Dialog().also { it.block() }
 
-// A series of questions to figure out a conclusion
-class Dialog internal constructor() {
+// Understands a series of questions to satify a need
+class Dialog internal constructor() : Question {
     private val questions = mutableListOf<Question>()
+    override val possibleAnswers = emptyList<Answer>() // n/a
+    override val consequences = mutableMapOf<Answer, Consequence>() // n/a
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
     val then get() = this.also { require(questions.isNotEmpty()) { "'first' keyword required for the first question in a dialog" } }
 
-    infix fun ask(question: DialogQuestion) = QuestionBuilder(question)
+    infix fun ask(question: Question) = QuestionBuilder(question)
 
-    fun status() = questions
+    override fun answer(answer: Answer) {
+        throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
+    }
+
+    override fun nextQuestionOrNull(): Question? {
+        questions.forEach { it.nextQuestionOrNull()?.also { return it } }
+        return null
+    }
+
+    override fun status() = questions
         .map { it.status() }
         .let { statuses: List<DialogStatus> ->
             when {
                 statuses.isEmpty() -> NOT_STARTED
                 statuses.all { it == NOT_STARTED } -> NOT_STARTED
-                statuses.any { it == STARTED } -> STARTED
-                statuses.all { it == SUCCEEDED } -> SUCCEEDED
-                statuses.any { it == FAILED } -> FAILED
-                statuses.any { it == SUCCEEDED } -> STARTED
-                else -> FAILED
+                statuses.any { it == IN_PROGRESS } -> IN_PROGRESS
+                statuses.all { it == SUCCESS } -> SUCCESS
+                statuses.any { it == PROBLEMS } -> PROBLEMS
+                statuses.any { it == SUCCESS } -> IN_PROGRESS
+                else -> PROBLEMS
             }
         }
 
-    fun question(id: QuestionId) = questions.question(id)
-        ?: throw IllegalArgumentException("Question with id $id does not exist")
+    inner class QuestionBuilder internal constructor(private val question: Question) {
 
-    fun nextQuestionOrNull() = questions.nextQuestion()
-
-    fun nextQuestion() = nextQuestionOrNull()
-        ?: throw NoUnansweredQuestionsException(this)
-
-    fun apply(vararg answers: Pair<QuestionId, Any>) {
-        apply(AnswerSet(answers.toMap()))
-    }
-
-    fun apply(answerSet: AnswerSet) {
-        answerSet.applyTo(this)
-    }
-
-    fun reset() {
-        questions.reset()
-    }
-
-    fun accept(visitor: QuestionVisitor) {
-        visitor.preVisit(this, questions.toList())
-        questions.forEach { it.accept(visitor) }
-        visitor.postVisit(this, questions.toList())
-    }
-
-    fun answerSet(): AnswerSet = AnswerSetBuilder(this).result()
-
-    inner class QuestionBuilder internal constructor(private val question: DialogQuestion) {
-
-        infix fun answers(block: AnswersBuilder.() -> Unit) =
-            AnswersBuilder()
-                .also { it.block() }
-                .let { questions.add(question(it.choices())) }
+        infix fun answers(block: ConsequencesBuilder.() -> Unit): Dialog =
+            this@Dialog.also {
+                it.questions.add(question)
+                ConsequencesBuilder(question).also { builder ->
+                    builder.block()
+                    require(builder.consequenceCount == question.possibleAnswers.size)
+                    { "Expected ${question.possibleAnswers.size} consequences, but got ${builder.consequenceCount}" }
+                }
+                question.validateConsequences()
+            }
     }
 }
 
-class AnswersBuilder internal constructor() {
-    private val choices = mutableListOf<Choice>()
-    private lateinit var answerValue: Any
+class ConsequencesBuilder internal constructor(private val question: Question) {
+    private lateinit var answer: Answer
+    internal var consequenceCount = 0
 
-    // Syntax sugar
-    val on = this
+    operator fun Answer.unaryMinus() = this@ConsequencesBuilder.also { answer = this }
 
-    infix fun answer(value: Any) = this.also { answerValue = value }
-
-    operator fun Boolean.unaryMinus() = this@AnswersBuilder.also { answerValue = this }
-
-    infix fun conclude(status: DialogConclusion) {
-        choices.add(Choice(answerValue, status))
+    infix fun conclude(consequence: Consequence) {
+        question.consequences[answer] = consequence.also { consequenceCount++ }
     }
 
-    infix fun ask(question: DialogQuestion) = QuestionBuilder(question)
+    infix fun ask(innerQuestion: Question) = QuestionBuilder(innerQuestion).also {
+        question.consequences[answer] = innerQuestion.also { consequenceCount++ }
+    }
 
-    internal fun choices(): Map<Any, Question> = choices.map()
+    inner class QuestionBuilder internal constructor(private val question: Question) {
 
-    inner class QuestionBuilder internal constructor(private val question: DialogQuestion) {
-
-        infix fun answers(block: AnswersBuilder.() -> Unit) =
-            AnswersBuilder()
-                .also { it.block() }
-                .let { choices.add(Choice(answerValue, question(it.choices()))) }
+        infix fun answers(block: ConsequencesBuilder.() -> Unit) = this@ConsequencesBuilder.also {
+            ConsequencesBuilder(question).also { builder ->
+                builder.block()
+                require(builder.consequenceCount == question.possibleAnswers.size)
+                { "Expected question.possibleAnswers.size consequences, but got ${builder.consequenceCount}" }
+            }
+            question.validateConsequences()
+        }
     }
 }
-
-typealias DialogQuestion = (Choices) -> Question

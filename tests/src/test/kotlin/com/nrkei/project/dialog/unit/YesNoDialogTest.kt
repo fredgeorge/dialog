@@ -8,7 +8,7 @@ package com.nrkei.project.dialog.unit
 
 import com.nrkei.project.dialog.dsl.dialog2
 import com.nrkei.project.dialog.model.*
-import com.nrkei.project.dialog.model.DialogStatus2.*
+import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
 import org.junit.jupiter.api.Assertions.assertEquals

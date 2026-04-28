@@ -6,13 +6,13 @@
 
 package com.nrkei.project.dialog.model
 
-import com.nrkei.project.dialog.model.DialogStatus2.PROBLEMS
-import com.nrkei.project.dialog.model.DialogStatus2.SUCCESS
+import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
+import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 
 // Understands next action (or no next action) for an Answer
 interface Consequence {
-    fun status(): DialogStatus2
-    fun nextQuestionOrNull(): Question2? = null
+    fun status(): DialogStatus
+    fun nextQuestionOrNull(): Question? = null
 }
 
 object Acceptable: Consequence {

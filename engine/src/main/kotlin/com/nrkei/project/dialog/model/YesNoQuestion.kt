@@ -6,15 +6,15 @@
 
 package com.nrkei.project.dialog.model
 
-import com.nrkei.project.dialog.model.DialogStatus2.IN_PROGRESS
-import com.nrkei.project.dialog.model.DialogStatus2.NOT_STARTED
-import com.nrkei.project.dialog.model.DialogStatus2.PROBLEMS
-import com.nrkei.project.dialog.model.DialogStatus2.SUCCESS
+import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
+import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
+import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
+import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
 
 // Understands a single boolean solicitation
-class YesNoQuestion(label: String) : Question2 {
+class YesNoQuestion(label: String) : Question {
     val label = QuestionLabel(label)
     override val possibleAnswers: List<Answer> = listOf(YES, NO)
     override val consequences = mutableMapOf<Answer, Consequence>()
@@ -25,7 +25,7 @@ class YesNoQuestion(label: String) : Question2 {
         this.answer = answer
     }
 
-    override fun status(): DialogStatus2 {
+    override fun status(): DialogStatus {
         return consequences[answer]?.let {
             when (it.status()) {
                 NOT_STARTED, IN_PROGRESS -> IN_PROGRESS
@@ -35,7 +35,7 @@ class YesNoQuestion(label: String) : Question2 {
         } ?: NOT_STARTED
     }
 
-    override fun nextQuestionOrNull() : Question2? {
+    override fun nextQuestionOrNull() : Question? {
         if (answer == null) return this
         return consequences[answer]?.nextQuestionOrNull()
     }
