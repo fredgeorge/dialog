@@ -11,6 +11,10 @@ import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.IntRangeQuestion.IntRangeAnswer
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.ADULT
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.INVALID
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.SENIOR
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.UNDER_18
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,9 +32,10 @@ internal class IntRangeDialogTest {
     @Test fun `Simple valid dialog`() {
         dialog {
             first ask age answers {
-                -AgeRange.UNDER_18 conclude Unacceptable
-                -AgeRange.ADULT conclude Acceptable
-                -AgeRange.SENIOR conclude Unacceptable
+                -INVALID conclude Unacceptable
+                -UNDER_18 conclude Unacceptable
+                -ADULT conclude Acceptable
+                -SENIOR conclude Unacceptable
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -44,6 +49,9 @@ internal class IntRangeDialogTest {
 
             age.answer(74)
             assertEquals(PROBLEMS, dialog.status())
+
+            age.answer(-2)
+            assertEquals(PROBLEMS, dialog.status())
         }
     }
 
@@ -51,7 +59,8 @@ internal class IntRangeDialogTest {
         override val minimum: Int,
         override val maximum: Int,
     ) : IntRangeAnswer {
-        UNDER_18(Int.MIN_VALUE, 17),
+        INVALID(Int.MIN_VALUE, -1),
+        UNDER_18(0, 17),
         ADULT(18, 64),
         SENIOR(65, Int.MAX_VALUE)
     }
