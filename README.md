@@ -108,12 +108,12 @@ Adapt as necessary for your environment.
 
 Note: This implementation was set up to use:
 
-- IntelliJ 2026.1 (Ultimate Edition)
-- Kotlin 2.3.20 (targeting Java 25 bytecode)
+- IntelliJ 2026.1.1 (Ultimate Edition)
+- Kotlin 2.3.21 (targeting Java 25 bytecode)
 - Java SDK 25 LTS (Oracle)
-- Gradle 9.4.1
+- Gradle 9.5.0
 - JUnit Jupiter 6.0.3 for testing
-- Kotlin-serialization 1.8.1 for JSON
+- Kotlin-serialization 1.11.0 for JSON
 
 Open the reference code:
 
