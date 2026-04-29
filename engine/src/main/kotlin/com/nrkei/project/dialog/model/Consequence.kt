@@ -38,7 +38,26 @@ class RejectionIssue(private val reason: String):
         TODO("Not yet implemented")
     }
 
-    override fun toString() = "Issue raised: $reason"
+    override fun toString() = "Rejection isssue raised: $reason"
+}
+
+class MissingIssue(private val reason: String):
+    Consequence,
+    Issue<MissingIssue>(IssueParty("Dialog Engine"), OPEN){
+
+    companion object MissingIssueType : IssueType<MissingIssue>
+
+    override val issueType = MissingIssueType
+
+    override fun status() = PROBLEMS
+
+    override fun <I : Issue<I>> toDto(): IssueDto<I> {
+        TODO("Not yet implemented")
+    }
+
+    override fun toString() = "Missing information issue raised: $reason"
 }
 
 fun problem(message: String) = RejectionIssue(message)
+
+fun missing(message: String) = MissingIssue(message)
