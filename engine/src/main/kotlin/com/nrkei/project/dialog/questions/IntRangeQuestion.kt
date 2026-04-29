@@ -18,6 +18,13 @@ import kotlin.reflect.KClass
 class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
         where R : Enum<R>, R : IntRangeAnswer {
 
+            companion object {
+                fun positiveInt(label: String) =
+                    IntRangeQuestion<PositiveRange>(label, PositiveRange::class)
+                fun zeroOrMoreInt(label: String) =
+                    IntRangeQuestion<NonNegativeRange>(label, NonNegativeRange::class)
+            }
+
     val label = label(label, IntCodec)
     override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
     override val consequences = mutableMapOf<Answer, Consequence>()
@@ -33,5 +40,15 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
         val minimum: Int
         val maximum: Int
         fun inRange(value: Int) = value in minimum..maximum
+    }
+
+    enum class NonNegativeRange(override val minimum: Int, override val maximum: Int): IntRangeAnswer {
+        INVALID(Int.MIN_VALUE, -1),
+        VALID(0, Int.MAX_VALUE)
+    }
+
+    enum class PositiveRange(override val minimum: Int, override val maximum: Int): IntRangeAnswer {
+        INVALID(Int.MIN_VALUE, 0),
+        VALID(1, Int.MAX_VALUE)
     }
 }

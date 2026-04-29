@@ -11,7 +11,11 @@ import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.questions.IntRangeQuestion
+import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
+import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.zeroOrMoreInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeAnswer
+import com.nrkei.project.dialog.questions.IntRangeQuestion.NonNegativeRange
+import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveRange
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.ADULT
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.INVALID
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.SENIOR
@@ -20,6 +24,7 @@ import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.ACCEPTABLE
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.POOR
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.WEALTHY
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -27,12 +32,16 @@ import org.junit.jupiter.api.Test
 internal class IntRangeDialogTest {
     private lateinit var age: IntRangeQuestion<AgeRange>
     private lateinit var netWorth: IntRangeQuestion<NetWorthRange>
+    private lateinit var childCount: IntRangeQuestion<NonNegativeRange>
+    private lateinit var applicantCount: IntRangeQuestion<PositiveRange>
 
     @BeforeEach
     fun setup() {
         ContextLabelRegistry.reset()
         age = IntRangeQuestion("Age", AgeRange::class)
         netWorth = IntRangeQuestion("Net Worth", NetWorthRange::class)
+        childCount = zeroOrMoreInt("Child Count")
+        applicantCount = positiveInt("Applicant Count")
     }
 
     @Test fun `Simple valid dialog for age`() {
@@ -80,6 +89,36 @@ internal class IntRangeDialogTest {
 
             netWorth.answer(7_400_000)
             assertEquals(SUCCESS, dialog.status())
+        }
+    }
+
+
+    @Test fun `Convenience Int constructors`() {
+        dialog {
+            first ask applicantCount answers {
+                -PositiveRange.INVALID conclude Unacceptable
+                -PositiveRange.VALID conclude Acceptable
+            }
+            then ask childCount answers {
+                -NonNegativeRange.INVALID conclude Unacceptable
+                -NonNegativeRange.VALID conclude Acceptable
+            }
+        }.also { dialog ->
+            assertEquals(NOT_STARTED, dialog.status())
+
+            assertEquals(applicantCount, dialog.nextQuestionOrNull())
+            applicantCount.answer(1)
+            assertEquals(childCount, dialog.nextQuestionOrNull())
+            childCount.answer(0)
+            assertNull(dialog.nextQuestionOrNull())
+            assertEquals(SUCCESS, dialog.status())
+
+            applicantCount.answer(0)
+            assertEquals(PROBLEMS, dialog.status())
+
+            applicantCount.answer(1)
+            childCount.answer(-1)
+            assertEquals(PROBLEMS, dialog.status())
         }
     }
 
