@@ -10,8 +10,9 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
-import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
+import com.nrkei.project.dialog.questions.YesNoQuestion
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull

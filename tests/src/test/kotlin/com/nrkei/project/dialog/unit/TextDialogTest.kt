@@ -11,10 +11,12 @@ import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
 import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
-import com.nrkei.project.dialog.model.TextQuestion.TextAnswer.SUFFICIENT
-import com.nrkei.project.dialog.model.TextQuestion.TextAnswer.TOO_SHORT
-import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.NO
-import com.nrkei.project.dialog.model.YesNoQuestion.YesNoChoice.YES
+import com.nrkei.project.dialog.questions.TextQuestion
+import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.SUFFICIENT
+import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.TOO_SHORT
+import com.nrkei.project.dialog.questions.YesNoQuestion
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach

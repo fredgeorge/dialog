@@ -4,11 +4,14 @@
  * Licensed under the MIT License; see LICENSE file in root.
  */
 
-package com.nrkei.project.dialog.model
+package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.context.DoubleCodec
 import com.nrkei.project.context.label
-import com.nrkei.project.dialog.model.DoubleRangeQuestion.DoubleRangeAnswer
+import com.nrkei.project.dialog.model.Answer
+import com.nrkei.project.dialog.model.Consequence
+import com.nrkei.project.dialog.model.Question
+import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeAnswer
 import kotlin.reflect.KClass
 
 // Understands a Question with Answer ranges expressed as Double values

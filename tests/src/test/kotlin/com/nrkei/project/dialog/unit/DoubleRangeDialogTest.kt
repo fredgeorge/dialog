@@ -10,7 +10,8 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.DoubleRangeQuestion.DoubleRangeAnswer
+import com.nrkei.project.dialog.questions.DoubleRangeQuestion
+import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeAnswer
 import com.nrkei.project.dialog.unit.DoubleRangeDialogTest.BmiRange.MORBIDLY_OBESE
 import com.nrkei.project.dialog.unit.DoubleRangeDialogTest.BmiRange.NORMAL
 import com.nrkei.project.dialog.unit.DoubleRangeDialogTest.BmiRange.OBESE

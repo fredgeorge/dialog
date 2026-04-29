@@ -10,7 +10,8 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.IntRangeQuestion.IntRangeAnswer
+import com.nrkei.project.dialog.questions.IntRangeQuestion
+import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeAnswer
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.ADULT
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.INVALID
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.SENIOR
