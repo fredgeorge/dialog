@@ -35,12 +35,12 @@ internal class YesNoDialogTest {
     fun `Simple valid dialog`() {
         dialog {
             first ask haveSpouse answers {
-                -YES conclude Unacceptable
+                -YES conclude problem("Can't have spouse")
                 -NO conclude Acceptable
             }
             then ask haveCoApplicant answers {
                 -YES conclude Acceptable
-                -NO conclude Unacceptable
+                -NO conclude problem("Can't have co-applicant")
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -66,14 +66,14 @@ internal class YesNoDialogTest {
         assertThrows<IllegalArgumentException> {
             dialog {
                 first ask haveSpouse answers {
-                    -YES conclude Unacceptable // To few answers
+                    -YES conclude Acceptable // To few answers
                 }
             }
         }
         assertThrows<IllegalArgumentException> {
             dialog {
                 first ask haveSpouse answers {
-                    -YES conclude Unacceptable
+                    -YES conclude Acceptable
                     -YES conclude Acceptable    // Duplicate answer
                 }
             }
@@ -81,9 +81,9 @@ internal class YesNoDialogTest {
         assertThrows<IllegalArgumentException> {
             dialog {
                 first ask haveSpouse answers {
-                    -YES conclude Unacceptable
+                    -YES conclude Acceptable
                     -NO conclude Acceptable
-                    -YES conclude Unacceptable  // Too many answers
+                    -YES conclude Acceptable  // Too many answers
                 }
             }
         }
@@ -95,7 +95,7 @@ internal class YesNoDialogTest {
             first ask haveSpouse answers {
                 -YES ask haveCoApplicant answers {
                     -YES conclude Acceptable
-                    -NO conclude Unacceptable
+                    -NO conclude problem("Must have spouse as co-applicant")
                 }
                 -NO conclude Acceptable
             }
@@ -124,14 +124,14 @@ internal class YesNoDialogTest {
             first ask haveSpouse answers {
                 -YES ask haveCoApplicant answers {
                     -YES conclude Acceptable
-                    -NO conclude Unacceptable
+                    -NO conclude problem("Must have spouse as co-applicant")
                 }
                 -NO ask haveCoApplicant answers {
                     -YES ask haveChildren answers {
                         -YES conclude Acceptable
                         -NO conclude Acceptable
                     }
-                    -NO conclude Unacceptable
+                    -NO conclude Acceptable
                 }
             }
         }.also { dialog ->

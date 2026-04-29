@@ -37,10 +37,10 @@ internal class TextDialogTest {
     @Test fun `Text with approval`() {
         dialog {
             first ask serviceRequest answers {
-                -TOO_SHORT conclude Unacceptable
+                -TOO_SHORT conclude problem("Service explanation is too short")
                 -SUFFICIENT ask isApproved answers {
                     -YES conclude Acceptable
-                    -NO conclude Unacceptable
+                    -NO conclude problem("Service request rejected")
                 }
             }
         }.also { dialog ->

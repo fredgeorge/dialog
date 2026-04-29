@@ -8,6 +8,11 @@ package com.nrkei.project.dialog.model
 
 import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
 import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
+import com.nrkei.project.issue.Issue
+import com.nrkei.project.issue.IssueParty
+import com.nrkei.project.issue.Issue.State.OPEN
+import com.nrkei.project.issue.IssueDto
+import com.nrkei.project.issue.IssueType
 
 // Understands next action (or no next action) for an Answer
 interface Consequence {
@@ -19,6 +24,21 @@ object Acceptable: Consequence {
     override fun status() = SUCCESS
 }
 
-object Unacceptable: Consequence {
+class RejectionIssue(private val reason: String):
+    Consequence,
+    Issue<RejectionIssue>(IssueParty("Dialog Engine"), OPEN){
+
+    companion object RejectionIssueType : IssueType<RejectionIssue>
+
+    override val issueType = RejectionIssueType
+
     override fun status() = PROBLEMS
+
+    override fun <I : Issue<I>> toDto(): IssueDto<I> {
+        TODO("Not yet implemented")
+    }
+
+    override fun toString() = "Issue raised: $reason"
 }
+
+fun problem(message: String) = RejectionIssue(message)

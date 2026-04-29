@@ -12,6 +12,7 @@ plugins {
 dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.context.engine)
+    implementation(libs.issue.engine)
 }
 
 publishing {

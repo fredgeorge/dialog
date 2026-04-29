@@ -47,10 +47,10 @@ internal class IntRangeDialogTest {
     @Test fun `Simple valid dialog for age`() {
         dialog {
             first ask age answers {
-                -INVALID conclude Unacceptable
-                -UNDER_18 conclude Unacceptable
+                -INVALID conclude problem("Invalid number for age")
+                -UNDER_18 conclude problem("Age must be at least 18")
                 -ADULT conclude Acceptable
-                -SENIOR conclude Unacceptable
+                -SENIOR conclude problem("Not available for senior citizens")
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -73,7 +73,7 @@ internal class IntRangeDialogTest {
     @Test fun `Simple valid dialog for net worth`() {
         dialog {
             first ask netWorth answers {
-                -POOR conclude Unacceptable
+                -POOR conclude problem("Not enough money")
                 -ACCEPTABLE conclude Acceptable
                 -WEALTHY conclude Acceptable
             }
@@ -95,11 +95,11 @@ internal class IntRangeDialogTest {
     @Test fun `Convenience Int constructors`() {
         dialog {
             first ask applicantCount answers {
-                -PositiveIntRange.INVALID conclude Unacceptable
+                -PositiveIntRange.INVALID conclude problem("Must have at least one applicant")
                 -PositiveIntRange.VALID conclude Acceptable
             }
             then ask childCount answers {
-                -NonNegativeIntRange.INVALID conclude Unacceptable
+                -NonNegativeIntRange.INVALID conclude problem("Specify zero or more children")
                 -NonNegativeIntRange.VALID conclude Acceptable
             }
         }.also { dialog ->

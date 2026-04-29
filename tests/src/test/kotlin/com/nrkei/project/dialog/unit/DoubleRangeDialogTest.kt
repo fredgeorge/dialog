@@ -10,7 +10,7 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.Unacceptable
+import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.*
 import com.nrkei.project.dialog.unit.DoubleRangeDialogTest.BmiRange.*
@@ -39,9 +39,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Simple valid dialog for temperature in Celsius`() {
         dialog {
             first ask temperature answers {
-                -COLD conclude Unacceptable
+                -COLD conclude problem("Too cold")
                 -WARM conclude Acceptable
-                -HOT conclude Unacceptable
+                -HOT conclude problem("Too hot")
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -64,9 +64,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Temperature boundary values are unambiguous`() {
         dialog {
             first ask temperature answers {
-                -COLD conclude Unacceptable
+                -COLD conclude problem("Too cold")
                 -WARM conclude Acceptable
-                -HOT conclude Unacceptable
+                -HOT conclude problem("Too hot")
             }
         }.also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -81,9 +81,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Temperature accepts Int answer without explicit cast`() {
         dialog {
             first ask temperature answers {
-                -COLD conclude Unacceptable
+                -COLD conclude problem("Too cold")
                 -WARM conclude Acceptable
-                -HOT conclude Unacceptable
+                -HOT conclude problem("Too hot")
             }
         }.also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -95,11 +95,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `Simple valid dialog for Body Mass Index`() {
         dialog {
             first ask bmi answers {
-                -UNDERWEIGHT    conclude Unacceptable
+                -UNDERWEIGHT    conclude problem("Underweight")
                 -NORMAL         conclude Acceptable
-                -OVERWEIGHT     conclude Unacceptable
-                -OBESE          conclude Unacceptable
-                -MORBIDLY_OBESE conclude Unacceptable
+                -OVERWEIGHT     conclude problem("Overweight")
+                -OBESE          conclude problem("Obese")
+                -MORBIDLY_OBESE conclude problem("Morbidly obese")
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -125,11 +125,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `BMI boundary values are unambiguous`() {
         dialog {
             first ask bmi answers {
-                -UNDERWEIGHT    conclude Unacceptable
+                -UNDERWEIGHT    conclude problem("Underweight")
                 -NORMAL         conclude Acceptable
-                -OVERWEIGHT     conclude Unacceptable
-                -OBESE          conclude Unacceptable
-                -MORBIDLY_OBESE conclude Unacceptable
+                -OVERWEIGHT     conclude problem("Overweight")
+                -OBESE          conclude problem("Obese")
+                -MORBIDLY_OBESE conclude problem("Morbidly obese")
             }
         }.also { dialog ->
             assertEquals(bmi, dialog.nextQuestionOrNull())
@@ -150,11 +150,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `Convenience Double constructors`() {
         dialog {
             first ask marginalTaxRate answers {
-                -NonNegativeDoubleRange.INVALID conclude Unacceptable
+                -NonNegativeDoubleRange.INVALID conclude problem("Can't have negative marginal tax rate")
                 -NonNegativeDoubleRange.VALID conclude Acceptable
             }
             then ask quantumChamberTemperature answers {
-                -PositiveDoubleRange.INVALID conclude Unacceptable
+                -PositiveDoubleRange.INVALID conclude problem("Can't cool to absolute zero")
                 -PositiveDoubleRange.VALID conclude Acceptable
             }
         }.also { dialog ->
