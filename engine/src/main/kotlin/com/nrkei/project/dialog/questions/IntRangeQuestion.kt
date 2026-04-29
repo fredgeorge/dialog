@@ -18,12 +18,13 @@ import kotlin.reflect.KClass
 class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
         where R : Enum<R>, R : IntRangeAnswer {
 
-            companion object {
-                fun positiveInt(label: String) =
-                    IntRangeQuestion<PositiveRange>(label, PositiveRange::class)
-                fun zeroOrMoreInt(label: String) =
-                    IntRangeQuestion<NonNegativeRange>(label, NonNegativeRange::class)
-            }
+    companion object {
+        fun positiveInt(label: String) =
+            IntRangeQuestion<PositiveIntRange>(label, PositiveIntRange::class)
+
+        fun zeroOrMoreInt(label: String) =
+            IntRangeQuestion<NonNegativeIntRange>(label, NonNegativeIntRange::class)
+    }
 
     val label = label(label, IntCodec)
     override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
@@ -42,12 +43,12 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
         fun inRange(value: Int) = value in minimum..maximum
     }
 
-    enum class NonNegativeRange(override val minimum: Int, override val maximum: Int): IntRangeAnswer {
+    enum class NonNegativeIntRange(override val minimum: Int, override val maximum: Int) : IntRangeAnswer {
         INVALID(Int.MIN_VALUE, -1),
         VALID(0, Int.MAX_VALUE)
     }
 
-    enum class PositiveRange(override val minimum: Int, override val maximum: Int): IntRangeAnswer {
+    enum class PositiveIntRange(override val minimum: Int, override val maximum: Int) : IntRangeAnswer {
         INVALID(Int.MIN_VALUE, 0),
         VALID(1, Int.MAX_VALUE)
     }

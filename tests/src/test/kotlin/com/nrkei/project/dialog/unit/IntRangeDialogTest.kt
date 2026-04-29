@@ -14,8 +14,8 @@ import com.nrkei.project.dialog.questions.IntRangeQuestion
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.zeroOrMoreInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeAnswer
-import com.nrkei.project.dialog.questions.IntRangeQuestion.NonNegativeRange
-import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveRange
+import com.nrkei.project.dialog.questions.IntRangeQuestion.NonNegativeIntRange
+import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.ADULT
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.INVALID
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.SENIOR
@@ -32,8 +32,8 @@ import org.junit.jupiter.api.Test
 internal class IntRangeDialogTest {
     private lateinit var age: IntRangeQuestion<AgeRange>
     private lateinit var netWorth: IntRangeQuestion<NetWorthRange>
-    private lateinit var childCount: IntRangeQuestion<NonNegativeRange>
-    private lateinit var applicantCount: IntRangeQuestion<PositiveRange>
+    private lateinit var childCount: IntRangeQuestion<NonNegativeIntRange>
+    private lateinit var applicantCount: IntRangeQuestion<PositiveIntRange>
 
     @BeforeEach
     fun setup() {
@@ -92,16 +92,15 @@ internal class IntRangeDialogTest {
         }
     }
 
-
     @Test fun `Convenience Int constructors`() {
         dialog {
             first ask applicantCount answers {
-                -PositiveRange.INVALID conclude Unacceptable
-                -PositiveRange.VALID conclude Acceptable
+                -PositiveIntRange.INVALID conclude Unacceptable
+                -PositiveIntRange.VALID conclude Acceptable
             }
             then ask childCount answers {
-                -NonNegativeRange.INVALID conclude Unacceptable
-                -NonNegativeRange.VALID conclude Acceptable
+                -NonNegativeIntRange.INVALID conclude Unacceptable
+                -NonNegativeIntRange.VALID conclude Acceptable
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
