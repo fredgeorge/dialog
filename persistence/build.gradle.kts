@@ -11,6 +11,10 @@ plugins {
 
 dependencies {
     implementation(project(":engine"))
+    implementation(libs.context.engine)
+    implementation(libs.context.persistence)
+    implementation(libs.issue.engine)
+    implementation(libs.issue.persistence)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(project(":test_support"))
 }
