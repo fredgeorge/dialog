@@ -17,8 +17,8 @@ import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
-object IncomeDialog {
-    val incomeDialog = dialog {
+object SalaryDialog {
+    val salaryDialog = dialog {
         first ask taxIncomeCorrect answers {
             -YES conclude Acceptable
             -NO ask correctIncome answers {
