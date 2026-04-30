@@ -9,7 +9,7 @@ Licensed under the MIT License; see LICENSE file in root.
 The __Dialog Model__ represents the solicitation of information
 between a system and target users. Basic concepts are:
 
-- __Question__ – the solicitation of a single piece of information
+- __Question__ – the solicitation regarding a single piece of information
 - __Choice__ – one of the possible answers to a _Question_
 - __Dialog__ – one or more related _Questions_
 - __Party__ – a target user for a _Dialog_
@@ -91,10 +91,8 @@ using _kotlin-serialization_ and the _Memento Pattern_.
 The persistence package stops with encoding and decoding the
 engine classes; interfaces to the outside world (databases,
 REST APIs, or event buses) should be in yet other packages.
-Some common test setup is in a separate 
-
-__test_support__ package for 
-
+Some common test setups are in a separate
+__test_support__ package for
 More on persistence is below.
 
 ## Building this Kotlin project using Gradle
