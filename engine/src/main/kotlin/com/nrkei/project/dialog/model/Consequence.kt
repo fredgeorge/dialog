@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.dialog.model.Consequence.Companion.dialogEngine
 import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
 import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 import com.nrkei.project.issue.Issue
@@ -13,11 +14,15 @@ import com.nrkei.project.issue.IssueParty
 import com.nrkei.project.issue.Issue.State.OPEN
 import com.nrkei.project.issue.IssueDto
 import com.nrkei.project.issue.IssueType
+import kotlinx.serialization.Serializable
 
 // Understands next action (or no next action) for an Answer
 interface Consequence {
     fun status(): DialogStatus
     fun nextQuestionOrNull(): Question? = null
+    companion object {
+        internal val dialogEngine = IssueParty("Dialog Engine")
+    }
 }
 
 object Acceptable: Consequence {
@@ -26,7 +31,7 @@ object Acceptable: Consequence {
 
 class RejectionIssue(private val reason: String):
     Consequence,
-    Issue<RejectionIssue>(IssueParty("Dialog Engine"), OPEN){
+    Issue<RejectionIssue>(dialogEngine, OPEN){
 
     companion object RejectionIssueType : IssueType<RejectionIssue>
 
@@ -34,16 +39,24 @@ class RejectionIssue(private val reason: String):
 
     override fun status() = PROBLEMS
 
-    override fun <I : Issue<I>> toDto(): IssueDto<I> {
-        TODO("Not yet implemented")
-    }
+    @Suppress("UNCHECKED_CAST")
+    override fun <I : Issue<I>> toDto() =
+        RejectionIssueDto(description = reason) as IssueDto<I>
 
-    override fun toString() = "Rejection isssue raised: $reason"
+    override fun toString() = "Rejection issue raised: $reason"
+
+    @Serializable
+    data class RejectionIssueDto(
+        override val raisedBy: String = dialogEngine.name,
+        override val state: State = OPEN,
+        override val closedBy: String? = null,
+        val description: String
+    ) : IssueDto<RejectionIssue>
 }
 
 class MissingIssue(private val reason: String):
     Consequence,
-    Issue<MissingIssue>(IssueParty("Dialog Engine"), OPEN){
+    Issue<MissingIssue>(dialogEngine, OPEN){
 
     companion object MissingIssueType : IssueType<MissingIssue>
 
@@ -51,11 +64,19 @@ class MissingIssue(private val reason: String):
 
     override fun status() = PROBLEMS
 
-    override fun <I : Issue<I>> toDto(): IssueDto<I> {
-        TODO("Not yet implemented")
-    }
+    @Suppress("UNCHECKED_CAST")
+    override fun <I : Issue<I>> toDto() =
+        MissingIssueDto(description = reason) as IssueDto<I>
 
     override fun toString() = "Missing information issue raised: $reason"
+
+    @Serializable
+    data class MissingIssueDto(
+        override val raisedBy: String = dialogEngine.name,
+        override val state: State = OPEN,
+        override val closedBy: String? = null,
+        val description: String
+    ) : IssueDto<MissingIssue>
 }
 
 fun problem(message: String) = RejectionIssue(message)
