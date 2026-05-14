@@ -1,0 +1,9 @@
+model: ollama_chat/qwen3-coder-next:q8_0
+read:
+  - CONVENTIONS.md
+  - ARCHITECTURE.md
+  - TESTING.md
+
+edit-format: diff
+auto-commits: false
+watch-files: true
