@@ -17,7 +17,7 @@ import com.nrkei.project.issue.IssueType
 import kotlinx.serialization.Serializable
 
 // Understands next action (or no next action) for an Answer
-interface Consequence {
+sealed interface Consequence {
     fun status(): DialogStatus
     fun nextQuestionOrNull(): Question? = null
     companion object {
