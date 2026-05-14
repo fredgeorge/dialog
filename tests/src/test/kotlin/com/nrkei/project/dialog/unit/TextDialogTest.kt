@@ -17,6 +17,7 @@ import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.TOO_SHORT
 import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
+import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -59,5 +60,9 @@ internal class TextDialogTest {
 
             assertNull(dialog.nextQuestionOrNull())
         }
+    }
+
+    @Test fun `Invalid minimum length`() {
+        assertThrows<IllegalArgumentException> { TextQuestion("Invalid", minLength = 0) }
     }
 }

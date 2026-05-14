@@ -14,6 +14,9 @@ import com.nrkei.project.dialog.model.Question
 
 // Understands a string-based answer to a Question
 class TextQuestion(label: String, private val minLength: Int = 1) : Question {
+    init {
+        require(minLength in 1..100) { "Minimum length of $minLength is not valid for TextQuestion $label" }
+    }
     val label = label(label, StringCodec)
     override val possibleAnswers = listOf(TextAnswer.SUFFICIENT, TextAnswer.TOO_SHORT)
     override val consequences = mutableMapOf<Answer, Consequence>()

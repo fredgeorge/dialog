@@ -1,8 +1,8 @@
 model: ollama_chat/qwen3-coder-next:q8_0
 read:
-  - CONVENTIONS.md
-  - ARCHITECTURE.md
-  - TESTING.md
+  - /Users/fred/src/llm/aider_skill/CONVENTIONS.md
+  - /Users/fred/src/llm/aider_skill/ARCHITECTURE.md
+  - /Users/fred/src/llm/aider_skill/TESTING.md
 
 edit-format: diff
 auto-commits: false
