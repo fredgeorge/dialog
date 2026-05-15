@@ -6,24 +6,18 @@
 
 package com.nrkei.project.dialog.dsl
 
-import com.nrkei.project.dialog.model.Answer
-import com.nrkei.project.dialog.model.Consequence
-import com.nrkei.project.dialog.model.DialogStatus
-import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
-import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
-import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
-import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
-import com.nrkei.project.dialog.model.Question
+import com.nrkei.project.dialog.model.*
+import com.nrkei.project.dialog.model.DialogStatus.*
 
 // DSL syntax to specify a series of questions
 fun dialog(block: Dialog.() -> Unit) =
     Dialog().also { it.block() }
 
-// Understands a series of questions to satify a need
+// Understands a series of questions to satisfy a need
 class Dialog internal constructor() : Question {
     private val questions = mutableListOf<Question>()
     override val possibleAnswers = emptyList<Answer>() // n/a
-    override val consequences = mutableMapOf<Answer, Consequence>() // n/a
+    override val consequences = QuestionConsequences(possibleAnswers)
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
@@ -67,26 +61,23 @@ class Dialog internal constructor() : Question {
                 it.questions.add(question)
                 ConsequencesBuilder(question).also { builder ->
                     builder.block()
-                    require(builder.consequenceCount == question.possibleAnswers.size)
-                    { "Expected ${question.possibleAnswers.size} consequences, but got ${builder.consequenceCount}" }
                 }
-                question.validateConsequences()
+                question.consequences.validate()
             }
     }
 }
 
 class ConsequencesBuilder internal constructor(private val question: Question) {
     private lateinit var answer: Answer
-    internal var consequenceCount = 0
 
     operator fun Answer.unaryMinus() = this@ConsequencesBuilder.also { answer = this }
 
     infix fun conclude(consequence: Consequence) {
-        question.consequences[answer] = consequence.also { consequenceCount++ }
+        question.consequences[answer] = consequence
     }
 
     infix fun ask(innerQuestion: Question) = QuestionBuilder(innerQuestion).also {
-        question.consequences[answer] = innerQuestion.also { consequenceCount++ }
+        question.consequences[answer] = innerQuestion
     }
 
     inner class QuestionBuilder internal constructor(private val question: Question) {
@@ -94,10 +85,8 @@ class ConsequencesBuilder internal constructor(private val question: Question) {
         infix fun answers(block: ConsequencesBuilder.() -> Unit) = this@ConsequencesBuilder.also {
             ConsequencesBuilder(question).also { builder ->
                 builder.block()
-                require(builder.consequenceCount == question.possibleAnswers.size)
-                { "Expected question.possibleAnswers.size consequences, but got ${builder.consequenceCount}" }
             }
-            question.validateConsequences()
+            question.consequences.validate()
         }
     }
 }

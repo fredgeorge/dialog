@@ -6,26 +6,18 @@
 
 package com.nrkei.project.dialog.model
 
-import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
-import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
-import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
-import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
+import com.nrkei.project.dialog.model.DialogStatus.*
 
 // Understands solicitation of information
 interface Question : Consequence {
     val possibleAnswers: List<Answer>
-    val consequences: MutableMap<Answer, Consequence>
+    val consequences: QuestionConsequences
 
     fun answer(answer: Any)
 
     fun consequence(): Consequence?
 
     fun isAnswered(): Boolean
-
-    fun validateConsequences() {
-        require(consequences.keys == possibleAnswers.toSet())
-        { "Must have a consequence for each possible answer" }
-    }
 
     override fun status(): DialogStatus {
         return consequence()?.let {

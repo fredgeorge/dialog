@@ -8,19 +8,23 @@ package com.nrkei.project.dialog.unit
 
 import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
-import com.nrkei.project.dialog.model.*
+import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus.*
+import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 // Ensures YesNoQuestion works correctly
 internal class YesNoDialogTest {
     private lateinit var haveSpouse: YesNoQuestion
     private lateinit var haveCoApplicant: YesNoQuestion
+    private lateinit var haveSpouseCoApplicant: YesNoQuestion
     private lateinit var haveChildren: YesNoQuestion
 
     @BeforeEach
@@ -28,6 +32,7 @@ internal class YesNoDialogTest {
         ContextLabelRegistry.reset()
         haveSpouse = YesNoQuestion("Have Spouse")
         haveCoApplicant = YesNoQuestion("Have Co-applicant")
+        haveSpouseCoApplicant = YesNoQuestion("Have Spouse Co-applicant")
         haveChildren = YesNoQuestion("Have Children")
     }
 
@@ -93,7 +98,7 @@ internal class YesNoDialogTest {
     fun `2-level valid dialog`() {
         dialog {
             first ask haveSpouse answers {
-                -YES ask haveCoApplicant answers {
+                -YES ask haveSpouseCoApplicant answers {
                     -YES conclude Acceptable
                     -NO conclude problem("Must have spouse as co-applicant")
                 }
@@ -108,10 +113,10 @@ internal class YesNoDialogTest {
             haveSpouse.answer(YES)
             assertEquals(IN_PROGRESS, dialog.status())
 
-            assertEquals(haveCoApplicant, dialog.nextQuestionOrNull())
-            haveCoApplicant.answer(YES)
+            assertEquals(haveSpouseCoApplicant, dialog.nextQuestionOrNull())
+            haveSpouseCoApplicant.answer(YES)
             assertEquals(SUCCESS, dialog.status())
-            haveCoApplicant.answer(NO)
+            haveSpouseCoApplicant.answer(NO)
             assertEquals(PROBLEMS, dialog.status())
 
             assertNull(dialog.nextQuestionOrNull())
@@ -122,7 +127,7 @@ internal class YesNoDialogTest {
     fun `3-level valid dialog`() {
         dialog {
             first ask haveSpouse answers {
-                -YES ask haveCoApplicant answers {
+                -YES ask haveSpouseCoApplicant answers {
                     -YES conclude Acceptable
                     -NO conclude problem("Must have spouse as co-applicant")
                 }

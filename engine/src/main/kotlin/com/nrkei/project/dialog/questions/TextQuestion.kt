@@ -9,8 +9,8 @@ package com.nrkei.project.dialog.questions
 import com.nrkei.project.context.StringCodec
 import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Answer
-import com.nrkei.project.dialog.model.Consequence
 import com.nrkei.project.dialog.model.Question
+import com.nrkei.project.dialog.model.QuestionConsequences
 
 // Understands a string-based answer to a Question
 class TextQuestion(label: String, private val minLength: Int = 1) : Question {
@@ -20,7 +20,7 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
 
     val label = label(label, StringCodec)
     override val possibleAnswers = listOf(TextAnswer.SUFFICIENT, TextAnswer.TOO_SHORT)
-    override val consequences = mutableMapOf<Answer, Consequence>()
+    override val consequences = QuestionConsequences(possibleAnswers)
     private var answer: Answer? = null
 
     override fun answer(answer: Any) {

@@ -9,15 +9,15 @@ package com.nrkei.project.dialog.questions
 import com.nrkei.project.context.EnumCodec
 import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Answer
-import com.nrkei.project.dialog.model.Consequence
 import com.nrkei.project.dialog.model.Question
+import com.nrkei.project.dialog.model.QuestionConsequences
 
 // Understands a single boolean solicitation
 class YesNoQuestion(label: String) : Question {
 
     val label = label(label, EnumCodec<YesNoChoice>(YesNoChoice::class.java))
     override val possibleAnswers: List<Answer> = listOf(YesNoChoice.YES, YesNoChoice.NO)
-    override val consequences = mutableMapOf<Answer, Consequence>()
+    override val consequences = QuestionConsequences(possibleAnswers)
     private var answer: Answer? = null
 
     override fun answer(answer: Any) {

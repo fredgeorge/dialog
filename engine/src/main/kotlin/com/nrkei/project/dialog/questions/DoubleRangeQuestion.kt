@@ -9,8 +9,8 @@ package com.nrkei.project.dialog.questions
 import com.nrkei.project.context.DoubleCodec
 import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Answer
-import com.nrkei.project.dialog.model.Consequence
 import com.nrkei.project.dialog.model.Question
+import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeAnswer
 import kotlin.reflect.KClass
 
@@ -28,7 +28,7 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
 
     val label = label(label, DoubleCodec)
     override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
-    override val consequences = mutableMapOf<Answer, Consequence>()
+    override val consequences = QuestionConsequences(possibleAnswers)
     private var answer: Answer? = null
 
     override fun answer(answer: Any) {
