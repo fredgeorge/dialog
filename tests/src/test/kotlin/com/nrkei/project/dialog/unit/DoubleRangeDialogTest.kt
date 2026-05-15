@@ -13,8 +13,6 @@ import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.*
-import com.nrkei.project.dialog.unit.DoubleRangeDialogTest.BmiRange.*
-import com.nrkei.project.dialog.unit.DoubleRangeDialogTest.TemperatureRange.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -39,9 +37,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Simple valid dialog for temperature in Celsius`() {
         dialog {
             first ask temperature answers {
-                -COLD conclude problem("Too cold")
-                -WARM conclude Acceptable
-                -HOT conclude problem("Too hot")
+                -TemperatureRange.COLD conclude problem("Too cold")
+                -TemperatureRange.WARM conclude Acceptable
+                -TemperatureRange.HOT conclude problem("Too hot")
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -64,9 +62,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Temperature boundary values are unambiguous`() {
         dialog {
             first ask temperature answers {
-                -COLD conclude problem("Too cold")
-                -WARM conclude Acceptable
-                -HOT conclude problem("Too hot")
+                -TemperatureRange.COLD conclude problem("Too cold")
+                -TemperatureRange.WARM conclude Acceptable
+                -TemperatureRange.HOT conclude problem("Too hot")
             }
         }.also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -81,9 +79,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Temperature accepts Int answer without explicit cast`() {
         dialog {
             first ask temperature answers {
-                -COLD conclude problem("Too cold")
-                -WARM conclude Acceptable
-                -HOT conclude problem("Too hot")
+                -TemperatureRange.COLD conclude problem("Too cold")
+                -TemperatureRange.WARM conclude Acceptable
+                -TemperatureRange.HOT conclude problem("Too hot")
             }
         }.also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -95,11 +93,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `Simple valid dialog for Body Mass Index`() {
         dialog {
             first ask bmi answers {
-                -UNDERWEIGHT    conclude problem("Underweight")
-                -NORMAL         conclude Acceptable
-                -OVERWEIGHT     conclude problem("Overweight")
-                -OBESE          conclude problem("Obese")
-                -MORBIDLY_OBESE conclude problem("Morbidly obese")
+                -BmiRange.UNDERWEIGHT conclude problem("Underweight")
+                -BmiRange.NORMAL conclude Acceptable
+                -BmiRange.OVERWEIGHT conclude problem("Overweight")
+                -BmiRange.OBESE conclude problem("Obese")
+                -BmiRange.MORBIDLY_OBESE conclude problem("Morbidly obese")
             }
         }.also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -125,11 +123,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `BMI boundary values are unambiguous`() {
         dialog {
             first ask bmi answers {
-                -UNDERWEIGHT    conclude problem("Underweight")
-                -NORMAL         conclude Acceptable
-                -OVERWEIGHT     conclude problem("Overweight")
-                -OBESE          conclude problem("Obese")
-                -MORBIDLY_OBESE conclude problem("Morbidly obese")
+                -BmiRange.UNDERWEIGHT conclude problem("Underweight")
+                -BmiRange.NORMAL conclude Acceptable
+                -BmiRange.OVERWEIGHT conclude problem("Overweight")
+                -BmiRange.OBESE conclude problem("Obese")
+                -BmiRange.MORBIDLY_OBESE conclude problem("Morbidly obese")
             }
         }.also { dialog ->
             assertEquals(bmi, dialog.nextQuestionOrNull())
@@ -178,7 +176,7 @@ internal class DoubleRangeDialogTest {
 
 
     // Celsius temperature ranges; supports negative values
-    // Ranges are half-open [minimum, maximum) — boundary values belong to the higher tier
+    // Ranges are half-open [minimum, maximum] — boundary values belong to the higher tier
     enum class TemperatureRange(
         override val minimum: Double,
         override val maximum: Double,
@@ -189,7 +187,7 @@ internal class DoubleRangeDialogTest {
     }
 
     // WHO Body Mass Index tiers (kg/m²)
-    // Ranges are half-open [minimum, maximum) — boundary values belong to the higher tier
+    // Ranges are half-open [minimum, maximum] — boundary values belong to the higher tier
     enum class BmiRange(
         override val minimum: Double,
         override val maximum: Double,
