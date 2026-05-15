@@ -15,9 +15,12 @@ import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 interface Question : Consequence {
     val possibleAnswers: List<Answer>
     val consequences: MutableMap<Answer, Consequence>
-    var answer: Answer?
 
     fun answer(answer: Any)
+
+    fun consequence(): Consequence?
+
+    fun isAnswered(): Boolean
 
     fun validateConsequences() {
         require(consequences.keys == possibleAnswers.toSet())
@@ -25,7 +28,7 @@ interface Question : Consequence {
     }
 
     override fun status(): DialogStatus {
-        return consequences[answer]?.let {
+        return consequence()?.let {
             when (it.status()) {
                 NOT_STARTED, IN_PROGRESS -> IN_PROGRESS
                 SUCCESS -> SUCCESS
@@ -35,7 +38,7 @@ interface Question : Consequence {
     }
 
     override fun nextQuestionOrNull() : Question? {
-        if (answer == null) return this
-        return consequences[answer]?.nextQuestionOrNull()
+        if (!isAnswered()) return this
+        return consequence()?.nextQuestionOrNull()
     }
 }

@@ -29,13 +29,17 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     val label = label(label, IntCodec)
     override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
     override val consequences = mutableMapOf<Answer, Consequence>()
-    override var answer: Answer? = null
+    private var answer: Answer? = null
 
     override fun answer(answer: Any) {
         require(answer is Int)
         { "Invalid answer of $answer for question $label" }
         this.answer = possibleAnswers.first { (it as IntRangeAnswer).inRange(answer) }
     }
+
+    override fun consequence() = answer?.let { consequences[it] }
+
+    override fun isAnswered() = answer != null
 
     interface IntRangeAnswer : Answer {
         val minimum: Int

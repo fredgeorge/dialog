@@ -18,13 +18,17 @@ class YesNoQuestion(label: String) : Question {
     val label = label(label, EnumCodec<YesNoChoice>(YesNoChoice::class.java))
     override val possibleAnswers: List<Answer> = listOf(YesNoChoice.YES, YesNoChoice.NO)
     override val consequences = mutableMapOf<Answer, Consequence>()
-    override var answer: Answer? = null
+    private var answer: Answer? = null
 
     override fun answer(answer: Any) {
         require(answer is YesNoChoice && answer in possibleAnswers)
         { "Invalid answer of $answer for question $label" }
         this.answer = answer
     }
+
+    override fun consequence() = answer?.let { consequences[it] }
+
+    override fun isAnswered() = answer != null
 
     enum class YesNoChoice : Answer { YES, NO }
 }

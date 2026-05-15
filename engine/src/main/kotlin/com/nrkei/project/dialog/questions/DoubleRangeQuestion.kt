@@ -29,7 +29,7 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     val label = label(label, DoubleCodec)
     override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
     override val consequences = mutableMapOf<Answer, Consequence>()
-    override var answer: Answer? = null
+    private var answer: Answer? = null
 
     override fun answer(answer: Any) {
         require(answer is Number)
@@ -37,6 +37,10 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
         this.answer = possibleAnswers
             .first { (it as DoubleRangeAnswer).inRange(answer.toDouble()) }
     }
+
+    override fun consequence() = answer?.let { consequences[it] }
+
+    override fun isAnswered() = answer != null
 
     interface DoubleRangeAnswer : Answer {
         val minimum: Double

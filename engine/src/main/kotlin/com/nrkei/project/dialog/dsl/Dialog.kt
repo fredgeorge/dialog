@@ -24,7 +24,6 @@ class Dialog internal constructor() : Question {
     private val questions = mutableListOf<Question>()
     override val possibleAnswers = emptyList<Answer>() // n/a
     override val consequences = mutableMapOf<Answer, Consequence>() // n/a
-    override var answer: Answer? = null
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
@@ -33,6 +32,12 @@ class Dialog internal constructor() : Question {
     infix fun ask(question: Question) = QuestionBuilder(question)
 
     override fun answer(answer: Any) {
+        throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
+    }
+
+    override fun consequence() = null
+
+    override fun isAnswered(): Boolean {
         throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
     }
 

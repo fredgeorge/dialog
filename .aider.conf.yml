@@ -1,4 +1,4 @@
-model: ollama_chat/qwen3-coder-next:q8_0
+model: ollama_chat/qwen3.6:35b-a3b-coding-bf16
 read:
   - /Users/fred/src/llm/aider_skill/CONVENTIONS.md
   - /Users/fred/src/llm/aider_skill/ARCHITECTURE.md
