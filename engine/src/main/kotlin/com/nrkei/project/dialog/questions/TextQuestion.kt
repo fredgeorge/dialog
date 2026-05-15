@@ -11,6 +11,8 @@ import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Answer
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
+import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.SUFFICIENT
+import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.TOO_SHORT
 
 // Understands a string-based answer to a Question
 class TextQuestion(label: String, private val minLength: Int = 1) : Question {
@@ -19,14 +21,17 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
     }
 
     val label = label(label, StringCodec)
-    override val possibleAnswers = listOf(TextAnswer.SUFFICIENT, TextAnswer.TOO_SHORT)
+    override val possibleAnswers = listOf(SUFFICIENT, TOO_SHORT)
     override val consequences = QuestionConsequences(possibleAnswers)
     private var answer: Answer? = null
 
     override fun answer(rawReply: Any) {
-        require(rawReply is String)
-        { "Invalid String answer of $rawReply for question $label" }
-        this.answer = if (rawReply.length < minLength) TextAnswer.TOO_SHORT else TextAnswer.SUFFICIENT
+        if (rawReply !is String) {
+            throw IllegalArgumentException(
+                "Invalid answer type: expected String, got ${rawReply::class.simpleName} for question $label"
+            )
+        }
+        this.answer = if (rawReply.length < minLength) TOO_SHORT else SUFFICIENT
     }
 
     override fun consequence() = answer?.let { consequences[it] }
