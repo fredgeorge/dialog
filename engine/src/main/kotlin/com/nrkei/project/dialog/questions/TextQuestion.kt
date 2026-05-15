@@ -23,10 +23,10 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
     override val consequences = QuestionConsequences(possibleAnswers)
     private var answer: Answer? = null
 
-    override fun answer(answer: Any) {
-        require(answer is String)
-        { "Invalid String answer of $answer for question $label" }
-        this.answer = if (answer.length < minLength) TextAnswer.TOO_SHORT else TextAnswer.SUFFICIENT
+    override fun answer(rawReply: Any) {
+        require(rawReply is String)
+        { "Invalid String answer of $rawReply for question $label" }
+        this.answer = if (rawReply.length < minLength) TextAnswer.TOO_SHORT else TextAnswer.SUFFICIENT
     }
 
     override fun consequence() = answer?.let { consequences[it] }

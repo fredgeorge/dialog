@@ -20,10 +20,10 @@ class YesNoQuestion(label: String) : Question {
     override val consequences = QuestionConsequences(possibleAnswers)
     private var answer: Answer? = null
 
-    override fun answer(answer: Any) {
-        require(answer is YesNoChoice && answer in possibleAnswers)
-        { "Invalid answer of $answer for question $label" }
-        this.answer = answer
+    override fun answer(rawReply: Any) {
+        require(rawReply is YesNoChoice && rawReply in possibleAnswers)
+        { "Invalid answer of $rawReply for question $label" }
+        answer = rawReply
     }
 
     override fun consequence() = answer?.let { consequences[it] }
