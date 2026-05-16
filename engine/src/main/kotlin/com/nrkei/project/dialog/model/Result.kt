@@ -7,6 +7,6 @@
 package com.nrkei.project.dialog.model
 
 // Understands a specific response to a Question
-interface Answer {
+interface Result {
     val name: String
 }

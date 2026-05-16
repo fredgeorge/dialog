@@ -8,27 +8,27 @@ package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.context.EnumCodec
 import com.nrkei.project.context.label
-import com.nrkei.project.dialog.model.Answer
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
+import com.nrkei.project.dialog.model.Result
 
 // Understands a single boolean solicitation
 class YesNoQuestion(label: String) : Question {
 
     val label = label(label, EnumCodec<YesNoChoice>(YesNoChoice::class.java))
-    override val possibleAnswers: List<Answer> = listOf(YesNoChoice.YES, YesNoChoice.NO)
-    override val consequences = QuestionConsequences(possibleAnswers)
-    private var answer: Answer? = null
+    override val possibleResults: List<Result> = listOf(YesNoChoice.YES, YesNoChoice.NO)
+    override val consequences = QuestionConsequences(possibleResults)
+    private var result: Result? = null
 
     override fun answer(rawReply: Any) {
-        require(rawReply is YesNoChoice && rawReply in possibleAnswers)
+        require(rawReply is YesNoChoice && rawReply in possibleResults)
         { "Invalid answer of $rawReply for question $label" }
-        answer = rawReply
+        result = rawReply
     }
 
-    override fun consequence() = answer?.let { consequences[it] }
+    override fun consequence() = result?.let { consequences[it] }
 
-    override fun isAnswered() = answer != null
+    override fun isAnswered() = result != null
 
-    enum class YesNoChoice : Answer { YES, NO }
+    enum class YesNoChoice : Result { YES, NO }
 }

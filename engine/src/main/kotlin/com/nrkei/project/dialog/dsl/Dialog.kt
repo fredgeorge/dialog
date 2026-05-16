@@ -16,8 +16,8 @@ fun dialog(block: Dialog.() -> Unit) =
 // Understands a series of questions to satisfy a need
 class Dialog internal constructor() : Question {
     private val questions = mutableListOf<Question>()
-    override val possibleAnswers = emptyList<Answer>() // n/a
-    override val consequences = QuestionConsequences(possibleAnswers)
+    override val possibleResults = emptyList<Result>() // n/a
+    override val consequences = QuestionConsequences(possibleResults)
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
@@ -68,16 +68,16 @@ class Dialog internal constructor() : Question {
 }
 
 class ConsequencesBuilder internal constructor(private val question: Question) {
-    private lateinit var answer: Answer
+    private lateinit var result: Result
 
-    operator fun Answer.unaryMinus() = this@ConsequencesBuilder.also { answer = this }
+    operator fun Result.unaryMinus() = this@ConsequencesBuilder.also { result = this }
 
     infix fun conclude(consequence: Consequence) {
-        question.consequences[answer] = consequence
+        question.consequences[result] = consequence
     }
 
     infix fun ask(innerQuestion: Question) = QuestionBuilder(innerQuestion).also {
-        question.consequences[answer] = innerQuestion
+        question.consequences[result] = innerQuestion
     }
 
     inner class QuestionBuilder internal constructor(private val question: Question) {

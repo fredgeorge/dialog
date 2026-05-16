@@ -10,7 +10,7 @@ import com.nrkei.project.dialog.model.DialogStatus.*
 
 // Understands solicitation of information
 interface Question : Consequence {
-    val possibleAnswers: List<Answer>
+    val possibleResults: List<Result>
     val consequences: QuestionConsequences
 
     fun answer(rawReply: Any)

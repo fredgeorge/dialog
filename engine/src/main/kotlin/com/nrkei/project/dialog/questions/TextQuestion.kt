@@ -8,11 +8,11 @@ package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.context.StringCodec
 import com.nrkei.project.context.label
-import com.nrkei.project.dialog.model.Answer
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
-import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.SUFFICIENT
-import com.nrkei.project.dialog.questions.TextQuestion.TextAnswer.TOO_SHORT
+import com.nrkei.project.dialog.model.Result
+import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
+import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
 
 // Understands a string-based answer to a Question
 class TextQuestion(label: String, private val minLength: Int = 1) : Question {
@@ -21,9 +21,9 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
     }
 
     val label = label(label, StringCodec)
-    override val possibleAnswers = listOf(SUFFICIENT, TOO_SHORT)
-    override val consequences = QuestionConsequences(possibleAnswers)
-    private var answer: Answer? = null
+    override val possibleResults = listOf(SUFFICIENT, TOO_SHORT)
+    override val consequences = QuestionConsequences(possibleResults)
+    private var result: Result? = null
 
     override fun answer(rawReply: Any) {
         if (rawReply !is String) {
@@ -31,12 +31,12 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
                 "Invalid answer type: expected String, got ${rawReply::class.simpleName} for question $label"
             )
         }
-        this.answer = if (rawReply.length < minLength) TOO_SHORT else SUFFICIENT
+        this.result = if (rawReply.length < minLength) TOO_SHORT else SUFFICIENT
     }
 
-    override fun consequence() = answer?.let { consequences[it] }
+    override fun consequence() = result?.let { consequences[it] }
 
-    override fun isAnswered() = answer != null
+    override fun isAnswered() = result != null
 
-    enum class TextAnswer : Answer { TOO_SHORT, SUFFICIENT }
+    enum class TextResult : Result { TOO_SHORT, SUFFICIENT }
 }

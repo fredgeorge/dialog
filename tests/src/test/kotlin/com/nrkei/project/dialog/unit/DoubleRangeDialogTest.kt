@@ -180,7 +180,7 @@ internal class DoubleRangeDialogTest {
     enum class TemperatureRange(
         override val minimum: Double,
         override val maximum: Double,
-    ) : DoubleRangeAnswer {
+    ) : DoubleRangeResult {
         COLD(-Double.MAX_VALUE, 15.0),
         WARM(15.0, 28.0),
         HOT(28.0, Double.MAX_VALUE)
@@ -191,7 +191,7 @@ internal class DoubleRangeDialogTest {
     enum class BmiRange(
         override val minimum: Double,
         override val maximum: Double,
-    ) : DoubleRangeAnswer {
+    ) : DoubleRangeResult {
         UNDERWEIGHT(-Double.MAX_VALUE, 18.5),
         NORMAL(18.5, 25.0),
         OVERWEIGHT(25.0, 30.0),

@@ -8,21 +8,15 @@ package com.nrkei.project.dialog.unit
 
 import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
-import com.nrkei.project.dialog.model.*
+import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus.*
+import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion
+import com.nrkei.project.dialog.questions.IntRangeQuestion.*
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.zeroOrMoreInt
-import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeAnswer
-import com.nrkei.project.dialog.questions.IntRangeQuestion.NonNegativeIntRange
-import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.ADULT
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.INVALID
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.SENIOR
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.UNDER_18
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.ACCEPTABLE
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.POOR
-import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.WEALTHY
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.*
+import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -124,7 +118,7 @@ internal class IntRangeDialogTest {
     enum class AgeRange(
         override val minimum: Int,
         override val maximum: Int,
-    ) : IntRangeAnswer {
+    ) : IntRangeResult {
         INVALID(Int.MIN_VALUE, -1),
         UNDER_18(0, 17),
         ADULT(18, 64),
@@ -134,7 +128,7 @@ internal class IntRangeDialogTest {
     enum class NetWorthRange(
         override val minimum: Int,
         override val maximum: Int,
-    ) : IntRangeAnswer {
+    ) : IntRangeResult {
         POOR(Int.MIN_VALUE, 99_999),
         ACCEPTABLE(100_000, 999_999),
         WEALTHY(1_000_000, Int.MAX_VALUE)

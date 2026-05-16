@@ -8,15 +8,15 @@ package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.context.DoubleCodec
 import com.nrkei.project.context.label
-import com.nrkei.project.dialog.model.Answer
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
-import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeAnswer
+import com.nrkei.project.dialog.model.Result
+import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeResult
 import kotlin.reflect.KClass
 
 // Understands a Question with Answer ranges expressed as Double values
 class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
-        where R : Enum<R>, R : DoubleRangeAnswer {
+        where R : Enum<R>, R : DoubleRangeResult {
 
     companion object {
         fun positiveDouble(label: String) =
@@ -27,33 +27,33 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     }
 
     val label = label(label, DoubleCodec)
-    override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
-    override val consequences = QuestionConsequences(possibleAnswers)
-    private var answer: Answer? = null
+    override val possibleResults: List<Result> = valuesEnum.java.enumConstants.toList()
+    override val consequences = QuestionConsequences(possibleResults)
+    private var result: Result? = null
 
     override fun answer(rawReply: Any) {
         require(rawReply is Number)
         { "Invalid answer of $rawReply for question $label" }
-        this.answer = possibleAnswers
-            .first { (it as DoubleRangeAnswer).inRange(rawReply.toDouble()) }
+        this.result = possibleResults
+            .first { (it as DoubleRangeResult).inRange(rawReply.toDouble()) }
     }
 
-    override fun consequence() = answer?.let { consequences[it] }
+    override fun consequence() = result?.let { consequences[it] }
 
-    override fun isAnswered() = answer != null
+    override fun isAnswered() = result != null
 
-    interface DoubleRangeAnswer : Answer {
+    interface DoubleRangeResult : Result {
         val minimum: Double
         val maximum: Double
         fun inRange(value: Double) = value >= minimum && value < maximum
     }
 
-    enum class NonNegativeDoubleRange(override val minimum: Double, override val maximum: Double) : DoubleRangeAnswer {
+    enum class NonNegativeDoubleRange(override val minimum: Double, override val maximum: Double) : DoubleRangeResult {
         INVALID(-Double.MAX_VALUE, 0.0),
         VALID(0.0, Double.MAX_VALUE)
     }
 
-    enum class PositiveDoubleRange(override val minimum: Double, override val maximum: Double) : DoubleRangeAnswer {
+    enum class PositiveDoubleRange(override val minimum: Double, override val maximum: Double) : DoubleRangeResult {
         INVALID(-Double.MAX_VALUE, 0.0),
         VALID(0.0, Double.MAX_VALUE);
         override fun inRange(value: Double) = value > minimum && value <= maximum

@@ -8,15 +8,15 @@ package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.context.IntCodec
 import com.nrkei.project.context.label
-import com.nrkei.project.dialog.model.Answer
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
-import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeAnswer
+import com.nrkei.project.dialog.model.Result
+import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeResult
 import kotlin.reflect.KClass
 
 // Understands a Question with Answer ranges
 class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
-        where R : Enum<R>, R : IntRangeAnswer {
+        where R : Enum<R>, R : IntRangeResult {
 
     companion object {
         fun positiveInt(label: String) =
@@ -27,32 +27,32 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     }
 
     val label = label(label, IntCodec)
-    override val possibleAnswers: List<Answer> = valuesEnum.java.enumConstants.toList()
-    override val consequences = QuestionConsequences(possibleAnswers)
-    private var answer: Answer? = null
+    override val possibleResults: List<Result> = valuesEnum.java.enumConstants.toList()
+    override val consequences = QuestionConsequences(possibleResults)
+    private var result: Result? = null
 
     override fun answer(rawReply: Any) {
         require(rawReply is Int)
         { "Invalid answer of $rawReply for question $label" }
-        this.answer = possibleAnswers.first { (it as IntRangeAnswer).inRange(rawReply) }
+        this.result = possibleResults.first { (it as IntRangeResult).inRange(rawReply) }
     }
 
-    override fun consequence() = answer?.let { consequences[it] }
+    override fun consequence() = result?.let { consequences[it] }
 
-    override fun isAnswered() = answer != null
+    override fun isAnswered() = result != null
 
-    interface IntRangeAnswer : Answer {
+    interface IntRangeResult : Result {
         val minimum: Int
         val maximum: Int
         fun inRange(value: Int) = value in minimum..maximum
     }
 
-    enum class NonNegativeIntRange(override val minimum: Int, override val maximum: Int) : IntRangeAnswer {
+    enum class NonNegativeIntRange(override val minimum: Int, override val maximum: Int) : IntRangeResult {
         INVALID(Int.MIN_VALUE, -1),
         VALID(0, Int.MAX_VALUE)
     }
 
-    enum class PositiveIntRange(override val minimum: Int, override val maximum: Int) : IntRangeAnswer {
+    enum class PositiveIntRange(override val minimum: Int, override val maximum: Int) : IntRangeResult {
         INVALID(Int.MIN_VALUE, 0),
         VALID(1, Int.MAX_VALUE)
     }
