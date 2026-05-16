@@ -31,11 +31,11 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
 
-    override fun answer(rawReply: Any) {
-        require(rawReply is Number)
-        { "Invalid answer of $rawReply for question $label" }
+    override fun answer(answer: Any) {
+        require(answer is Number)
+        { "Invalid answer of $answer for question $label" }
         this.result = possibleResults
-            .first { (it as DoubleRangeResult).inRange(rawReply.toDouble()) }
+            .first { (it as DoubleRangeResult).inRange(answer.toDouble()) }
     }
 
     override fun consequence() = result?.let { consequences[it] }

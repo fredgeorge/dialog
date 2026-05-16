@@ -15,10 +15,10 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
 // Understands who is applying for a Loan
-object ApplicantDialog {
-    val applicantDialog = dialog {
+object CoApplicantDialog {
+    val coApplicantDialog = dialog {
         first ask haveSpouse answers {
-            -YES ask haveCoApplicant answers {
+            -YES ask haveSpouseCoApplicant answers {
                 -YES conclude missing("Requires co-applicant approval")
                 -NO conclude problem("Spouse must be co-applicant")
             }
@@ -29,6 +29,7 @@ object ApplicantDialog {
         }
     }
 
-    private val haveSpouse = YesNoQuestion("Have Spouse")
-    private val haveCoApplicant = YesNoQuestion("Have Co-applicant")
+    private val haveSpouse = YesNoQuestion("Have Spouse?")
+    private val haveCoApplicant = YesNoQuestion("Have Co-applicant?")
+    private val haveSpouseCoApplicant = YesNoQuestion("Have Spouse Co-applicant?")
 }

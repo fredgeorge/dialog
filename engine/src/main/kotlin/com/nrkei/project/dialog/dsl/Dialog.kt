@@ -25,7 +25,7 @@ class Dialog internal constructor() : Question {
 
     infix fun ask(question: Question) = QuestionBuilder(question)
 
-    override fun answer(rawReply: Any) {
+    override fun answer(answer: Any) {
         throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
     }
 

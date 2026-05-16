@@ -25,13 +25,13 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
 
-    override fun answer(rawReply: Any) {
-        if (rawReply !is String) {
+    override fun answer(answer: Any) {
+        if (answer !is String) {
             throw IllegalArgumentException(
-                "Invalid answer type: expected String, got ${rawReply::class.simpleName} for question $label"
+                "Invalid answer type: expected String, got ${answer::class.simpleName} for question $label"
             )
         }
-        this.result = if (rawReply.length < minLength) TOO_SHORT else SUFFICIENT
+        this.result = if (answer.length < minLength) TOO_SHORT else SUFFICIENT
     }
 
     override fun consequence() = result?.let { consequences[it] }

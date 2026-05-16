@@ -13,7 +13,7 @@ interface Question : Consequence {
     val possibleResults: List<Result>
     val consequences: QuestionConsequences
 
-    fun answer(rawReply: Any)
+    fun answer(answer: Any)
 
     fun consequence(): Consequence?
 

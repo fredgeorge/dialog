@@ -31,10 +31,10 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
 
-    override fun answer(rawReply: Any) {
-        require(rawReply is Int)
-        { "Invalid answer of $rawReply for question $label" }
-        this.result = possibleResults.first { (it as IntRangeResult).inRange(rawReply) }
+    override fun answer(answer: Any) {
+        require(answer is Int)
+        { "Invalid answer of $answer for question $label" }
+        this.result = possibleResults.first { (it as IntRangeResult).inRange(answer) }
     }
 
     override fun consequence() = result?.let { consequences[it] }
