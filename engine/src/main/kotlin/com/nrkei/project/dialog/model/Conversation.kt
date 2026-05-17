@@ -6,7 +6,6 @@
 
 package com.nrkei.project.dialog.model
 
-import com.nrkei.project.dialog.dsl.Dialog
 import java.util.*
 
 // Purpose: Understands which Dialog should be invoked in which circumstance

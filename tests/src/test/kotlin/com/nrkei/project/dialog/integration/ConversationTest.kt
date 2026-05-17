@@ -6,18 +6,11 @@
 
 package com.nrkei.project.dialog.integration
 
-import com.nrkei.project.dialog.model.Conversation
 import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
 import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
-import com.nrkei.project.template.util.CoApplicantDialog.coApplicantDialog
-import com.nrkei.project.template.util.CoApplicantDialog.coApplicantIssue
-import com.nrkei.project.template.util.DependentsDialog.dependentDialog
-import com.nrkei.project.template.util.DependentsDialog.dependentIssue
-import com.nrkei.project.template.util.OtherIncomeDialog.otherIncomeDialog
-import com.nrkei.project.template.util.OtherIncomeDialog.otherIncomeIssue
-import com.nrkei.project.template.util.SalaryDialog.salaryDialog
 import com.nrkei.project.template.util.SalaryDialog.salaryIssue
+import com.nrkei.project.template.util.TestConversation.testConversation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -26,12 +19,7 @@ internal class ConversationTest {
 
     @Test
     fun `clone all question types`() {
-        Conversation(
-            salaryIssue to salaryDialog,
-            otherIncomeIssue to otherIncomeDialog,
-            coApplicantIssue to coApplicantDialog,
-            dependentIssue to dependentDialog
-        ).also { original ->
+        testConversation.also { original ->
             original.clone()[salaryIssue].also { firstDialogCopy ->
                 assertEquals(NOT_STARTED, firstDialogCopy.status())
                 firstDialogCopy.nextQuestionOrNull()?.answer(NO)

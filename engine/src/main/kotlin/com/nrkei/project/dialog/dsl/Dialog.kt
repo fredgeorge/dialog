@@ -6,18 +6,21 @@
 
 package com.nrkei.project.dialog.dsl
 
-import com.nrkei.project.dialog.model.*
-import com.nrkei.project.dialog.model.DialogStatus.*
+import com.nrkei.project.dialog.model.Consequence
+import com.nrkei.project.dialog.model.Dialog
+import com.nrkei.project.dialog.model.Question
+import com.nrkei.project.dialog.model.Result
 
 // DSL syntax to specify a series of questions
-fun dialog(block: Dialog.() -> Unit) =
-    Dialog().also { it.block() }
+fun dialog(block: DialogBuilder.() -> Unit): Dialog =
+    DialogBuilder().let {
+        it.block()
+        it.result()
+    }
 
-// Understands a series of questions to satisfy a need
-class Dialog internal constructor() : Question {
+// Purpose: Understands a series of questions to satisfy a need
+class DialogBuilder internal constructor() {
     private val questions = mutableListOf<Question>()
-    override val possibleResults = emptyList<Result>() // n/a
-    override val consequences = QuestionConsequences(possibleResults)
 
     // Syntax sugar
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
@@ -25,43 +28,12 @@ class Dialog internal constructor() : Question {
 
     infix fun ask(question: Question) = QuestionBuilder(question).also { questions.add(question) }
 
-    override fun answer(answer: Any) {
-        throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
-    }
-
-    override fun consequence() = null
-
-    override fun isAnswered(): Boolean {
-        throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
-    }
-
-    override fun nextQuestionOrNull(): Question? {
-        questions.forEach { it.nextQuestionOrNull()?.also { return it } }
-        return null
-    }
-
-    override fun status() = questions
-        .map { it.status() }
-        .let { statuses: List<DialogStatus> ->
-            when {
-                statuses.isEmpty() -> NOT_STARTED
-                statuses.all { it == NOT_STARTED } -> NOT_STARTED
-                statuses.any { it == IN_PROGRESS } -> IN_PROGRESS
-                statuses.all { it == SUCCESS } -> SUCCESS
-                statuses.any { it == PROBLEMS } -> PROBLEMS
-                statuses.any { it == SUCCESS } -> IN_PROGRESS
-                else -> PROBLEMS
-            }
-        }
-
-    override fun clone() = Dialog().also { copy ->
-        this.questions.forEach { copy.questions.add(it.clone() as Question) }
-    }
+    internal fun result() = Dialog(questions)
 
     inner class QuestionBuilder internal constructor(private val question: Question) {
 
-        infix fun answers(block: ConsequencesBuilder.() -> Unit): Dialog =
-            this@Dialog.also {
+        infix fun answers(block: ConsequencesBuilder.() -> Unit) =
+            this@DialogBuilder.also {
                 ConsequencesBuilder(question).also { builder ->
                     builder.block()
                 }
