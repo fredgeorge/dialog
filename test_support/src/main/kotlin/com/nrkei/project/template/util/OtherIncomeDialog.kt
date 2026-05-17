@@ -7,7 +7,9 @@
 package com.nrkei.project.template.util
 
 import com.nrkei.project.dialog.dsl.dialog
-import com.nrkei.project.dialog.model.*
+import com.nrkei.project.dialog.model.Acceptable
+import com.nrkei.project.dialog.model.missing
+import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.INVALID
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.VALID
@@ -15,8 +17,14 @@ import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
-// Understands finding alternative income sources
+// Purpose: Understands possible alternative income sources
 object OtherIncomeDialog {
+    private val rentalIncome = YesNoQuestion("Do you have rental income?")
+    private val alimony = YesNoQuestion("Are you receiving alimony?")
+    private val alimonyDetails = positiveInt("What is your monthly alimony amount?")
+    private val documentationUploaded = YesNoQuestion("Have you uploaded documentation for alimony?")
+    private val guarantorsPossible = YesNoQuestion("Do you have someone who can serve as guarantor?")
+
     val otherIncomeDialog = dialog {
         first ask rentalIncome answers {
             -YES conclude missing("Need details on rental income(s)")
@@ -38,9 +46,5 @@ object OtherIncomeDialog {
         }
     }
 
-    private val rentalIncome = YesNoQuestion("Do you have rental income?")
-    private val alimony = YesNoQuestion("Are you receiving alimony?")
-    private val alimonyDetails = positiveInt("What is your monthly alimony amount?")
-    private val documentationUploaded = YesNoQuestion("Have you uploaded documentation for alimony?")
-    private val guarantorsPossible = YesNoQuestion("Do you have someone who can serve as guarantor?")
+    val otherIncomeIssue = missing("Do you have other income sources?")
 }

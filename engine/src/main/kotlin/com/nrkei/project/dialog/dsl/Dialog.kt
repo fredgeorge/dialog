@@ -23,7 +23,7 @@ class Dialog internal constructor() : Question {
     val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
     val then get() = this.also { require(questions.isNotEmpty()) { "'first' keyword required for the first question in a dialog" } }
 
-    infix fun ask(question: Question) = QuestionBuilder(question)
+    infix fun ask(question: Question) = QuestionBuilder(question).also { questions.add(question) }
 
     override fun answer(answer: Any) {
         throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
@@ -54,11 +54,12 @@ class Dialog internal constructor() : Question {
             }
         }
 
+    internal fun clone() = this
+
     inner class QuestionBuilder internal constructor(private val question: Question) {
 
         infix fun answers(block: ConsequencesBuilder.() -> Unit): Dialog =
             this@Dialog.also {
-                it.questions.add(question)
                 ConsequencesBuilder(question).also { builder ->
                     builder.block()
                 }
