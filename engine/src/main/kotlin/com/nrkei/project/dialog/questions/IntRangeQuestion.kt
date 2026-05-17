@@ -6,8 +6,6 @@
 
 package com.nrkei.project.dialog.questions
 
-import com.nrkei.project.context.IntCodec
-import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
@@ -15,7 +13,7 @@ import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeResult
 import kotlin.reflect.KClass
 
 // Understands a Question with Answer ranges
-class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
+class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Question
         where R : Enum<R>, R : IntRangeResult {
 
     companion object {
@@ -26,7 +24,6 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
             IntRangeQuestion<NonNegativeIntRange>(label, NonNegativeIntRange::class)
     }
 
-    val label = label(label, IntCodec)
     override val possibleResults: List<Result> = valuesEnum.java.enumConstants.toList()
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
@@ -40,6 +37,10 @@ class IntRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     override fun consequence() = result?.let { consequences[it] }
 
     override fun isAnswered() = result != null
+
+    override fun clone() = YesNoQuestion(label).also { question ->
+        question.consequences.cloneFrom(this.consequences)
+    }
 
     interface IntRangeResult : Result {
         val minimum: Int

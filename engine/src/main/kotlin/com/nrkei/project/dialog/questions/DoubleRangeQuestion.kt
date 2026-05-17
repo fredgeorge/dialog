@@ -6,8 +6,6 @@
 
 package com.nrkei.project.dialog.questions
 
-import com.nrkei.project.context.DoubleCodec
-import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
@@ -15,7 +13,7 @@ import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeResult
 import kotlin.reflect.KClass
 
 // Understands a Question with Answer ranges expressed as Double values
-class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
+class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Question
         where R : Enum<R>, R : DoubleRangeResult {
 
     companion object {
@@ -26,7 +24,6 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
             DoubleRangeQuestion<NonNegativeDoubleRange>(label, NonNegativeDoubleRange::class)
     }
 
-    val label = label(label, DoubleCodec)
     override val possibleResults: List<Result> = valuesEnum.java.enumConstants.toList()
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
@@ -41,6 +38,10 @@ class DoubleRangeQuestion<R>(label: String, valuesEnum: KClass<R>) : Question
     override fun consequence() = result?.let { consequences[it] }
 
     override fun isAnswered() = result != null
+
+    override fun clone() = YesNoQuestion(label).also { question ->
+        question.consequences.cloneFrom(this.consequences)
+    }
 
     interface DoubleRangeResult : Result {
         val minimum: Double

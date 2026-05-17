@@ -18,6 +18,8 @@ class Conversation private constructor(
     constructor(firstDialog: Pair<MissingIssue, Dialog>, vararg dialogs: Pair<MissingIssue, Dialog>) :
             this(listOf(firstDialog, *dialogs).toMap())
 
+    operator fun get(issue: MissingIssue) = dialogs[issue] ?: throw IllegalStateException("No Dialog defined for issue $issue")
+
     fun clone() = Conversation(
         dialogs.mapValues { (_, value) -> value.clone() }.toMap()
     )

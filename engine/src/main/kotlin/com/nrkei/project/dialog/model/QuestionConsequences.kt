@@ -32,4 +32,8 @@ class QuestionConsequences internal constructor(
     internal fun validate() =
         require(allowedResults.size == consequences.size)
         { "All possible Answers must be specified" }
+
+    internal fun cloneFrom(other: QuestionConsequences) {
+        other.consequences.forEach { (result, consequence) ->  this.consequences[result] = consequence.clone() }
+    }
 }

@@ -54,7 +54,9 @@ class Dialog internal constructor() : Question {
             }
         }
 
-    internal fun clone() = this
+    override fun clone() = Dialog().also { copy ->
+        this.questions.forEach { copy.questions.add(it.clone() as Question) }
+    }
 
     inner class QuestionBuilder internal constructor(private val question: Question) {
 

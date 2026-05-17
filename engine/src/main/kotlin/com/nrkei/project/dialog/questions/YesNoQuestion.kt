@@ -6,16 +6,12 @@
 
 package com.nrkei.project.dialog.questions
 
-import com.nrkei.project.context.EnumCodec
-import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
 
 // Understands a single boolean solicitation
-class YesNoQuestion(label: String) : Question {
-
-    val label = label(label, EnumCodec<YesNoChoice>(YesNoChoice::class.java))
+class YesNoQuestion(private val label: String) : Question {
     override val possibleResults: List<Result> = listOf(YesNoChoice.YES, YesNoChoice.NO)
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
@@ -29,6 +25,10 @@ class YesNoQuestion(label: String) : Question {
     override fun consequence() = result?.let { consequences[it] }
 
     override fun isAnswered() = result != null
+
+    override fun clone() = YesNoQuestion(label).also { question ->
+        question.consequences.cloneFrom(this.consequences)
+    }
 
     enum class YesNoChoice : Result { YES, NO }
 }

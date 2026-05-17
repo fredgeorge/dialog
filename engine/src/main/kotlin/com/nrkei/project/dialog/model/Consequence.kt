@@ -10,23 +10,25 @@ import com.nrkei.project.dialog.model.Consequence.Companion.dialogEngine
 import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
 import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
 import com.nrkei.project.issue.Issue
-import com.nrkei.project.issue.IssueParty
 import com.nrkei.project.issue.Issue.State.OPEN
 import com.nrkei.project.issue.IssueDto
+import com.nrkei.project.issue.IssueParty
 import com.nrkei.project.issue.IssueType
 import kotlinx.serialization.Serializable
 
 // Understands next action (or no next action) for an Answer
 sealed interface Consequence {
-    fun status(): DialogStatus
-    fun nextQuestionOrNull(): Question? = null
     companion object {
         internal val dialogEngine = IssueParty("Dialog Engine")
     }
+    fun status(): DialogStatus
+    fun nextQuestionOrNull(): Question? = null
+    fun clone(): Consequence
 }
 
 object Acceptable: Consequence {
     override fun status() = SUCCESS
+    override fun clone() = this
 }
 
 class RejectionIssue(private val reason: String):
@@ -38,6 +40,8 @@ class RejectionIssue(private val reason: String):
     override val issueType = RejectionIssueType
 
     override fun status() = PROBLEMS
+
+    override fun clone() = this
 
     @Suppress("UNCHECKED_CAST")
     override fun <I : Issue<I>> toDto() =
@@ -63,6 +67,8 @@ class MissingIssue(private val reason: String):
     override val issueType = MissingIssueType
 
     override fun status() = PROBLEMS
+
+    override fun clone() = this
 
     @Suppress("UNCHECKED_CAST")
     override fun <I : Issue<I>> toDto() =

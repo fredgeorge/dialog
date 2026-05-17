@@ -6,8 +6,6 @@
 
 package com.nrkei.project.dialog.questions
 
-import com.nrkei.project.context.StringCodec
-import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
@@ -15,12 +13,11 @@ import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
 
 // Understands a string-based answer to a Question
-class TextQuestion(label: String, private val minLength: Int = 1) : Question {
+class TextQuestion(private val label: String, private val minLength: Int = 1) : Question {
     init {
         require(minLength in 1..100) { "Minimum length of $minLength is not valid for TextQuestion $label" }
     }
 
-    val label = label(label, StringCodec)
     override val possibleResults = listOf(SUFFICIENT, TOO_SHORT)
     override val consequences = QuestionConsequences(possibleResults)
     private var result: Result? = null
@@ -37,6 +34,10 @@ class TextQuestion(label: String, private val minLength: Int = 1) : Question {
     override fun consequence() = result?.let { consequences[it] }
 
     override fun isAnswered() = result != null
+
+    override fun clone() = YesNoQuestion(label).also { question ->
+        question.consequences.cloneFrom(this.consequences)
+    }
 
     enum class TextResult : Result { TOO_SHORT, SUFFICIENT }
 }
