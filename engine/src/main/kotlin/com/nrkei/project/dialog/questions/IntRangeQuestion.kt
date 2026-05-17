@@ -7,7 +7,6 @@
 package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.dialog.model.Question
-import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeResult
 import kotlin.reflect.KClass
@@ -18,29 +17,24 @@ class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Qu
 
     companion object {
         fun positiveInt(label: String) =
-            IntRangeQuestion<PositiveIntRange>(label, PositiveIntRange::class)
+            IntRangeQuestion(label, PositiveIntRange::class)
 
         fun zeroOrMoreInt(label: String) =
-            IntRangeQuestion<NonNegativeIntRange>(label, NonNegativeIntRange::class)
+            IntRangeQuestion(label, NonNegativeIntRange::class)
     }
 
-    override val possibleResults: List<Result> = valuesEnum.java.enumConstants.toList()
-    override val consequences = QuestionConsequences(possibleResults)
-    private var result: Result? = null
+    override val possibleResults: List<IntRangeResult> = valuesEnum.java.enumConstants.toList()
+    private var result: IntRangeResult? = null
 
     override fun answer(answer: Any) {
         require(answer is Int)
         { "Invalid answer of $answer for question $label" }
-        this.result = possibleResults.first { (it as IntRangeResult).inRange(answer) }
+        this.result = possibleResults.first { it.inRange(answer) }
     }
 
-    override fun consequence() = result?.let { consequences[it] }
+    override fun result() = result
 
-    override fun isAnswered() = result != null
-
-    override fun clone() = YesNoQuestion(label).also { question ->
-        question.consequences.cloneFrom(this.consequences)
-    }
+    override fun clone() = YesNoQuestion(label)
 
     interface IntRangeResult : Result {
         val minimum: Int

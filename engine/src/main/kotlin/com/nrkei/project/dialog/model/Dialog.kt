@@ -9,26 +9,14 @@ package com.nrkei.project.dialog.model
 import com.nrkei.project.dialog.model.DialogStatus.*
 
 // Purpose: Understands a series of questions to satisfy a need
-class Dialog internal constructor(private val questions: List<Question>) : Question {
-    override val possibleResults = emptyList<Result>() // n/a
-    override val consequences = QuestionConsequences(possibleResults)
-
-    override fun answer(answer: Any) {
-        throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
-    }
-
-    override fun consequence() = null
-
-    override fun isAnswered(): Boolean {
-        throw IllegalArgumentException("Only Questions can be answered; this is a Dialog")
-    }
+class Dialog internal constructor(private val questionConsequences: List<QuestionConsequences>) : Consequence{
 
     override fun nextQuestionOrNull(): Question? {
-        questions.forEach { it.nextQuestionOrNull()?.also { return it } }
+        questionConsequences.forEach { it.nextQuestionOrNull()?.also { return it } }
         return null
     }
 
-    override fun status() = questions
+    override fun status() = questionConsequences
         .map { it.status() }
         .let { statuses: List<DialogStatus> ->
             when {
@@ -42,5 +30,5 @@ class Dialog internal constructor(private val questions: List<Question>) : Quest
             }
         }
 
-    override fun clone() = Dialog(this.questions.map { it.clone() as Question} )
+    override fun clone() = Dialog(this.questionConsequences.map { it.clone()} )
 }

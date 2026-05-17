@@ -7,7 +7,6 @@
 package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.dialog.model.Question
-import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeResult
 import kotlin.reflect.KClass
@@ -18,35 +17,30 @@ class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) :
 
     companion object {
         fun positiveDouble(label: String) =
-            DoubleRangeQuestion<PositiveDoubleRange>(label, PositiveDoubleRange::class)
+            DoubleRangeQuestion(label, PositiveDoubleRange::class)
 
         fun zeroOrMoreDouble(label: String) =
-            DoubleRangeQuestion<NonNegativeDoubleRange>(label, NonNegativeDoubleRange::class)
+            DoubleRangeQuestion(label, NonNegativeDoubleRange::class)
     }
 
-    override val possibleResults: List<Result> = valuesEnum.java.enumConstants.toList()
-    override val consequences = QuestionConsequences(possibleResults)
+    override val possibleResults: List<DoubleRangeResult> = valuesEnum.java.enumConstants.toList()
     private var result: Result? = null
 
     override fun answer(answer: Any) {
         require(answer is Number)
         { "Invalid answer of $answer for question $label" }
         this.result = possibleResults
-            .first { (it as DoubleRangeResult).inRange(answer.toDouble()) }
+            .first { it.inRange(answer.toDouble()) }
     }
 
-    override fun consequence() = result?.let { consequences[it] }
+    override fun result() = result
 
-    override fun isAnswered() = result != null
-
-    override fun clone() = YesNoQuestion(label).also { question ->
-        question.consequences.cloneFrom(this.consequences)
-    }
+    override fun clone() = YesNoQuestion(label)
 
     interface DoubleRangeResult : Result {
         val minimum: Double
         val maximum: Double
-        fun inRange(value: Double) = value >= minimum && value < maximum
+        fun inRange(value: Double) = value in minimum..<maximum
     }
 
     enum class NonNegativeDoubleRange(override val minimum: Double, override val maximum: Double) : DoubleRangeResult {

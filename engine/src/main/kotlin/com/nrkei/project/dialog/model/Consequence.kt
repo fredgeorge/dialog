@@ -22,7 +22,7 @@ sealed interface Consequence {
         internal val dialogEngine = IssueParty("Dialog Engine")
     }
     fun status(): DialogStatus
-    fun nextQuestionOrNull(): Question? = null
+    fun nextQuestionOrNull(): Question?
     fun clone(): Consequence
 }
 
@@ -30,6 +30,7 @@ sealed interface Consequence {
 object Acceptable: Consequence {
     override fun status() = SUCCESS
     override fun clone() = this
+    override fun nextQuestionOrNull() = null
 }
 
 // Purpose: Understands that a problem has arisen that inhibits successful resolution
@@ -42,6 +43,8 @@ class RejectionIssue(private val reason: String):
     override val issueType = RejectionIssueType
 
     override fun status() = PROBLEMS
+
+    override fun nextQuestionOrNull() = null
 
     override fun clone() = this
 
@@ -71,7 +74,14 @@ class MissingIssue(private val reason: String):
 
     override fun status() = PROBLEMS
 
+    override fun nextQuestionOrNull() = null
+
     override fun clone() = this
+
+    override fun equals(other: Any?) =
+        super.equals(other) && other is MissingIssue && this.reason == other.reason
+
+    override fun hashCode() = reason.hashCode()
 
     @Suppress("UNCHECKED_CAST")
     override fun <I : Issue<I>> toDto() =

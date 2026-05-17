@@ -6,31 +6,13 @@
 
 package com.nrkei.project.dialog.model
 
-import com.nrkei.project.dialog.model.DialogStatus.*
-
 // PurposeUnderstands solicitation of something specific
-interface Question : Consequence {
+interface Question {
     val possibleResults: List<Result>
-    val consequences: QuestionConsequences
 
     fun answer(answer: Any)
 
-    fun consequence(): Consequence?
+    fun result(): Result?
 
-    fun isAnswered(): Boolean
-
-    override fun status(): DialogStatus {
-        return consequence()?.let {
-            when (it.status()) {
-                NOT_STARTED, IN_PROGRESS -> IN_PROGRESS
-                SUCCESS -> SUCCESS
-                PROBLEMS -> PROBLEMS
-            }
-        } ?: NOT_STARTED
-    }
-
-    override fun nextQuestionOrNull() : Question? {
-        if (!isAnswered()) return this
-        return consequence()?.nextQuestionOrNull()
-    }
+    fun clone(): Question
 }

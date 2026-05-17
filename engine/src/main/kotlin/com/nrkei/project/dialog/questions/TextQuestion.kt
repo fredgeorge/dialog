@@ -7,7 +7,6 @@
 package com.nrkei.project.dialog.questions
 
 import com.nrkei.project.dialog.model.Question
-import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
@@ -19,8 +18,7 @@ class TextQuestion(private val label: String, private val minLength: Int = 1) : 
     }
 
     override val possibleResults = listOf(SUFFICIENT, TOO_SHORT)
-    override val consequences = QuestionConsequences(possibleResults)
-    private var result: Result? = null
+    private var result: TextResult? = null
 
     override fun answer(answer: Any) {
         if (answer !is String) {
@@ -31,13 +29,9 @@ class TextQuestion(private val label: String, private val minLength: Int = 1) : 
         this.result = if (answer.length < minLength) TOO_SHORT else SUFFICIENT
     }
 
-    override fun consequence() = result?.let { consequences[it] }
+    override fun result() = result
 
-    override fun isAnswered() = result != null
-
-    override fun clone() = YesNoQuestion(label).also { question ->
-        question.consequences.cloneFrom(this.consequences)
-    }
+    override fun clone() = YesNoQuestion(label)
 
     enum class TextResult : Result { TOO_SHORT, SUFFICIENT }
 }

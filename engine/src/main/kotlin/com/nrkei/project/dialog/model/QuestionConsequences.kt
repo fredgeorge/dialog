@@ -6,10 +6,14 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
+import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
+
 // Purpose: Understands the outcome (action) for each Result of a Question
 class QuestionConsequences internal constructor(
+    private val question: Question,
     private val allowedResults: List<Result>
-) {
+) : Consequence {
     private val consequences = mutableMapOf<Result, Consequence>()
 
     internal operator fun set(result: Result, consequence: Consequence) {
@@ -32,7 +36,24 @@ class QuestionConsequences internal constructor(
         require(allowedResults.size == consequences.size)
         { "All possible Answers must be specified" }
 
-    internal fun cloneFrom(other: QuestionConsequences) {
-        other.consequences.forEach { (result, consequence) ->  this.consequences[result] = consequence.clone() }
+    override fun status() = question.result().let { result ->
+        when (result) {
+            null -> NOT_STARTED
+            else -> this[result].status().let { status ->
+                if (status == NOT_STARTED) IN_PROGRESS else status
+            }
+        }
     }
+
+    override fun nextQuestionOrNull() =
+        question.result().let { result ->
+            when (result) {
+                null -> question
+                else -> this[result].nextQuestionOrNull()
+            }
+        }
+
+
+    override fun clone(): QuestionConsequences = QuestionConsequences(question.clone(), allowedResults)
+        .also { it.consequences.putAll(consequences.mapValues { it.value.clone() }) }
 }

@@ -6,10 +6,7 @@
 
 package com.nrkei.project.dialog.dsl
 
-import com.nrkei.project.dialog.model.Consequence
-import com.nrkei.project.dialog.model.Dialog
-import com.nrkei.project.dialog.model.Question
-import com.nrkei.project.dialog.model.Result
+import com.nrkei.project.dialog.model.*
 
 // DSL syntax to specify a series of questions
 fun dialog(block: DialogBuilder.() -> Unit): Dialog =
@@ -20,48 +17,41 @@ fun dialog(block: DialogBuilder.() -> Unit): Dialog =
 
 // Purpose: Understands defining a sequence of questions and their consequences
 class DialogBuilder internal constructor() {
-    private val questions = mutableListOf<Question>()
+    private val questionConsequences = mutableListOf<QuestionConsequences>()
 
     // Syntax sugar
-    val first get() = this.also { require(questions.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
-    val then get() = this.also { require(questions.isNotEmpty()) { "'first' keyword required for the first question in a dialog" } }
+    val first get() = this.also { require(questionConsequences.isEmpty()) { "'then' keyword required for each question after the first in a dialog" } }
+    val then get() = this.also { require(questionConsequences.isNotEmpty()) { "'first' keyword required for the first question in a dialog" } }
 
-    infix fun ask(question: Question) = QuestionBuilder(question).also { questions.add(question) }
+    infix fun ask(question: Question) =
+        QuestionBuilder(question).also { questionConsequences.add(it.result()) }
 
-    internal fun result() = Dialog(questions)
-
-    inner class QuestionBuilder internal constructor(private val question: Question) {
-
-        infix fun answers(block: ConsequencesBuilder.() -> Unit) =
-            this@DialogBuilder.also {
-                ConsequencesBuilder(question).also { builder ->
-                    builder.block()
-                }
-                question.consequences.validate()
-            }
-    }
+    internal fun result() = Dialog(questionConsequences)
 }
 
-class ConsequencesBuilder internal constructor(private val question: Question) {
+class QuestionBuilder internal constructor(question: Question) {
+    private val questionConsequences = QuestionConsequences(question, question.possibleResults)
+
+    infix fun answers(block: ConsequencesBuilder.() -> Unit) =
+        ConsequencesBuilder(questionConsequences).block()
+            .also {
+                questionConsequences.validate()
+            }
+
+    internal fun result() = questionConsequences
+}
+
+class ConsequencesBuilder internal constructor(private val questionConsequences: QuestionConsequences) {
     private lateinit var result: Result
 
     operator fun Result.unaryMinus() = this@ConsequencesBuilder.also { result = this }
 
     infix fun conclude(consequence: Consequence) {
-        question.consequences[result] = consequence
+        questionConsequences[result] = consequence
     }
 
-    infix fun ask(innerQuestion: Question) = QuestionBuilder(innerQuestion).also {
-        question.consequences[result] = innerQuestion
-    }
-
-    inner class QuestionBuilder internal constructor(private val question: Question) {
-
-        infix fun answers(block: ConsequencesBuilder.() -> Unit) = this@ConsequencesBuilder.also {
-            ConsequencesBuilder(question).also { builder ->
-                builder.block()
-            }
-            question.consequences.validate()
+    infix fun ask(innerQuestion: Question) =
+        QuestionBuilder(innerQuestion).also {
+            questionConsequences[result] = it.result()
         }
-    }
 }
