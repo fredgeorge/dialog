@@ -6,7 +6,7 @@
 
 package com.nrkei.project.dialog.model
 
-// Understands a specific response to a Question
+// Purpose: Understands a specific conclusion given an answer to a Question
 interface Result {
     val name: String
 }

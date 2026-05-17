@@ -16,6 +16,7 @@ import com.nrkei.project.template.util.OtherIncomeDialog.otherIncomeIssue
 import com.nrkei.project.template.util.SalaryDialog.salaryDialog
 import com.nrkei.project.template.util.SalaryDialog.salaryIssue
 
+// Purpose: Understands all the possible Dialogs with a common purpose
 object TestConversation {
     var testConversation = Conversation(
         salaryIssue to salaryDialog,

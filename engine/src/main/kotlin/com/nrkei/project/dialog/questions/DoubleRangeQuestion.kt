@@ -12,7 +12,7 @@ import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeResult
 import kotlin.reflect.KClass
 
-// Understands a Question with Answer ranges expressed as Double values
+// Purpose: Understands a Question with Answer ranges expressed as Double values
 class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Question
         where R : Enum<R>, R : DoubleRangeResult {
 

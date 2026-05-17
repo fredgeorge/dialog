@@ -12,7 +12,7 @@ import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
 
-// Understands a string-based answer to a Question
+// Purpose: Understands a string-based answer to a Question
 class TextQuestion(private val label: String, private val minLength: Int = 1) : Question {
     init {
         require(minLength in 1..100) { "Minimum length of $minLength is not valid for TextQuestion $label" }

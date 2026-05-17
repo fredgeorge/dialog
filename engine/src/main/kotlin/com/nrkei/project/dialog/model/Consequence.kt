@@ -16,7 +16,7 @@ import com.nrkei.project.issue.IssueParty
 import com.nrkei.project.issue.IssueType
 import kotlinx.serialization.Serializable
 
-// Understands next action (or no next action) for an Answer
+// Purpose: Understands next action (or no next action) for a Result of a Question
 sealed interface Consequence {
     companion object {
         internal val dialogEngine = IssueParty("Dialog Engine")
@@ -26,11 +26,13 @@ sealed interface Consequence {
     fun clone(): Consequence
 }
 
+// Purpose: Understands that no further action is required
 object Acceptable: Consequence {
     override fun status() = SUCCESS
     override fun clone() = this
 }
 
+// Purpose: Understands that a problem has arisen that inhibits successful resolution
 class RejectionIssue(private val reason: String):
     Consequence,
     Issue<RejectionIssue>(dialogEngine, OPEN){
@@ -58,6 +60,7 @@ class RejectionIssue(private val reason: String):
     ) : IssueDto<RejectionIssue>
 }
 
+// Purpose: Understands that more information is required to reach successful resolution
 class MissingIssue(private val reason: String):
     Consequence,
     Issue<MissingIssue>(dialogEngine, OPEN){

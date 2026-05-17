@@ -10,7 +10,7 @@ import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.QuestionConsequences
 import com.nrkei.project.dialog.model.Result
 
-// Understands a single boolean solicitation
+// Purpose: Understands a single boolean solicitation
 class YesNoQuestion(private val label: String) : Question {
     override val possibleResults: List<Result> = listOf(YesNoChoice.YES, YesNoChoice.NO)
     override val consequences = QuestionConsequences(possibleResults)

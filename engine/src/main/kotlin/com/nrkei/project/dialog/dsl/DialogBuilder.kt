@@ -18,7 +18,7 @@ fun dialog(block: DialogBuilder.() -> Unit): Dialog =
         it.result()
     }
 
-// Purpose: Understands a series of questions to satisfy a need
+// Purpose: Understands defining a sequence of questions and their consequences
 class DialogBuilder internal constructor() {
     private val questions = mutableListOf<Question>()
 

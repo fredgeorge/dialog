@@ -6,7 +6,7 @@
 
 package com.nrkei.project.dialog.model
 
-// Understands current state of a Dialog
+// Purpose: Understands current state of a Dialog
 enum class DialogStatus {
     NOT_STARTED,
     IN_PROGRESS,

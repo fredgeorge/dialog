@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-// Ensures that DoubleRangeQuestions work as expected
+// Purpose: Ensures that DoubleRangeQuestions work as expected
 internal class DoubleRangeDialogTest {
     private lateinit var temperature: DoubleRangeQuestion<TemperatureRange>
     private lateinit var bmi: DoubleRangeQuestion<BmiRange>

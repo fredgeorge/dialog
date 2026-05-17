@@ -12,7 +12,7 @@ import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeResult
 import kotlin.reflect.KClass
 
-// Understands a Question with Answer ranges
+// Purpose: Understands a Question with Answer integer ranges
 class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Question
         where R : Enum<R>, R : IntRangeResult {
 

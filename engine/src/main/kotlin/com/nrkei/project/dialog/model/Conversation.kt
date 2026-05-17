@@ -8,10 +8,10 @@ package com.nrkei.project.dialog.model
 
 import java.util.*
 
-// Purpose: Understands which Dialog should be invoked in which circumstance
+// Purpose: Understands Dialogs that should be invoked in a particular circumstance
 class Conversation private constructor(
     private val dialogs: Map<MissingIssue, Dialog>,
-    private val conversationId: UUID = UUID.randomUUID()
+    @Suppress("unused") private val conversationId: UUID = UUID.randomUUID()
 ) {
 
     constructor(firstDialog: Pair<MissingIssue, Dialog>, vararg dialogs: Pair<MissingIssue, Dialog>) :

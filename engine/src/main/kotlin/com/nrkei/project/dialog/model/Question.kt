@@ -8,7 +8,7 @@ package com.nrkei.project.dialog.model
 
 import com.nrkei.project.dialog.model.DialogStatus.*
 
-// Understands solicitation of information
+// PurposeUnderstands solicitation of something specific
 interface Question : Consequence {
     val possibleResults: List<Result>
     val consequences: QuestionConsequences

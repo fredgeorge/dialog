@@ -6,8 +6,7 @@
 
 package com.nrkei.project.dialog.model
 
-// Manages consequences for a Question, ensuring all possible answers are covered
-// and each answer is set only once. The internal map does not store null values.
+// Purpose: Understands the outcome (action) for each Result of a Question
 class QuestionConsequences internal constructor(
     private val allowedResults: List<Result>
 ) {
