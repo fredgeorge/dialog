@@ -109,7 +109,7 @@ Note: This implementation was set up to use:
 - IntelliJ 2026.1.1 (Ultimate Edition)
 - Kotlin 2.3.21 (targeting Java 25 bytecode)
 - Java SDK 25 LTS (Oracle)
-- Gradle 9.5.0
+- Gradle 9.5.1
 - JUnit Jupiter 6.0.3 for testing
 - Kotlin-serialization 1.11.0 for JSON
 

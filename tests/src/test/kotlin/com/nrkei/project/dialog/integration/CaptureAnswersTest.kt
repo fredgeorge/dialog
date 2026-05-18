@@ -14,6 +14,7 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 import com.nrkei.project.dialog.visitors.ExtractValues
+import com.nrkei.project.dialog.visitors.RestoreValues
 import com.nrkei.project.template.util.CoApplicantDialog.HAVE_CO_APPLICANT_ID
 import com.nrkei.project.template.util.CoApplicantDialog.HAVE_CO_APPLICANT_QUESTION
 import com.nrkei.project.template.util.CoApplicantDialog.HAVE_SPOUSE_QUESTION
@@ -27,7 +28,7 @@ import org.junit.jupiter.api.Test
 internal class CaptureAnswersTest {
 
     @Test
-    fun `Extract yes-no answers`() {
+    fun `Extract answers`() {
         coApplicantDialog.also { dialog ->
             dialog.nextQuestionOrNull()?.answer(YES) // Have spouse
             dialog.nextQuestionOrNull()?.answer(NO) // Have no co-applicant
@@ -48,6 +49,23 @@ internal class CaptureAnswersTest {
                 dialog.nextQuestionOrNull()?.answer("12345678901")
                 assertNull(dialog.nextQuestionOrNull())
                 assertEquals(PROBLEMS, dialog.status())
+            }
+        }
+    }
+
+    @Test
+    fun `Restore answers`() {
+        Context().also { context ->
+            coApplicantDialog.clone().also { dialog ->
+                dialog.nextQuestionOrNull()?.answer(NO) // Have spouse
+                dialog.nextQuestionOrNull()?.answer(YES) // Have no co-applicant
+                ExtractValues(dialog, context)
+                assertEquals(HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
+            }
+            coApplicantDialog.clone().also { dialog ->
+                assertEquals(HAVE_SPOUSE_QUESTION, dialog.nextQuestionOrNull()?.label)
+                RestoreValues(dialog, context)
+                assertEquals(HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
             }
         }
     }

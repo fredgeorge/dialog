@@ -12,7 +12,7 @@ A Kotlin dialog framework for gathering and refining information through structu
 |-----------------------|-------------------------------|
 | Kotlin                | 2.3.21                        |
 | Java                  | 25                            |
-| Gradle                | 9.5.0                         |
+| Gradle                | 9.5.1                         |
 | JUnit Jupiter         | 6.0.3                         |
 | kotlinx-serialization | 1.11.0                         |
 | Target IDE            | IntelliJ IDEA 2026.1 Ultimate |
@@ -35,7 +35,7 @@ dialog/
 ├── gradle.properties         # javaVersion=25, config cache, Kotlin style
 ├── gradle/
 │   ├── libs.versions.toml    # Version catalog (single source of truth for versions)
-│   └── wrapper/              # Gradle 9.5.0
+│   └── wrapper/              # Gradle 9.5.1
 ├── engine/                   # Core domain: Dialog, Question, Answer, Consequence, Party, Need, Conversation, Issue
 ├── persistence/              # JSON/Base64 encoding utilities for serialization
 ├── test_support/             # Shared test fixtures (sample Dialogs, Answers, populated Contexts)
