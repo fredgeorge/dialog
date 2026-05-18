@@ -19,16 +19,19 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
 // Purpose: Understand if co-applicant exists/needed for Loan
 object CoApplicantDialog {
-    private val haveSpouse = YesNoQuestion("Have Spouse?")
-    private val haveCoApplicant = YesNoQuestion("Have Co-applicant?")
-    private val haveSpouseCoApplicant = YesNoQuestion("Have Spouse Co-applicant?")
-    private val spouseId = TextQuestion("Spouse ID", 11)
-    private val coApplicantId = TextQuestion("CoApplicant ID", 11)
+
+    const val HAVE_SPOUSE_QUESTION = "Have Spouse?"
+    const val HAVE_CO_APPLICANT_QUESTION = "Have Co-applicant?"
+    const val HAVE_CO_APPLICANT_ID = "CoApplicant ID"
+
+    private val haveSpouse = YesNoQuestion(HAVE_SPOUSE_QUESTION)
+    private val haveCoApplicant = YesNoQuestion(HAVE_CO_APPLICANT_QUESTION)
+    private val coApplicantId = TextQuestion(HAVE_CO_APPLICANT_ID, 11)
 
     val coApplicantDialog = dialog {
         first ask haveSpouse answers {
-            -YES ask haveSpouseCoApplicant answers {
-                -YES ask spouseId answers {
+            -YES ask haveCoApplicant answers {
+                -YES ask coApplicantId answers {
                     -SUFFICIENT conclude missing("Need co-applicant approval")
                     -TOO_SHORT conclude problem("National ID should be 11 digits")
                 }

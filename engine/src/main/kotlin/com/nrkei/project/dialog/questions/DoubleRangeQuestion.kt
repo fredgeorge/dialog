@@ -6,6 +6,10 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.context.Context
+import com.nrkei.project.context.ContextLabel
+import com.nrkei.project.context.DoubleCodec
+import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
@@ -13,7 +17,11 @@ import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeResult
 import kotlin.reflect.KClass
 
 // Purpose: Understands a Question with Answer ranges expressed as Double values
-class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Question
+class DoubleRangeQuestion<R>(
+    override val label: String,
+    private val valuesEnum: KClass<R>,
+    private val contextLabel: ContextLabel<Double> = label(label, DoubleCodec)
+) : Question
         where R : Enum<R>, R : DoubleRangeResult {
 
     companion object {
@@ -23,6 +31,9 @@ class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) :
         fun zeroOrMoreDouble(label: String) =
             DoubleRangeQuestion(label, NonNegativeDoubleRange::class)
     }
+
+    constructor(label: String, valuesEnum: KClass<R>)
+            : this(label, valuesEnum, label(label, DoubleCodec))
 
     override val possibleResults: List<DoubleRangeResult> = valuesEnum.java.enumConstants.toList()
     private var answer: Double? = null
@@ -37,10 +48,15 @@ class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) :
 
     override fun result() = result
 
-    override fun clone() = YesNoQuestion(label)
+    override fun clone() = DoubleRangeQuestion(label, valuesEnum, contextLabel)
+
 
     override fun accept(visitor: DialogVisitor) {
         visitor.visit(this, label, possibleResults, result, answer)
+    }
+
+    override fun save(context: Context) {
+        answer?.also { context[contextLabel] = it }
     }
 
     interface DoubleRangeResult : Result {

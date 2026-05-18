@@ -7,6 +7,7 @@
 package com.nrkei.project.dialog.model
 
 import com.nrkei.project.dialog.model.DialogStatus.*
+import com.nrkei.project.dialog.visitors.QuestionFinder
 
 // Purpose: Understands a series of questions to satisfy a need
 class Dialog internal constructor(private val questionConsequences: List<QuestionConsequences>) : Consequence{
@@ -37,4 +38,7 @@ class Dialog internal constructor(private val questionConsequences: List<Questio
         questionConsequences.forEach { it.accept(visitor) }
         visitor.postVisit(this, questionConsequences)
     }
+
+    fun question(label: String) = QuestionFinder(this, label).result()
+        ?: throw IllegalArgumentException("Question with label '$label' not found in dialog")
 }

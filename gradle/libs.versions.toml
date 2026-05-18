@@ -6,7 +6,7 @@
 junit = "6.0.3"
 kotlin = "2.3.21"
 serialization = "1.11.0"
-context = "1.2.4"
+context = "1.2.5"
 issue = "1.1.12"
 
 [plugins]

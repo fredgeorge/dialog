@@ -49,7 +49,7 @@ internal class VisitorTest {
         }
 
         override fun visit(
-            qustion: Question,
+            question: Question,
             label: String,
             possibleResults: List<Result>,
             result: Result?,

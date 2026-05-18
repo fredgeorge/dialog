@@ -15,7 +15,7 @@ interface DialogVisitor {
     fun preVisit(result: Result, consequence: Consequence) { }
     fun postVisit(result: Result, consequence: Consequence) { }
     fun visit(
-        qustion: Question,
+        question: Question,
         label: String,
         possibleResults: List<Result>,
         result: Result?,

@@ -6,6 +6,10 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.context.Context
+import com.nrkei.project.context.ContextLabel
+import com.nrkei.project.context.IntCodec
+import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
@@ -13,7 +17,11 @@ import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeResult
 import kotlin.reflect.KClass
 
 // Purpose: Understands a Question with Answer integer ranges
-class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Question
+class IntRangeQuestion<R> private constructor(
+    override val label: String,
+    private val valuesEnum: KClass<R>,
+    private val contextLabel: ContextLabel<Int>
+) : Question
         where R : Enum<R>, R : IntRangeResult {
 
     companion object {
@@ -23,6 +31,9 @@ class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Qu
         fun zeroOrMoreInt(label: String) =
             IntRangeQuestion(label, NonNegativeIntRange::class)
     }
+
+    constructor(label: String, valuesEnum: KClass<R>)
+            : this(label, valuesEnum, label(label, IntCodec))
 
     override val possibleResults: List<IntRangeResult> = valuesEnum.java.enumConstants.toList()
     private var answer: Int? = null
@@ -37,10 +48,14 @@ class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Qu
 
     override fun result() = result
 
-    override fun clone() = YesNoQuestion(label)
+    override fun clone() = IntRangeQuestion(label, valuesEnum, contextLabel)
 
     override fun accept(visitor: DialogVisitor) {
         visitor.visit(this, label, possibleResults, result, answer)
+    }
+
+    override fun save(context: Context) {
+        answer?.also { context[contextLabel] = it }
     }
 
     interface IntRangeResult : Result {

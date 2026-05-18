@@ -6,6 +6,10 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.context.Context
+import com.nrkei.project.context.ContextLabel
+import com.nrkei.project.context.StringCodec
+import com.nrkei.project.context.label
 import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
@@ -13,10 +17,17 @@ import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
 
 // Purpose: Understands a string-based answer to a Question
-class TextQuestion(private val label: String, private val minLength: Int = 1) : Question {
+class TextQuestion private constructor(
+    override val label: String,
+    private val minLength: Int,
+    private val contextLabel: ContextLabel<String>
+) : Question {
+
     init {
         require(minLength in 1..100) { "Minimum length of $minLength is not valid for TextQuestion $label" }
     }
+
+    constructor(label: String, minLength: Int = 1) : this(label, minLength, label(label, StringCodec))
 
     override val possibleResults = listOf(SUFFICIENT, TOO_SHORT)
     private var answer: String? = null
@@ -34,10 +45,14 @@ class TextQuestion(private val label: String, private val minLength: Int = 1) : 
 
     override fun result() = result
 
-    override fun clone() = YesNoQuestion(label)
+    override fun clone() = TextQuestion(label, minLength, contextLabel)
 
     override fun accept(visitor: DialogVisitor) {
         visitor.visit(this, label, possibleResults, result, answer)
+    }
+
+    override fun save(context: Context) {
+        answer?.also { context[contextLabel] = it }
     }
 
     enum class TextResult : Result { TOO_SHORT, SUFFICIENT }
