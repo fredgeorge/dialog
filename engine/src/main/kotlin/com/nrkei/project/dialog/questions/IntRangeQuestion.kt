@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.IntRangeQuestion.IntRangeResult
@@ -24,17 +25,23 @@ class IntRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) : Qu
     }
 
     override val possibleResults: List<IntRangeResult> = valuesEnum.java.enumConstants.toList()
+    private var answer: Int? = null
     private var result: IntRangeResult? = null
 
     override fun answer(answer: Any) {
         require(answer is Int)
         { "Invalid answer of $answer for question $label" }
+        this.answer = answer
         this.result = possibleResults.first { it.inRange(answer) }
     }
 
     override fun result() = result
 
     override fun clone() = YesNoQuestion(label)
+
+    override fun accept(visitor: DialogVisitor) {
+        visitor.visit(this, label, possibleResults, result, answer)
+    }
 
     interface IntRangeResult : Result {
         val minimum: Int

@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
@@ -18,6 +19,7 @@ class TextQuestion(private val label: String, private val minLength: Int = 1) : 
     }
 
     override val possibleResults = listOf(SUFFICIENT, TOO_SHORT)
+    private var answer: String? = null
     private var result: TextResult? = null
 
     override fun answer(answer: Any) {
@@ -26,12 +28,17 @@ class TextQuestion(private val label: String, private val minLength: Int = 1) : 
                 "Invalid answer type: expected String, got ${answer::class.simpleName} for question $label"
             )
         }
+        this.answer = answer
         this.result = if (answer.length < minLength) TOO_SHORT else SUFFICIENT
     }
 
     override fun result() = result
 
     override fun clone() = YesNoQuestion(label)
+
+    override fun accept(visitor: DialogVisitor) {
+        visitor.visit(this, label, possibleResults, result, answer)
+    }
 
     enum class TextResult : Result { TOO_SHORT, SUFFICIENT }
 }

@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
 
@@ -25,6 +26,10 @@ class YesNoQuestion(private val label: String) : Question {
     override fun clone() = YesNoQuestion(label)
 
     override fun toString() = "${this.javaClass.simpleName} asking $label"
+
+    override fun accept(visitor: DialogVisitor) {
+        visitor.visit(this, label, possibleResults, result, result)
+    }
 
     enum class YesNoChoice : Result { YES, NO }
 }

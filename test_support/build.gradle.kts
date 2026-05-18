@@ -7,4 +7,5 @@
 dependencies {
     implementation(project(":engine"))
     implementation(libs.issue.engine)
+    implementation(kotlin("test"))
 }

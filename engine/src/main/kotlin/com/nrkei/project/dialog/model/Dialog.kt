@@ -31,4 +31,10 @@ class Dialog internal constructor(private val questionConsequences: List<Questio
         }
 
     override fun clone() = Dialog(this.questionConsequences.map { it.clone()} )
+
+    override fun accept(visitor: DialogVisitor) {
+        visitor.preVisit(this, questionConsequences)
+        questionConsequences.forEach { it.accept(visitor) }
+        visitor.postVisit(this, questionConsequences)
+    }
 }

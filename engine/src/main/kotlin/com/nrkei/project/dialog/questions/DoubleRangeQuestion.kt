@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.questions
 
+import com.nrkei.project.dialog.model.DialogVisitor
 import com.nrkei.project.dialog.model.Question
 import com.nrkei.project.dialog.model.Result
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.DoubleRangeResult
@@ -24,18 +25,23 @@ class DoubleRangeQuestion<R>(private val label: String, valuesEnum: KClass<R>) :
     }
 
     override val possibleResults: List<DoubleRangeResult> = valuesEnum.java.enumConstants.toList()
+    private var answer: Double? = null
     private var result: Result? = null
 
     override fun answer(answer: Any) {
         require(answer is Number)
         { "Invalid answer of $answer for question $label" }
-        this.result = possibleResults
-            .first { it.inRange(answer.toDouble()) }
+        this.answer = answer.toDouble()
+        this.result = possibleResults.first { it.inRange(answer.toDouble()) }
     }
 
     override fun result() = result
 
     override fun clone() = YesNoQuestion(label)
+
+    override fun accept(visitor: DialogVisitor) {
+        visitor.visit(this, label, possibleResults, result, answer)
+    }
 
     interface DoubleRangeResult : Result {
         val minimum: Double

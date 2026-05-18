@@ -53,7 +53,17 @@ class QuestionConsequences internal constructor(
             }
         }
 
-
     override fun clone(): QuestionConsequences = QuestionConsequences(question.clone(), allowedResults)
         .also { it.consequences.putAll(consequences.mapValues { it.value.clone() }) }
+
+    override fun accept(visitor: DialogVisitor) {
+        visitor.preVisit(this, question)
+        question.accept(visitor)
+        consequences.forEach { result, consequence ->
+            visitor.preVisit(result, consequence)
+            consequence.accept(visitor)
+            visitor.postVisit(result, consequence)
+        }
+        visitor.postVisit(this, question)
+    }
 }

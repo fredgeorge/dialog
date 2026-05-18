@@ -15,4 +15,6 @@ interface Question {
     fun result(): Result?
 
     fun clone(): Question
+
+    fun accept(visitor: DialogVisitor)
 }

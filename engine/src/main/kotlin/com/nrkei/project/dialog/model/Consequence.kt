@@ -24,6 +24,7 @@ sealed interface Consequence {
     fun status(): DialogStatus
     fun nextQuestionOrNull(): Question?
     fun clone(): Consequence
+    fun accept(visitor: DialogVisitor)
 }
 
 // Purpose: Understands that no further action is required
@@ -31,6 +32,7 @@ object Acceptable: Consequence {
     override fun status() = SUCCESS
     override fun clone() = this
     override fun nextQuestionOrNull() = null
+    override fun accept(visitor: DialogVisitor) = visitor.visit(this)
 }
 
 // Purpose: Understands that a problem has arisen that inhibits successful resolution
@@ -47,6 +49,8 @@ class RejectionIssue(private val reason: String):
     override fun nextQuestionOrNull() = null
 
     override fun clone() = this
+
+    override fun accept(visitor: DialogVisitor) = visitor.visit(this, reason)
 
     @Suppress("UNCHECKED_CAST")
     override fun <I : Issue<I>> toDto() =
@@ -77,6 +81,8 @@ class MissingIssue(private val reason: String):
     override fun nextQuestionOrNull() = null
 
     override fun clone() = this
+
+    override fun accept(visitor: DialogVisitor) = visitor.visit(this, reason)
 
     override fun equals(other: Any?) =
         super.equals(other) && other is MissingIssue && this.reason == other.reason
