@@ -8,6 +8,7 @@ kotlin = "2.3.21"
 serialization = "1.11.0"
 context = "1.2.5"
 issue = "1.1.12"
+lettuce = "7.5.2.RELEASE"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -25,3 +26,5 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+
+lettuce = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }

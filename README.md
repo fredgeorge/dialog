@@ -10,25 +10,28 @@ The __Dialog Model__ represents the solicitation of information
 between a system and target users. Basic concepts are:
 
 - __Question__ – the solicitation regarding a single piece of information
-- __Choice__ – one of the possible answers to a _Question_
-- __Dialog__ – one or more related _Questions_
+- __Answer__ – a possible response to a _Question_
+- __Dialog__ – one or more related _Questions_, posssibly in a hierarchy
 - __Party__ – a target user for a _Dialog_
-- __Answer__ – the current response to a _Question_
-- __Need__ – a requirement for information from a _Party_
-- __Context__ – the current state of the system represented by all the current _Answers_
-- __Conversation__ – a sequence of _Dialogs_ between _Parties_ 
-  and the system for a particular goal
+- __Result__ - given an Answer, Result is the analysis of the Answer.
+- __Consequence__ - the next action to be taken based on the Result
+- __Issue__ – a requirement for information from a _Party_
+- __Context__ – the current state of the system represented 
+  by all the currently selected _Answers_
+- __Conversation__ – an association of _Issues_ to corresponding 
+  _Dialogs_ between _Parties_ and the system for a particular goal
 
-Given a particular _Need_, a _Dialog_ is initiated with a _Party_.
+Given a particular _Issue_, a _Dialog_ is initiated with a _Party_.
 Each _Question_ of a _Dialog_ will be presented to the _Party_. 
-An _Answer_ from the possible _Choices_ determines the next action:
+An _Answer_ from all possible _Answers_ determines the next action,
+which is called a _Consequence_.
 
 - _Success_, indicating a valid response consistent with 
   the overall goal of the _Conversation_
-- _Failure_, usually with specifics on why the _Answer_   
-  was not satisfactory, and inconsistent with the overall goal
-- Progressing to another _Question_
-- Creating another _Need_ to be satisfied, possibly by another _Party_
+- _Failure_, represented by a new _Issue_, usually with 
+  specifics on why the _Answer_   
+  was not satisfactory and inconsistent with the overall goal
+- Asking a subsequent _Question_
 
 A __Context__ component is used to track the _Answers_
 for a _Dialog_. This facilitates the user going back
@@ -38,8 +41,8 @@ _Answer_. The Context also allows suspension of a
 _Dialog_, and being able to resume later.
 
 The system triggers different _Dialogs_ based on its
-needs. Needs will be expressed using the __Issue__ 
-component. Possible _Needs_ would include:
+needs. Needs are expressed using the __Issue__ 
+component. Possible _Issues_ would include:
 
 - _Failure Situation_ indicating that changes or additional  
 information is required for overall success
@@ -66,16 +69,36 @@ needed for Success
 - Templates to generate multiple copies of a Dialog Block 
   to support a Dialog for each item in a collection
 
+### User Experience
+
+The user experience is driven by presenting relevant _Issues_
+to the appropriate _Party_. These _Issues_ could be things 
+deemed unacceptable (aka, wrong) based on analysis of the
+information gathered so far. Or these _Issues_ could be
+missing information that is required for overall success.
+
+We expect that given a list of _Issues_ to be addressed, 
+the _Party_ will select an _Issue_ to address first. The
+selected _Issue_ will drive selection of a _Dialog_, and
+the _Dialog_ will present the _next question_ to the _Party_.
+If some _Answers_ already exist to the _Dialog's Questions_, 
+the next unanswered _Question_ will be presented.
+
+The user can change their mind about a previous _Question_
+as well, and the _Dialog_ will present the relevant next
+_Question_ based on this change.
+
 ### Using the Dialog Model
 
 _Dialogs_ are constructed with a Kotlin DSL. The DSL
-specifies the _Question_, possible _Choices_, and the
+specifies the _Question_, possible _Answers_, and the
 next action associated with each _Answer_ (Success, Failure,
-next _Question_, or new _Need_).
+need for more information, or
+next _Question_).
 
-A _Dialog_ is associated with a particular _Need_ that 
+A _Dialog_ is associated with a particular _Issue_ that 
 can resolve it. A _Party_ may be presented with multiple
-_Dialogs_ if multiple _Needs_ arise.
+_Dialogs_ if multiple _Issues_ arise.
 
 ### Project Structure
 

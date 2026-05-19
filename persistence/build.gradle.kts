@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.issue.engine)
     implementation(libs.issue.persistence)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.lettuce)
     testImplementation(project(":test_support"))
 }
 
