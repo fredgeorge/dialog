@@ -23,6 +23,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
     val libs = rootProject.extensions.getByType<LibrariesForLibs>()
+    val sourceSets = extensions.getByType<SourceSetContainer>()
 
     extensions.configure<JavaPluginExtension> {
         toolchain {
@@ -39,5 +40,29 @@ subprojects {
 
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+    }
+
+    tasks.named<Test>("test") {
+        description = "Runs fast unit tests only."
+        exclude("**/integration/**")
+        include("**/unit/**")
+    }
+
+    tasks.register<Test>("integrationTest") {
+        description = "Runs integration tests."
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+        testClassesDirs = sourceSets["test"].output.classesDirs
+        classpath = sourceSets["test"].runtimeClasspath
+
+        useJUnitPlatform()
+
+        include("**/integration/**")
+
+        shouldRunAfter(tasks.named("test"))
+    }
+
+    tasks.named("check") {
+        dependsOn(tasks.named("integrationTest"))
     }
 }
