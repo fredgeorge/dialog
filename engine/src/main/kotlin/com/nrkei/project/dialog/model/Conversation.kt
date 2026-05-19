@@ -11,7 +11,7 @@ import java.util.*
 // Purpose: Understands Dialogs that should be invoked in a particular circumstance
 class Conversation private constructor(
     private val dialogs: Map<MissingIssue, Dialog>,
-    @Suppress("unused") private val conversationId: UUID = UUID.randomUUID()
+    val conversationId: UUID = UUID.randomUUID()
 ) {
 
     constructor(firstDialog: Pair<MissingIssue, Dialog>, vararg dialogs: Pair<MissingIssue, Dialog>) :
