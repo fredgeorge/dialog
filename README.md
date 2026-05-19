@@ -84,6 +84,10 @@ the _Dialog_ will present the _next question_ to the _Party_.
 If some _Answers_ already exist to the _Dialog's Questions_, 
 the next unanswered _Question_ will be presented.
 
+The user need not answer all the questions in a _Dialog_.
+They can request re-analysis of the existing _Answers_, 
+or start working on a different _Issue_.
+
 The user can change their mind about a previous _Question_
 as well, and the _Dialog_ will present the relevant next
 _Question_ based on this change.
@@ -117,6 +121,14 @@ REST APIs, or event buses) should be in yet other packages.
 Some common test setups are in a separate
 __test_support__ package for
 More on persistence is below.
+
+### Future Refinements
+
+Some possible future refinements:
+
+- Allow a different _Conversation_ per product or service
+- Handle _RejectionIssues_
+- Ease selection of a previous _Question_ to allow a change
 
 ## Building this Kotlin project using Gradle
 
