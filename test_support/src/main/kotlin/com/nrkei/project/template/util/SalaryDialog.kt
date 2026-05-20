@@ -19,9 +19,11 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
 // Purpose: Understand the accuracy of salary
 object SalaryDialog {
+    const val HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED = "Has income documentation been uploaded?"
+
     private val taxIncomeCorrect = YesNoQuestion("Is your tax income correct?")
     private val correctIncome = IntRangeQuestion.positiveInt("What is the actual income?")
-    private val documentationUploaded = YesNoQuestion("Has income documentation been uploaded?")
+    private val documentationUploaded = YesNoQuestion(HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED)
     private val beenReviewed = YesNoQuestion("Has the documentation been reviewed?")
 
     val salaryDialog = dialog {

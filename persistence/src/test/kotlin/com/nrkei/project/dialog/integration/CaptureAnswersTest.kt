@@ -9,12 +9,18 @@ package com.nrkei.project.dialog.integration
 import com.nrkei.project.context.Context
 import com.nrkei.project.context.enumCodec
 import com.nrkei.project.context.label
-import com.nrkei.project.dialog.model.DialogStatus
-import com.nrkei.project.dialog.questions.YesNoQuestion
+import com.nrkei.project.dialog.model.DialogStatus.PROBLEMS
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 import com.nrkei.project.dialog.visitors.ExtractValues
 import com.nrkei.project.dialog.visitors.RestoreValues
-import com.nrkei.project.template.util.CoApplicantDialog
-import org.junit.jupiter.api.Assertions
+import com.nrkei.project.template.util.CoApplicantDialog.HAVE_CO_APPLICANT_ID
+import com.nrkei.project.template.util.CoApplicantDialog.HAVE_CO_APPLICANT_QUESTION
+import com.nrkei.project.template.util.CoApplicantDialog.HAVE_SPOUSE_QUESTION
+import com.nrkei.project.template.util.CoApplicantDialog.coApplicantDialog
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
 // Purpose: Ensures that Question values can be extracted from a dialog
@@ -22,38 +28,38 @@ internal class CaptureAnswersTest {
 
     @Test
     fun `Extract answers`() {
-        CoApplicantDialog.coApplicantDialog.also { dialog ->
-            dialog.nextQuestionOrNull()?.answer(YesNoQuestion.YesNoChoice.YES) // Have spouse
-            dialog.nextQuestionOrNull()?.answer(YesNoQuestion.YesNoChoice.NO) // Have no co-applicant
+        coApplicantDialog.also { dialog ->
+            dialog.nextQuestionOrNull()?.answer(YES) // Have spouse
+            dialog.nextQuestionOrNull()?.answer(NO) // Have no co-applicant
             Context().also { context ->
                 ExtractValues(dialog, context)
-                Assertions.assertEquals(
-                    YesNoQuestion.YesNoChoice.YES,
-                    context[label(CoApplicantDialog.HAVE_SPOUSE_QUESTION, enumCodec<YesNoQuestion.YesNoChoice>())]
+                assertEquals(
+                    YES,
+                    context[label(HAVE_SPOUSE_QUESTION, enumCodec<YesNoChoice>())]
                 )
-                Assertions.assertEquals(
-                    YesNoQuestion.YesNoChoice.NO,
-                    context[label(CoApplicantDialog.HAVE_CO_APPLICANT_QUESTION, enumCodec<YesNoQuestion.YesNoChoice>())]
+                assertEquals(
+                    NO,
+                    context[label(HAVE_CO_APPLICANT_QUESTION, enumCodec<YesNoChoice>())]
                 )
 
                 // Change answers
-                dialog.question(CoApplicantDialog.HAVE_SPOUSE_QUESTION).answer(YesNoQuestion.YesNoChoice.NO)
-                dialog.question(CoApplicantDialog.HAVE_CO_APPLICANT_QUESTION).answer(YesNoQuestion.YesNoChoice.YES)
+                dialog.question(HAVE_SPOUSE_QUESTION).answer(NO)
+                dialog.question(HAVE_CO_APPLICANT_QUESTION).answer(YES)
                 ExtractValues(dialog, context)
-                Assertions.assertEquals(
-                    YesNoQuestion.YesNoChoice.NO,
-                    context[label(CoApplicantDialog.HAVE_SPOUSE_QUESTION, enumCodec<YesNoQuestion.YesNoChoice>())]
+                assertEquals(
+                    NO,
+                    context[label(HAVE_SPOUSE_QUESTION, enumCodec<YesNoChoice>())]
                 )
-                Assertions.assertEquals(
-                    YesNoQuestion.YesNoChoice.YES,
-                    context[label(CoApplicantDialog.HAVE_CO_APPLICANT_QUESTION, enumCodec<YesNoQuestion.YesNoChoice>())]
+                assertEquals(
+                    YES,
+                    context[label(HAVE_CO_APPLICANT_QUESTION, enumCodec<YesNoChoice>())]
                 )
-                Assertions.assertEquals(CoApplicantDialog.HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
+                assertEquals(HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
 
                 // Complete questions
                 dialog.nextQuestionOrNull()?.answer("12345678901")
-                Assertions.assertNull(dialog.nextQuestionOrNull())
-                Assertions.assertEquals(DialogStatus.PROBLEMS, dialog.status())
+                assertNull(dialog.nextQuestionOrNull())
+                assertEquals(PROBLEMS, dialog.status())
             }
         }
     }
@@ -61,16 +67,16 @@ internal class CaptureAnswersTest {
     @Test
     fun `Restore answers`() {
         Context().also { context ->
-            CoApplicantDialog.coApplicantDialog.clone().also { dialog ->
-                dialog.nextQuestionOrNull()?.answer(YesNoQuestion.YesNoChoice.NO) // Have spouse
-                dialog.nextQuestionOrNull()?.answer(YesNoQuestion.YesNoChoice.YES) // Have no co-applicant
+            coApplicantDialog.clone().also { dialog ->
+                dialog.nextQuestionOrNull()?.answer(NO) // Have spouse
+                dialog.nextQuestionOrNull()?.answer(YES) // Have no co-applicant
                 ExtractValues(dialog, context)
-                Assertions.assertEquals(CoApplicantDialog.HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
+                assertEquals(HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
             }
-            CoApplicantDialog.coApplicantDialog.clone().also { dialog ->
-                Assertions.assertEquals(CoApplicantDialog.HAVE_SPOUSE_QUESTION, dialog.nextQuestionOrNull()?.label)
+            coApplicantDialog.clone().also { dialog ->
+                assertEquals(HAVE_SPOUSE_QUESTION, dialog.nextQuestionOrNull()?.label)
                 RestoreValues(dialog, context)
-                Assertions.assertEquals(CoApplicantDialog.HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
+                assertEquals(HAVE_CO_APPLICANT_ID, dialog.nextQuestionOrNull()?.label)
             }
         }
     }
