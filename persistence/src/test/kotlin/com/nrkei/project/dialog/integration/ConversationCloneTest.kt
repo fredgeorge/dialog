@@ -6,9 +6,10 @@
 
 package com.nrkei.project.dialog.integration
 
-import com.nrkei.project.dialog.model.DialogStatus.IN_PROGRESS
-import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
+import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
+import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
+import com.nrkei.project.template.util.CoApplicantDialog.coApplicantIssue
 import com.nrkei.project.template.util.SalaryDialog.salaryIssue
 import com.nrkei.project.template.util.TestConversation.testConversation
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -18,7 +19,7 @@ import org.junit.jupiter.api.Test
 internal class ConversationCloneTest {
 
     @Test
-    fun `clone all question types`() {
+    fun `Clone yes-no and integer question types`() {
         testConversation.also { original ->
             original.clone()[salaryIssue].also { firstDialogCopy ->
                 assertEquals(NOT_STARTED, firstDialogCopy.status())
@@ -30,6 +31,26 @@ internal class ConversationCloneTest {
                 assertEquals(NOT_STARTED, secondDialogCopy.status())
                 secondDialogCopy.nextQuestionOrNull()?.answer(NO)
                 assertEquals(IN_PROGRESS, secondDialogCopy.status())
+            }
+        }
+    }
+
+    @Test
+    fun `Clone yes-no and text question types`() {
+        testConversation.also { original ->
+            original.clone()[coApplicantIssue].also { firstDialogCopy ->
+                assertEquals(NOT_STARTED, firstDialogCopy.status())
+                firstDialogCopy.nextQuestionOrNull()?.answer(YES)
+                firstDialogCopy.nextQuestionOrNull()?.answer(YES)
+                firstDialogCopy.nextQuestionOrNull()?.answer("12345678901")
+                assertEquals(PROBLEMS, firstDialogCopy.status())
+            }
+            original.clone()[coApplicantIssue].also { secondDialogCopy ->
+                assertEquals(NOT_STARTED, secondDialogCopy.status())
+                secondDialogCopy.nextQuestionOrNull()?.answer(NO)
+                secondDialogCopy.nextQuestionOrNull()?.answer(YES)
+                secondDialogCopy.nextQuestionOrNull()?.answer("98765432109")
+                assertEquals(PROBLEMS, secondDialogCopy.status())
             }
         }
     }
