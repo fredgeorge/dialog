@@ -13,4 +13,5 @@ dependencyResolutionManagement {
 
 // Change to your project name
 rootProject.name = "dialog"
-include("engine", "test_support", "tests", "persistence")
+include("engine", "test_support", "tests", "persistence", "api")
+
