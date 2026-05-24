@@ -9,7 +9,7 @@ serialization = "1.11.0"
 context = "1.2.6"
 issue = "1.1.13"
 lettuce = "7.5.2.RELEASE"
-ktor = "3.0.0"
+ktor = "3.5.0"
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
