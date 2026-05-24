@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
         json(Json {
-            prettyPrint = true
+            prettyPrint = false
             isLenient = true
             ignoreUnknownKeys = true
         })
