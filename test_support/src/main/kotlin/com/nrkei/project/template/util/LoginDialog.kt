@@ -9,6 +9,9 @@ package com.nrkei.project.template.util
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.missing
 import com.nrkei.project.dialog.model.problem
+import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
+import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.INVALID
+import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.VALID
 import com.nrkei.project.dialog.questions.TextQuestion
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
@@ -22,16 +25,21 @@ object LoginDialog {
 
     const val WHO_ARE_YOU = "Who are you?"
     const val WHAT_IS_YOUR_ID = "What is your ID?"
-    const val SALARY_AUTHORIZATION = "May I pull salary information"
+    const val SALARY_AUTHORIZATION = "May I pull salary information?"
+    const val LOAN_AMOUNT = "How much are you borrowing?"
 
     private val haveId = TextQuestion(WHAT_IS_YOUR_ID, 11)
     private val salaryAuthorization = YesNoQuestion(SALARY_AUTHORIZATION)
+    private val loanAmount = positiveInt(LOAN_AMOUNT)
 
     val loginDialog = dialog {
         first ask haveId answers {
-            -SUFFICIENT ask salaryAuthorization answers {
-                -YES conclude missing(NEED_SALARY_INFORMATION)
-                -NO conclude problem("Cannot process a loan without salary confirmation")
+            -SUFFICIENT ask loanAmount answers {
+                -VALID ask salaryAuthorization answers {
+                    -YES conclude missing(NEED_SALARY_INFORMATION)
+                    -NO conclude problem("Cannot process a loan without salary confirmation")
+                }
+                -INVALID conclude problem("Loan amount is required")
             }
             -TOO_SHORT conclude problem("National ID should be 11 digits")
             }
