@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.cors)
     implementation(libs.context.engine)
+    testImplementation(libs.ktor.server.test.host)
 }
 
 application {

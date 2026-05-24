@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.api
 
+import com.nrkei.project.dialog.api.endpoints.answerRoute
 import com.nrkei.project.dialog.api.endpoints.healthRoute
 import com.nrkei.project.dialog.api.endpoints.issuesRoute
 import io.ktor.server.application.*
@@ -15,5 +16,6 @@ fun Application.configureRoutes() {
     routing {
         healthRoute()
         issuesRoute()
-    }
-}
+        answerRoute()
+     }
+ }
