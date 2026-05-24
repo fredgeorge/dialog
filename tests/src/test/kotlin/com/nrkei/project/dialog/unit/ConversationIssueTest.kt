@@ -15,9 +15,10 @@ internal class ConversationIssueTest {
     @Test
     fun `Closed Issues not shown`() {
         testConversation.clone().also { conversation ->
-            assertEquals(4, conversation.openIssues().size)
-            conversation.openIssues().first().be(DISMISSED, TEST)
-            assertEquals(3, conversation.openIssues().size)
+            conversation.openIssues().size.also { originalCount ->
+                conversation.openIssues().first().be(DISMISSED, TEST)
+                assertEquals(originalCount - 1, conversation.openIssues().size)
+            }
         }
     }
 }

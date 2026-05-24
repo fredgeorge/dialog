@@ -11,6 +11,8 @@ import com.nrkei.project.template.util.CoApplicantDialog.coApplicantDialog
 import com.nrkei.project.template.util.CoApplicantDialog.coApplicantIssue
 import com.nrkei.project.template.util.DependentsDialog.dependentDialog
 import com.nrkei.project.template.util.DependentsDialog.dependentIssue
+import com.nrkei.project.template.util.LoginDialog.loginDialog
+import com.nrkei.project.template.util.LoginDialog.loginIssue
 import com.nrkei.project.template.util.OtherIncomeDialog.otherIncomeDialog
 import com.nrkei.project.template.util.OtherIncomeDialog.otherIncomeIssue
 import com.nrkei.project.template.util.SalaryDialog.salaryDialog
@@ -18,7 +20,10 @@ import com.nrkei.project.template.util.SalaryDialog.salaryIssue
 
 // Purpose: Understands all the possible Dialogs with a common purpose
 object TestConversation {
+    const val NEED_SALARY_INFORMATION = "Need salary information"
+
     var testConversation = Conversation(
+        loginIssue to loginDialog,
         salaryIssue to salaryDialog,
         otherIncomeIssue to otherIncomeDialog,
         coApplicantIssue to coApplicantDialog,
