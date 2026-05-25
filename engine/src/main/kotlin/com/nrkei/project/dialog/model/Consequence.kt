@@ -68,7 +68,7 @@ class RejectionIssue(private val reason: String):
 }
 
 // Purpose: Understands that more information is required to reach successful resolution
-class MissingIssue(private val reason: String):
+class MissingIssue(val reason: String):
     Consequence,
     Issue<MissingIssue>(dialogEngine, OPEN){
 

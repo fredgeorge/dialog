@@ -9,11 +9,13 @@ package com.nrkei.project.dialog.api.endpoints
 import io.ktor.http.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import java.util.*
 
 fun Routing.loginRoute() {
     post("/login/{conversationUUID?}") {
-        val conversationUUID = call.parameters["conversationUUID"]
-        val response = IssuesResponse(issues = emptyList(), messages = emptyList())
+        val conversationUUID = call.parameters["conversationUUID"]?.let { UUID.fromString(it) }
+            ?: UUID.randomUUID()
+        val response = IssuesResponse(conversationUUID.toString(), issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
     }
 }

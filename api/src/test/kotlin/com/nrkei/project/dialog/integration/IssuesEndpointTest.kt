@@ -1,14 +1,15 @@
 package com.nrkei.project.dialog.integration
 
 import com.nrkei.project.dialog.api.module
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
 
 internal class IssuesEndpointTest {
 
@@ -44,11 +45,13 @@ internal class IssuesEndpointTest {
         val response = client.post("/issues/550e8400-e29b-41d4-a716-446655440000")
 
         val bodyText = response.bodyAsText()
-        assertEquals("""{"issues":[],"messages":[]}""", bodyText)
+        assertTrue(bodyText.contains("\"conversationUUID\":\"550e8400-e29b-41d4-a716-446655440000\""))
+        assertTrue(bodyText.contains("\"issues\":[]"))
+        assertTrue(bodyText.contains("\"messages\":[]"))
     }
 
     @Test
-    fun `issues endpoint with empty conversation UUID returns 404`() = testApplication {
+    fun `issues endpoint requires conversationUUID`() = testApplication {
         application {
             module()
         }

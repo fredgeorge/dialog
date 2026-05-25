@@ -11,6 +11,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import java.util.*
 
 @Serializable
 data class AnswerRequest(
@@ -20,9 +21,9 @@ data class AnswerRequest(
 
 fun Routing.answerRoute() {
     post("/answers/{conversationUUID}") {
-        val conversationUUID = call.parameters["conversationUUID"]
+        val conversationUUID = call.parameters["conversationUUID"]?.let { UUID.fromString(it) }
         call.receive<AnswerRequest>()
-        val response = IssuesResponse(issues = emptyList(), messages = emptyList())
+        val response = IssuesResponse(conversationUUID.toString(), issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
      }
 }

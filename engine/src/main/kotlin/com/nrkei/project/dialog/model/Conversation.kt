@@ -16,6 +16,11 @@ class Conversation private constructor(
     private val openIssues: MutableList<Issue<*>> = mutableListOf(),
     @Suppress("unused") val conversationId: UUID = UUID.randomUUID()
 ) {
+    init {
+        dialogs.forEach { (issue, dialog) ->
+            dialog.purpose = issue.reason
+        }
+    }
 
     constructor(firstDialog: Pair<MissingIssue, Dialog>, vararg dialogs: Pair<MissingIssue, Dialog>) :
             this(listOf(firstDialog, *dialogs).toMap(), listOf(firstDialog, *dialogs).map { it.first }.toMutableList())

@@ -6,6 +6,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
@@ -61,7 +62,9 @@ internal class LoginEndpointTest {
         val response = client.post("/login")
 
         val bodyText = response.bodyAsText()
-        assertEquals("""{"issues":[],"messages":[]}""", bodyText)
+        assertTrue(bodyText.contains("\"conversationUUID\":\""))
+        assertTrue(bodyText.contains("\"issues\":[]"))
+        assertTrue(bodyText.contains("\"messages\":[]"))
     }
 
     @Test
@@ -79,6 +82,8 @@ internal class LoginEndpointTest {
         val response = client.post("/login/550e8400-e29b-41d4-a716-446655440000")
 
         val bodyText = response.bodyAsText()
-        assertEquals("""{"issues":[],"messages":[]}""", bodyText)
+        assertTrue(bodyText.contains("\"conversationUUID\":\"550e8400-e29b-41d4-a716-446655440000\""))
+        assertTrue(bodyText.contains("\"issues\":[]"))
+        assertTrue(bodyText.contains("\"messages\":[]"))
     }
 }
