@@ -6,12 +6,11 @@
 
 package com.nrkei.project.dialog.api.endpoints
 
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import java.util.*
 
 @Serializable
 data class AnswerRequest(
@@ -20,10 +19,11 @@ data class AnswerRequest(
 )
 
 fun Routing.answerRoute() {
-    post("/answers/{conversationId}") {
-        val conversationId = call.parameters["conversationId"]?.let { UUID.fromString(it) }
+    post("/answers/{conversationId}/{dialogId}") {
+        val conversationId = call.parameters["conversationId"]!!
+        val dialogId = call.parameters["dialogId"]!!
         call.receive<AnswerRequest>()
-        val response = IssuesResponse(conversationId.toString(), issues = emptyList(), messages = emptyList())
-        call.respond(HttpStatusCode.OK, response)
+        val response = IssuesResponse(conversationId, issues = emptyList(), messages = emptyList())
+        call.respond(OK, response)
      }
 }

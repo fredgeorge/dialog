@@ -6,16 +6,15 @@
 
 package com.nrkei.project.dialog.api.endpoints
 
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.util.*
 
 fun Routing.loginRoute() {
     post("/login/{conversationId?}") {
-        val conversationId = call.parameters["conversationId"]?.let { UUID.fromString(it) }
-            ?: UUID.randomUUID()
-        val response = IssuesResponse(conversationId.toString(), issues = emptyList(), messages = emptyList())
-        call.respond(HttpStatusCode.OK, response)
+        val conversationId = call.parameters["conversationId"]?:"${UUID.randomUUID()}" // default ID to UUID string
+        val response = IssuesResponse(conversationId, issues = emptyList(), messages = emptyList())
+        call.respond(OK, response)
     }
 }

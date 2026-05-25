@@ -6,7 +6,7 @@
 
 package com.nrkei.project.dialog.api.endpoints
 
-import io.ktor.http.*
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
@@ -24,6 +24,6 @@ fun Routing.healthRoute() {
             status = "ok",
             timestamp = Instant.now().toString()
         )
-        call.respond(HttpStatusCode.OK, response)
+        call.respond(OK, response)
     }
 }

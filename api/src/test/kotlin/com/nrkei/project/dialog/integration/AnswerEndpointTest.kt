@@ -2,15 +2,15 @@ package com.nrkei.project.dialog.integration
 
 import com.nrkei.project.dialog.api.endpoints.AnswerRequest
 import com.nrkei.project.dialog.api.module
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
 
 internal class AnswerEndpointTest {
 
@@ -26,7 +26,7 @@ internal class AnswerEndpointTest {
             }
         }
 
-        val response = client.post("/answers/550e8400-e29b-41d4-a716-446655440000") {
+        val response = client.post("/answers/550e8400-e29b-41d4-a716-446655440000/dialog1") {
             contentType(ContentType.Application.Json)
             setBody(AnswerRequest(label = "haveSpouse", value = "YES"))
         }
@@ -46,7 +46,7 @@ internal class AnswerEndpointTest {
             }
         }
 
-        val response = client.post("/answers/550e8400-e29b-41d4-a716-446655440000") {
+        val response = client.post("/answers/550e8400-e29b-41d4-a716-446655440000/dialog1") {
             contentType(ContentType.Application.Json)
             setBody(AnswerRequest(label = "spouseName", value = "Jane"))
         }
@@ -69,7 +69,7 @@ internal class AnswerEndpointTest {
             }
         }
 
-        val response = client.post("/answers/550e8400-e29b-41d4-a716-446655440000") {
+        val response = client.post("/answers/550e8400-e29b-41d4-a716-446655440000/dialog1") {
             contentType(ContentType.Application.Json)
             setBody(AnswerRequest(label = "", value = "anything"))
         }
