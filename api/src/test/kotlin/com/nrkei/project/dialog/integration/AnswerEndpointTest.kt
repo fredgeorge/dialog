@@ -51,7 +51,7 @@ internal class AnswerEndpointTest {
         }
 
         val bodyText = response.bodyAsText()
-        assertEquals("""{"issues":[]}""", bodyText)
+        assertEquals("""{"issues":[],"messages":[]}""", bodyText)
     }
 
     @Test

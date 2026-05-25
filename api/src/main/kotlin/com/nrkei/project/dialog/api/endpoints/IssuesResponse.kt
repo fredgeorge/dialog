@@ -13,12 +13,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IssuesResponse(
-    val issues: List<String>
+    val issues: List<String>,
+    val messages: List<String> = emptyList()
 )
 
 fun Routing.issuesRoute() {
     post("/issues/{conversationUUID}") {
-        val response = IssuesResponse(issues = emptyList())
+        val response = IssuesResponse(issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
     }
 }

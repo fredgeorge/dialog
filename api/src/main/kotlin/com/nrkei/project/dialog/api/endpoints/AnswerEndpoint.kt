@@ -22,7 +22,7 @@ fun Routing.answerRoute() {
     post("/answers/{conversationUUID}") {
         val conversationUUID = call.parameters["conversationUUID"]
         call.receive<AnswerRequest>()
-        val response = IssuesResponse(issues = emptyList())
+        val response = IssuesResponse(issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
      }
 }

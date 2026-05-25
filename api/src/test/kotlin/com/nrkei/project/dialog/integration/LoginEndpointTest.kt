@@ -44,6 +44,6 @@ internal class LoginEndpointTest {
         val response = client.post("/login")
 
         val bodyText = response.bodyAsText()
-        assertEquals("""{"issues":[]}""", bodyText)
+        assertEquals("""{"issues":[],"messages":[]}""", bodyText)
     }
 }

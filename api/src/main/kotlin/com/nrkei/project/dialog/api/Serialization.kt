@@ -17,6 +17,7 @@ fun Application.configureSerialization() {
             prettyPrint = false
             isLenient = true
             ignoreUnknownKeys = true
+            encodeDefaults = true
         })
     }
 }
