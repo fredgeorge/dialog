@@ -4,8 +4,9 @@
 
 | Command | Description |
 |---------|-------------|
-| `./gradlew test` | Run unit tests (tests module) |
-| `./gradlew integrationTest` | Run integration tests (persistence module) |
+| `./gradlew test` | Run fast unit tests (`/unit/`) |
+| `./gradlew integrationTest` | Run integration tests (`/integration/`) |
+| `./gradlew check` | Run both unit and integration tests |
 | `./gradlew build` | Build all modules (engine, persistence, api, test_support, tests) |
 | `./gradlew api:run` | Start Ktor server (localhost:8080) |
 | `docker compose up redis` | Start Redis dev dependency |
