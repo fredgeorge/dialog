@@ -14,15 +14,15 @@ import java.util.*
 
 @Serializable
 data class IssuesResponse(
-    val conversationUUID: String,
+    val conversationId: String,
     val issues: List<String>,
     val messages: List<String> = emptyList()
 )
 
 fun Routing.issuesRoute() {
-    post("/issues/{conversationUUID}") {
-        val conversationUUID = call.parameters["conversationUUID"]?.let { UUID.fromString(it) }
-        val response = IssuesResponse(conversationUUID.toString(), issues = emptyList(), messages = emptyList())
+    post("/issues/{conversationId}") {
+        val conversationId = call.parameters["conversationId"]?.let { UUID.fromString(it) }
+        val response = IssuesResponse(conversationId.toString(), issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
     }
 }

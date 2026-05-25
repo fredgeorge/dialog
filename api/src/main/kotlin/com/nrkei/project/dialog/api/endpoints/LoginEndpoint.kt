@@ -12,10 +12,10 @@ import io.ktor.server.routing.*
 import java.util.*
 
 fun Routing.loginRoute() {
-    post("/login/{conversationUUID?}") {
-        val conversationUUID = call.parameters["conversationUUID"]?.let { UUID.fromString(it) }
+    post("/login/{conversationId?}") {
+        val conversationId = call.parameters["conversationId"]?.let { UUID.fromString(it) }
             ?: UUID.randomUUID()
-        val response = IssuesResponse(conversationUUID.toString(), issues = emptyList(), messages = emptyList())
+        val response = IssuesResponse(conversationId.toString(), issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
     }
 }

@@ -20,10 +20,10 @@ data class AnswerRequest(
 )
 
 fun Routing.answerRoute() {
-    post("/answers/{conversationUUID}") {
-        val conversationUUID = call.parameters["conversationUUID"]?.let { UUID.fromString(it) }
+    post("/answers/{conversationId}") {
+        val conversationId = call.parameters["conversationId"]?.let { UUID.fromString(it) }
         call.receive<AnswerRequest>()
-        val response = IssuesResponse(conversationUUID.toString(), issues = emptyList(), messages = emptyList())
+        val response = IssuesResponse(conversationId.toString(), issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
      }
 }

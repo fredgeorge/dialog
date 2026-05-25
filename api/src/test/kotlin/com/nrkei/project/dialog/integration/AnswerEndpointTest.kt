@@ -52,7 +52,7 @@ internal class AnswerEndpointTest {
         }
 
         val bodyText = response.bodyAsText()
-        assertTrue(bodyText.contains("\"conversationUUID\":\"550e8400-e29b-41d4-a716-446655440000\""))
+        assertTrue(bodyText.contains("\"conversationId\":\"550e8400-e29b-41d4-a716-446655440000\""))
         assertTrue(bodyText.contains("\"issues\":[]"))
         assertTrue(bodyText.contains("\"messages\":[]"))
     }

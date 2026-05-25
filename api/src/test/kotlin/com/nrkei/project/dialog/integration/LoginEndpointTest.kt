@@ -31,7 +31,7 @@ internal class LoginEndpointTest {
     }
 
     @Test
-    fun `login endpoint with conversationUUID returns 200`() = testApplication {
+    fun `login endpoint with conversationId returns 200`() = testApplication {
         application {
             module()
         }
@@ -62,13 +62,13 @@ internal class LoginEndpointTest {
         val response = client.post("/login")
 
         val bodyText = response.bodyAsText()
-        assertTrue(bodyText.contains("\"conversationUUID\":\""))
+        assertTrue(bodyText.contains("\"conversationId\":\""))
         assertTrue(bodyText.contains("\"issues\":[]"))
         assertTrue(bodyText.contains("\"messages\":[]"))
     }
 
     @Test
-    fun `login endpoint with conversationUUID returns valid json body`() = testApplication {
+    fun `login endpoint with conversationId returns valid json body`() = testApplication {
         application {
             module()
         }
@@ -82,7 +82,7 @@ internal class LoginEndpointTest {
         val response = client.post("/login/550e8400-e29b-41d4-a716-446655440000")
 
         val bodyText = response.bodyAsText()
-        assertTrue(bodyText.contains("\"conversationUUID\":\"550e8400-e29b-41d4-a716-446655440000\""))
+        assertTrue(bodyText.contains("\"conversationId\":\"550e8400-e29b-41d4-a716-446655440000\""))
         assertTrue(bodyText.contains("\"issues\":[]"))
         assertTrue(bodyText.contains("\"messages\":[]"))
     }
