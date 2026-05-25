@@ -30,6 +30,23 @@ internal class LoginEndpointTest {
     }
 
     @Test
+    fun `login endpoint with conversationUUID returns 200`() = testApplication {
+        application {
+            module()
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val response = client.post("/login/550e8400-e29b-41d4-a716-446655440000")
+
+        assertEquals(HttpStatusCode.OK, response.status)
+    }
+
+    @Test
     fun `login endpoint returns valid json body`() = testApplication {
         application {
             module()
@@ -42,6 +59,24 @@ internal class LoginEndpointTest {
         }
 
         val response = client.post("/login")
+
+        val bodyText = response.bodyAsText()
+        assertEquals("""{"issues":[],"messages":[]}""", bodyText)
+    }
+
+    @Test
+    fun `login endpoint with conversationUUID returns valid json body`() = testApplication {
+        application {
+            module()
+        }
+
+        val client = createClient {
+            install(ContentNegotiation) {
+                json()
+            }
+        }
+
+        val response = client.post("/login/550e8400-e29b-41d4-a716-446655440000")
 
         val bodyText = response.bodyAsText()
         assertEquals("""{"issues":[],"messages":[]}""", bodyText)

@@ -11,7 +11,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Routing.loginRoute() {
-    post("/login") {
+    post("/login/{conversationUUID?}") {
+        val conversationUUID = call.parameters["conversationUUID"]
         val response = IssuesResponse(issues = emptyList(), messages = emptyList())
         call.respond(HttpStatusCode.OK, response)
     }
