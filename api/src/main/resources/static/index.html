@@ -13,8 +13,9 @@
         <span class="label">Conversation:</span>
         <code id="conversation-id"></code>
         <button type="button" id="btn-refresh">Refresh</button>
-        <button type="button" id="btn-all-issues">All issues</button>
-        <button type="button" id="btn-logout">Logout</button>
+         <button type="button" id="btn-all-issues">All issues</button>
+         <button type="button" id="btn-all-ids">All conversations</button>
+         <button type="button" id="btn-logout">Logout</button>
     </div>
 </header>
 
@@ -52,10 +53,16 @@
         <ul id="messages-list"></ul>
     </section>
 
-    <section id="error-view" hidden>
-        <h3>Error</h3>
-        <p id="error-text"></p>
-    </section>
+     <section id="error-view" hidden>
+         <h3>Error</h3>
+         <p id="error-text"></p>
+     </section>
+
+     <section id="all-ids-view" hidden>
+         <h2>Active Conversations</h2>
+         <ul id="all-ids-list"></ul>
+         <p id="all-ids-empty" class="empty" hidden>No active conversations.</p>
+     </section>
 </main>
 
 <script src="app.js"></script>

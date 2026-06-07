@@ -12,6 +12,7 @@ const views = {
     question: document.getElementById('question-view'),
     messages: document.getElementById('messages-view'),
     error: document.getElementById('error-view'),
+    allIds: document.getElementById('all-ids-view'),
 };
 
 const els = {
@@ -21,6 +22,7 @@ const els = {
     resumeId: document.getElementById('resume-id'),
     btnRefresh: document.getElementById('btn-refresh'),
     btnAllIssues: document.getElementById('btn-all-issues'),
+    btnAllIds: document.getElementById('btn-all-ids'),
     btnLogout: document.getElementById('btn-logout'),
     issuesHeading: document.getElementById('issues-heading'),
     issuesList: document.getElementById('issues-list'),

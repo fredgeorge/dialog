@@ -19,6 +19,7 @@ fun Application.configureRoutes() {
         loginRoute()
         refreshRoute()
         allIssuesRoute()
+        conversationIdsRoute()
         staticResources("/", "static") {
             default("index.html")
         }

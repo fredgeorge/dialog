@@ -1,4 +1,4 @@
-# Dialog FLow
+# Dialog Flow
 
 ## Purpose
 
@@ -11,14 +11,14 @@ dialog backend.
  _Conversation_. Response will be an __issues list__ reply. This starts
  a new _Conversation_.
 2. Client sends a __login__ request with a _Conversation_ ID to resume a
- previous conversation. If there are multiple outstanding _Issues_, response
+ previous conversation. If there are multiple outstanding _Issues_, the response
  will be an __issues list__ reply. If there is a single outstanding Issue
  with a corresponding _Dialog_, and that dialog is incomplete, a __question__
- reply is send. Otherwise, the reply is the same as for __all issues__ request.
+ reply is sent. Otherwise, the reply is the same as for __all issues__ request.
 3. Client sends an __answer__ request containing the _Answer_ to a _Question_
  for a _Dialog_ with a _Conversation_ ID. If there is another _Question_ for
  that _Dialog_, the response will be another __question__ reply. If this 
- _Dialog_ is resolved, the remaining _Issues_ are examined, the the reply logic
+ _Dialog_ is resolved, the remaining _Issues_ are examined; the reply logic
  is the same as for __login__ request with a _Conversation_ ID.
 4. Client sends a __refresh__ request. The reply will always be an __issues list__
  of outstanding open Issues even if there is only one Issue. 
@@ -28,11 +28,13 @@ dialog backend.
 5. Client sends an __all issues__ request. This always returns all the current
  _Issues_ and the resolved _Issues_ in an expanded __issues list__ reply. This
  enables the client to change their mind on a prior _Answer_ to a _Question_.
+6. Client sends an __all conversations__ request. This returns a list of all
+ _Conversations_ and their status.
  
 ## Other Information
 
 If a response includes a _Conversation_ ID and optionally a _Dialog_ ID, these
-should be included on subsequent requests from the Web client.
+should be included on later requests from the Web client.
 
 There is always an option to request a __refresh__. This suspends the current
 _Dialog_, if any.
