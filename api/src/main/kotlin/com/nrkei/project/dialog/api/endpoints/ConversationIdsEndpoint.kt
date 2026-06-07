@@ -12,7 +12,13 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ConversationIdsResponse(val conversationIds: List<String> = emptyList())
+data class ConversationSummary(
+    val conversationId: String,
+    val status: String
+)
+
+@Serializable
+data class ConversationIdsResponse(val conversationIds: List<ConversationSummary> = emptyList())
 
 fun Routing.conversationIdsRoute() {
     get("/conversation-ids") {

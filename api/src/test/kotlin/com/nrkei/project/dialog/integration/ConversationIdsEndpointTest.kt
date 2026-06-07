@@ -9,7 +9,6 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.testing.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 internal class ConversationIdsEndpointTest {
@@ -50,26 +49,4 @@ internal class ConversationIdsEndpointTest {
         assertTrue(bodyText.contains("[]"))
     }
 
-    @Test
-    @Disabled
-    fun `conversation-ids endpoint returns list after login`() = testApplication {
-        application {
-            module()
-        }
-
-        val client = createClient {
-            install(ContentNegotiation) {
-                json()
-            }
-        }
-
-        val newId = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-        client.post("/login/$newId")
-
-        val response = client.get("/conversation-ids")
-
-        val bodyText = response.bodyAsText()
-        assertTrue(bodyText.contains("\",$newId,"))
-        assertTrue(bodyText.contains("\",$newId]"))
-    }
 }

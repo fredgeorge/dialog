@@ -33,6 +33,8 @@ const els = {
     answerInputContainer: document.getElementById('answer-input-container'),
     messagesList: document.getElementById('messages-list'),
     errorText: document.getElementById('error-text'),
+    allIdsList: document.getElementById('all-ids-list'),
+    allIdsEmpty: document.getElementById('all-ids-empty'),
 };
 
 function show(view) { view.hidden = false; }
@@ -43,6 +45,7 @@ function resetTransientViews() {
     hide(views.question);
     hide(views.messages);
     hide(views.error);
+    hide(views.allIds);
 }
 
 async function postJson(path, body) {
@@ -266,6 +269,44 @@ async function allIssues() {
     }
 }
 
+async function allConversations() {
+    try {
+        const response = await fetch('/conversation-ids');
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        const payload = await response.json();
+        renderAllConversations(payload);
+    } catch (e) {
+        resetTransientViews();
+        renderError(`All-conversations failed: ${e.message}`);
+    }
+}
+
+function renderAllConversations(payload) {
+    resetTransientViews();
+    els.allIdsList.innerHTML = '';
+    const items = (payload && payload.conversationIds) || [];
+    if (items.length === 0) {
+        els.allIdsEmpty.hidden = false;
+        show(views.allIds);
+        return;
+    }
+    els.allIdsEmpty.hidden = true;
+    for (const entry of items) {
+        const li = document.createElement('li');
+        const label = document.createElement('span');
+        const status = document.createElement('span');
+        const id = typeof entry === 'string' ? entry : entry.conversationId;
+        const text = typeof entry === 'string' ? 'Not Started' : (entry.status || 'Not Started');
+        label.textContent = id;
+        status.textContent = text;
+        status.className = 'status ' + statusClass(text);
+        li.appendChild(label);
+        li.appendChild(status);
+        els.allIdsList.appendChild(li);
+    }
+    show(views.allIds);
+}
+
 function logout() {
     state.conversationId = null;
     state.dialogId = null;
@@ -289,4 +330,5 @@ els.answerForm.addEventListener('submit', (e) => {
 
 els.btnRefresh.addEventListener('click', refresh);
 els.btnAllIssues.addEventListener('click', allIssues);
+els.btnAllIds.addEventListener('click', allConversations);
 els.btnLogout.addEventListener('click', logout);
