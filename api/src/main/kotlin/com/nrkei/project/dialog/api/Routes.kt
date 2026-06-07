@@ -6,11 +6,9 @@
 
 package com.nrkei.project.dialog.api
 
-import com.nrkei.project.dialog.api.endpoints.answerRoute
-import com.nrkei.project.dialog.api.endpoints.healthRoute
-import com.nrkei.project.dialog.api.endpoints.issuesRoute
-import com.nrkei.project.dialog.api.endpoints.loginRoute
+import com.nrkei.project.dialog.api.endpoints.*
 import io.ktor.server.application.*
+import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
 
 fun Application.configureRoutes() {
@@ -19,5 +17,10 @@ fun Application.configureRoutes() {
         issuesRoute()
         answerRoute()
         loginRoute()
+        refreshRoute()
+        allIssuesRoute()
+        staticResources("/", "static") {
+            default("index.html")
+        }
      }
  }

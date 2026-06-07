@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dialog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+    <h1>Dialog</h1>
+    <div id="session-info" hidden>
+        <span class="label">Conversation:</span>
+        <code id="conversation-id"></code>
+        <button type="button" id="btn-refresh">Refresh</button>
+        <button type="button" id="btn-all-issues">All issues</button>
+        <button type="button" id="btn-logout">Logout</button>
+    </div>
+</header>
+
+<main>
+    <section id="login-view">
+        <h2>Login</h2>
+        <p>Start a new conversation, or resume an existing one by entering its ID.</p>
+        <form id="login-form">
+            <label for="resume-id">Conversation ID (optional)</label>
+            <input type="text" id="resume-id" name="resume-id"
+                   placeholder="leave blank to start a new conversation"
+                   autocomplete="off">
+            <button type="submit">Login</button>
+        </form>
+    </section>
+
+    <section id="issues-view" hidden>
+        <h2 id="issues-heading">Open Issues</h2>
+        <ul id="issues-list" class="issues"></ul>
+        <p id="issues-empty" class="empty" hidden>No issues to show.</p>
+    </section>
+
+    <section id="question-view" hidden>
+        <h2>Question</h2>
+        <p id="question-text"></p>
+        <form id="answer-form">
+            <div id="answer-input-container"></div>
+            <button type="submit">Submit answer</button>
+        </form>
+        <p id="question-dialog-id" class="muted"></p>
+    </section>
+
+    <section id="messages-view" hidden>
+        <h3>Messages</h3>
+        <ul id="messages-list"></ul>
+    </section>
+
+    <section id="error-view" hidden>
+        <h3>Error</h3>
+        <p id="error-text"></p>
+    </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
