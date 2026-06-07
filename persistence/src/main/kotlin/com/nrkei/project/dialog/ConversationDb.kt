@@ -10,7 +10,7 @@ import com.nrkei.project.context.Context
 import java.util.*
 
 // Purpose: Understands API for Context data persistence
-interface ContextDb {
+interface ConversationDb {
     fun save(conversationId: UUID, context: Context)
     fun context(conversationId: UUID): Context
 }

@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.context.ContextCodec.ContextDto
 import com.nrkei.project.issue.Issue
 import com.nrkei.project.issue.Issue.State.OPEN
 import java.util.*
@@ -36,4 +37,11 @@ class Conversation private constructor(
         issue.state() == OPEN &&
         dialogs[issue]?.let { it.nextQuestionOrNull() != null } ?: false
     }
+
+    data class ConversationDto(
+        val conversationId: UUID,
+        val missingIssueReasons: List<String>,
+        val rejectionIssueReasons: List<String>,
+        val contextDto: ContextDto
+    )
 }
