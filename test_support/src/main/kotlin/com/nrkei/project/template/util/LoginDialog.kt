@@ -9,7 +9,6 @@ package com.nrkei.project.template.util
 import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.missing
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.INVALID
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.VALID
@@ -43,11 +42,11 @@ object LoginDialog {
             -SUFFICIENT ask loanAmount answers {
                 -VALID ask salaryAuthorization answers {
                     -YES conclude missing(NEED_SALARY_INFORMATION)
-                    -NO conclude problem("Cannot process a loan without salary confirmation")
+                    -NO problem "Cannot process a loan without salary confirmation"
                 }
-                -INVALID conclude problem("Loan amount is required")
+                -INVALID problem "Loan amount is required"
             }
-            -TOO_SHORT conclude problem("National ID should be 11 digits")
+            -TOO_SHORT problem "National ID should be 11 digits"
             }
         }
 }

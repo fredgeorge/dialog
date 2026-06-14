@@ -10,7 +10,6 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.*
 import com.nrkei.project.template.util.TestPurpose
@@ -38,9 +37,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Simple valid dialog for temperature in Celsius`() {
         (TestPurpose dialog {
             first ask temperature answers {
-                -TemperatureRange.COLD conclude problem("Too cold")
+                -TemperatureRange.COLD problem "Too cold"
                 -TemperatureRange.WARM conclude Acceptable
-                -TemperatureRange.HOT conclude problem("Too hot")
+                -TemperatureRange.HOT problem "Too hot"
             }
         }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -63,9 +62,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Temperature boundary values are unambiguous`() {
         (TestPurpose dialog {
             first ask temperature answers {
-                -TemperatureRange.COLD conclude problem("Too cold")
+                -TemperatureRange.COLD problem "Too cold"
                 -TemperatureRange.WARM conclude Acceptable
-                -TemperatureRange.HOT conclude problem("Too hot")
+                -TemperatureRange.HOT problem "Too hot"
             }
         }).also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -80,9 +79,9 @@ internal class DoubleRangeDialogTest {
     @Test fun `Temperature accepts Int answer without explicit cast`() {
         (TestPurpose dialog {
             first ask temperature answers {
-                -TemperatureRange.COLD conclude problem("Too cold")
+                -TemperatureRange.COLD problem "Too cold"
                 -TemperatureRange.WARM conclude Acceptable
-                -TemperatureRange.HOT conclude problem("Too hot")
+                -TemperatureRange.HOT problem "Too hot"
             }
         }).also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -94,11 +93,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `Simple valid dialog for Body Mass Index`() {
         (TestPurpose dialog {
             first ask bmi answers {
-                -BmiRange.UNDERWEIGHT conclude problem("Underweight")
+                -BmiRange.UNDERWEIGHT problem "Underweight"
                 -BmiRange.NORMAL conclude Acceptable
-                -BmiRange.OVERWEIGHT conclude problem("Overweight")
-                -BmiRange.OBESE conclude problem("Obese")
-                -BmiRange.MORBIDLY_OBESE conclude problem("Morbidly obese")
+                -BmiRange.OVERWEIGHT problem "Overweight"
+                -BmiRange.OBESE problem "Obese"
+                -BmiRange.MORBIDLY_OBESE problem "Morbidly obese"
             }
         }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -124,11 +123,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `BMI boundary values are unambiguous`() {
         (TestPurpose dialog {
             first ask bmi answers {
-                -BmiRange.UNDERWEIGHT conclude problem("Underweight")
+                -BmiRange.UNDERWEIGHT problem "Underweight"
                 -BmiRange.NORMAL conclude Acceptable
-                -BmiRange.OVERWEIGHT conclude problem("Overweight")
-                -BmiRange.OBESE conclude problem("Obese")
-                -BmiRange.MORBIDLY_OBESE conclude problem("Morbidly obese")
+                -BmiRange.OVERWEIGHT problem "Overweight"
+                -BmiRange.OBESE problem "Obese"
+                -BmiRange.MORBIDLY_OBESE problem "Morbidly obese"
             }
         }).also { dialog ->
             assertEquals(bmi, dialog.nextQuestionOrNull())
@@ -149,11 +148,11 @@ internal class DoubleRangeDialogTest {
     @Test fun `Convenience Double constructors`() {
         (TestPurpose dialog {
             first ask marginalTaxRate answers {
-                -NonNegativeDoubleRange.INVALID conclude problem("Can't have negative marginal tax rate")
+                -NonNegativeDoubleRange.INVALID problem "Can't have negative marginal tax rate"
                 -NonNegativeDoubleRange.VALID conclude Acceptable
             }
             then ask quantumChamberTemperature answers {
-                -PositiveDoubleRange.INVALID conclude problem("Can't cool to absolute zero")
+                -PositiveDoubleRange.INVALID problem "Can't cool to absolute zero"
                 -PositiveDoubleRange.VALID conclude Acceptable
             }
         }).also { dialog ->

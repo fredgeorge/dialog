@@ -10,7 +10,6 @@ import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.INVALID
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.VALID
@@ -37,7 +36,7 @@ object SalaryDialog {
         first ask taxIncomeCorrect answers {
             -YES conclude Acceptable
             -NO ask correctIncome answers {
-                -INVALID conclude problem("Enter a positive income amount")
+                -INVALID problem "Enter a positive income amount"
                 -VALID ask documentationUploaded answers {
                     -YES ask beenReviewed answers {
                         -YES conclude Acceptable

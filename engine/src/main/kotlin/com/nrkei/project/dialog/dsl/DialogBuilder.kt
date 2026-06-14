@@ -29,11 +29,14 @@ class DialogBuilder internal constructor(private val purpose: DialogPurpose) {
     internal fun result() = Dialog(purpose, questionConsequences)
 }
 
-class QuestionBuilder internal constructor(private val purpose: DialogPurpose, question: Question) {
+class QuestionBuilder internal constructor(
+    private val purpose: DialogPurpose,
+    private val question: Question
+) {
     private val questionConsequences = QuestionConsequences(question, question.possibleResults)
 
     infix fun answers(block: ConsequencesBuilder.() -> Unit) =
-        ConsequencesBuilder(purpose, questionConsequences).block()
+        ConsequencesBuilder(purpose, question, questionConsequences).block()
             .also {
                 questionConsequences.validate()
             }
@@ -43,6 +46,7 @@ class QuestionBuilder internal constructor(private val purpose: DialogPurpose, q
 
 class ConsequencesBuilder internal constructor(
     private val purpose: DialogPurpose,
+    private val question: Question,
     private val questionConsequences: QuestionConsequences
 ) {
     private lateinit var result: Result
@@ -51,6 +55,10 @@ class ConsequencesBuilder internal constructor(
 
     infix fun conclude(consequence: Consequence) {
         questionConsequences[result] = consequence
+    }
+
+    infix fun problem(message: String) {
+        questionConsequences[result] = ProblemIssue(purpose, question, result, message)
     }
 
     infix fun ask(innerQuestion: Question) =

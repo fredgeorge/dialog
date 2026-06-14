@@ -10,7 +10,6 @@ import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.TextQuestion
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
@@ -40,14 +39,14 @@ object CoApplicantDialog {
             -YES ask haveCoApplicant answers {
                 -YES ask coApplicantId answers {
                     -SUFFICIENT conclude missing("Need co-applicant approval")
-                    -TOO_SHORT conclude problem("National ID should be 11 digits")
+                    -TOO_SHORT problem "National ID should be 11 digits"
                 }
-                -NO conclude problem("Spouse must be co-applicant")
+                -NO problem "Spouse must be co-applicant"
             }
             -NO ask haveCoApplicant answers {
                 -YES ask coApplicantId answers {
                     -SUFFICIENT conclude missing("Need co-applicant approval")
-                    -TOO_SHORT conclude problem("National ID should be 11 digits")
+                    -TOO_SHORT problem "National ID should be 11 digits"
                 }
                 -NO conclude Acceptable
             }

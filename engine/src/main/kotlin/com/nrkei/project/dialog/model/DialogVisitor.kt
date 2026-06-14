@@ -6,6 +6,8 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
+
 // Purpose: Understands a Dialog hierarchy
 interface DialogVisitor {
     fun preVisit(dialog: Dialog, questionConsequences: List<QuestionConsequences>) { }
@@ -23,5 +25,11 @@ interface DialogVisitor {
     ) { }
     fun visit(acceptable: Acceptable) { }
     fun visit(issue: MissingIssue, reason: String) { }
-    fun visit(issue: RejectionIssue, reason: String) { }
+    fun visit(
+        issue: ProblemIssue,
+        purpose: DialogPurpose,
+        question: Question,
+        result: Result,
+        reason: String
+    ) { }
 }

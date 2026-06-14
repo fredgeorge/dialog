@@ -10,7 +10,6 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion
 import com.nrkei.project.dialog.questions.IntRangeQuestion.*
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
@@ -42,10 +41,10 @@ internal class IntRangeDialogTest {
     @Test fun `Simple valid dialog for age`() {
         (TestPurpose dialog {
             first ask age answers {
-                -INVALID conclude problem("Invalid number for age")
-                -UNDER_18 conclude problem("Age must be at least 18")
+                -INVALID problem "Invalid number for age"
+                -UNDER_18 problem "Age must be at least 18"
                 -ADULT conclude Acceptable
-                -SENIOR conclude problem("Not available for senior citizens")
+                -SENIOR problem "Not available for senior citizens"
             }
         }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -68,7 +67,7 @@ internal class IntRangeDialogTest {
     @Test fun `Simple valid dialog for net worth`() {
         (TestPurpose dialog {
             first ask netWorth answers {
-                -POOR conclude problem("Not enough money")
+                -POOR problem "Not enough money"
                 -ACCEPTABLE conclude Acceptable
                 -WEALTHY conclude Acceptable
             }
@@ -90,11 +89,11 @@ internal class IntRangeDialogTest {
     @Test fun `Convenience Int constructors`() {
         (TestPurpose dialog {
             first ask applicantCount answers {
-                -PositiveIntRange.INVALID conclude problem("Must have at least one applicant")
+                -PositiveIntRange.INVALID problem "Must have at least one applicant"
                 -PositiveIntRange.VALID conclude Acceptable
             }
             then ask childCount answers {
-                -NonNegativeIntRange.INVALID conclude problem("Specify zero or more children")
+                -NonNegativeIntRange.INVALID problem "Specify zero or more children"
                 -NonNegativeIntRange.VALID conclude Acceptable
             }
         }).also { dialog ->

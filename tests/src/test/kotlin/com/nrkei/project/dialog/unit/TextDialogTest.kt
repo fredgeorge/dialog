@@ -12,7 +12,6 @@ import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus
 import com.nrkei.project.dialog.model.DialogStatus.NOT_STARTED
 import com.nrkei.project.dialog.model.DialogStatus.SUCCESS
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.TextQuestion
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.SUFFICIENT
 import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
@@ -41,10 +40,10 @@ internal class TextDialogTest {
     @Test fun `Text with approval`() {
         (TestPurpose dialog {
             first ask serviceRequest answers {
-                -TOO_SHORT conclude problem("Service explanation is too short")
+                -TOO_SHORT problem "Service explanation is too short"
                 -SUFFICIENT ask isApproved answers {
                     -YES conclude Acceptable
-                    -NO conclude problem("Service request rejected")
+                    -NO problem "Service request rejected"
                 }
             }
         }).also { dialog ->

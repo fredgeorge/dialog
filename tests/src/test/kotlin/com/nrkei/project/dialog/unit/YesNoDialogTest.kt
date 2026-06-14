@@ -10,7 +10,6 @@ import com.nrkei.project.context.ContextLabelRegistry
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.DialogStatus.*
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
@@ -41,12 +40,12 @@ internal class YesNoDialogTest {
     fun `Simple valid dialog`() {
         (TestPurpose dialog {
             first ask haveSpouse answers {
-                -YES conclude problem("Can't have spouse")
+                -YES problem "Can't have spouse"
                 -NO conclude Acceptable
             }
             then ask haveCoApplicant answers {
                 -YES conclude Acceptable
-                -NO conclude problem("Can't have co-applicant")
+                -NO problem "Can't have co-applicant"
             }
         }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
@@ -101,7 +100,7 @@ internal class YesNoDialogTest {
             first ask haveSpouse answers {
                 -YES ask haveSpouseCoApplicant answers {
                     -YES conclude Acceptable
-                    -NO conclude problem("Must have spouse as co-applicant")
+                    -NO problem "Must have spouse as co-applicant"
                 }
                 -NO conclude Acceptable
             }
@@ -130,7 +129,7 @@ internal class YesNoDialogTest {
             first ask haveSpouse answers {
                 -YES ask haveSpouseCoApplicant answers {
                     -YES conclude Acceptable
-                    -NO conclude problem("Must have spouse as co-applicant")
+                    -NO problem "Must have spouse as co-applicant"
                 }
                 -NO ask haveCoApplicant answers {
                     -YES ask haveChildren answers {

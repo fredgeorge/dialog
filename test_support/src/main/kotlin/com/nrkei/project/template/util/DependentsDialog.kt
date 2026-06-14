@@ -10,8 +10,9 @@ import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion
+import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.INVALID
+import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.VALID
 import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
@@ -32,15 +33,15 @@ object DependentsDialog {
     val dependentDialog = Dependents dialog {
         first ask haveChildren answers {
             -YES ask howManyChildren answers {
-                -IntRangeQuestion.PositiveIntRange.VALID conclude Acceptable
-                -IntRangeQuestion.PositiveIntRange.INVALID conclude problem("Invalid children count")
+                -VALID conclude Acceptable
+                -INVALID problem "Invalid children count"
             }
             -NO conclude Acceptable
         }
         then ask haveOtherDependents answers {
             -YES ask howManyDependents answers {
-                -IntRangeQuestion.PositiveIntRange.VALID conclude Acceptable
-                -IntRangeQuestion.PositiveIntRange.INVALID conclude problem("Invalid other dependent count")
+                -VALID conclude Acceptable
+                -INVALID problem "Invalid other dependent count"
             }
             -NO conclude Acceptable
         }

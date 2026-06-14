@@ -6,6 +6,7 @@
 
 package com.nrkei.project.dialog.unit
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.model.*
 import com.nrkei.project.template.util.OtherIncomeDialog.otherIncomeDialog
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -22,7 +23,7 @@ internal class VisitorTest {
             assertEquals(5, visitor.questionCount)
             assertEquals(3, visitor.acceptableCount)
             assertEquals(4, visitor.missingIssueCount)
-            assertEquals(1, visitor.rejectionIssueCount)
+            assertEquals(1, visitor.problemIssueCount)
             assertEquals(10, visitor.resultCount)
         }
     }
@@ -36,7 +37,7 @@ internal class VisitorTest {
         var questionCount = 0
         var acceptableCount = 0
         var missingIssueCount = 0
-        var rejectionIssueCount = 0
+        var problemIssueCount = 0
         var resultCount = 0
 
         override fun preVisit(dialog: Dialog, questionConsequences: List<QuestionConsequences>) {
@@ -66,8 +67,14 @@ internal class VisitorTest {
             missingIssueCount++
         }
 
-        override fun visit(issue: RejectionIssue, reason: String) {
-            rejectionIssueCount++
+        override fun visit(
+            issue: ProblemIssue,
+            purpose: DialogPurpose,
+            question: Question,
+            result: Result,
+            reason: String
+        ) {
+            problemIssueCount++
         }
     }
 }

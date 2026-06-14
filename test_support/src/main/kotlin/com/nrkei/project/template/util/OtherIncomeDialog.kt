@@ -10,7 +10,6 @@ import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
-import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.INVALID
 import com.nrkei.project.dialog.questions.IntRangeQuestion.PositiveIntRange.VALID
@@ -40,7 +39,7 @@ object OtherIncomeDialog {
         }
         then ask alimony answers {
             -YES ask alimonyDetails answers {
-                -INVALID conclude problem("Enter a valid amount for alimony")
+                -INVALID problem "Enter a valid amount for alimony"
                 -VALID ask documentationUploaded answers {
                     -YES conclude missing("Review of alimony documentation needed")
                     -NO conclude missing("Upload documentation for alimony")

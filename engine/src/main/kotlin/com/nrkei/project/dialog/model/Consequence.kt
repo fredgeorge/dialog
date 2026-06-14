@@ -28,6 +28,4 @@ object Acceptable: Consequence {
     override fun accept(visitor: DialogVisitor) = visitor.visit(this)
 }
 
-fun problem(message: String) = RejectionIssue(message)
-
 fun missing(message: String) = MissingIssue(message)

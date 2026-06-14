@@ -8,11 +8,9 @@ package com.nrkei.project.dialog
 
 import com.nrkei.project.dialog.model.MissingIssue
 import com.nrkei.project.dialog.model.MissingIssue.MissingIssueDto
-import com.nrkei.project.dialog.model.RejectionIssue
-import com.nrkei.project.dialog.model.RejectionIssue.RejectionIssueDto
 
 // Understands creation of issues from DTOs
 object IssuePersistence {
-    internal fun RejectionIssueDto.toIssue() = RejectionIssue(this.description)
+//    internal fun ProblemIssue.ProblemIssueDto.toIssue() = ProblemIssue(this.description)
     internal fun MissingIssueDto.toIssue() = MissingIssue(this.description)
 }

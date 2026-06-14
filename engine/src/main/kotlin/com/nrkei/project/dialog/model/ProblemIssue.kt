@@ -6,17 +6,23 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.issue.Issue
 import com.nrkei.project.issue.IssueDto
 import com.nrkei.project.issue.IssueType
 import kotlinx.serialization.Serializable
 
 // Purpose: Understands that a problem has arisen that inhibits successful resolution
-class RejectionIssue(private val reason: String):
+class ProblemIssue(
+    private val purpose: DialogPurpose,
+    private val question: Question,
+    private val result: Result,
+    private val reason: String
+):
     Consequence,
-    Issue<RejectionIssue>(Consequence.dialogEngine, State.OPEN){
+    Issue<ProblemIssue>(Consequence.dialogEngine, State.OPEN){
 
-    companion object RejectionIssueType : IssueType<RejectionIssue>
+    companion object RejectionIssueType : IssueType<ProblemIssue>
 
     override val issueType = RejectionIssueType
 
@@ -26,24 +32,30 @@ class RejectionIssue(private val reason: String):
 
     override fun clone() = this
 
-    override fun accept(visitor: DialogVisitor) = visitor.visit(this, reason)
+    override fun accept(visitor: DialogVisitor) = visitor.visit(this, purpose, question, result, reason)
 
     override fun equals(other: Any?) =
-        this === other || other is RejectionIssue && this.reason == other.reason
+        this === other || other is ProblemIssue && this.equals(other)
+
+    private fun equals(other: ProblemIssue) =
+        this.purpose == other.purpose &&
+                this.question == other.question &&
+                this.result == other.result &&
+                this.reason == other.reason
 
     override fun hashCode() = reason.hashCode()
 
     @Suppress("UNCHECKED_CAST")
     override fun <I : Issue<I>> toDto() =
-        RejectionIssueDto(description = reason) as IssueDto<I>
+        ProblemIssueDto(description = reason) as IssueDto<I>
 
     override fun toString() = "Rejection issue raised: $reason"
 
     @Serializable
-    data class RejectionIssueDto(
+    data class ProblemIssueDto(
         override val raisedBy: String = Consequence.dialogEngine.name,
         override val state: State = State.OPEN,
         override val closedBy: String? = null,
         val description: String
-    ) : IssueDto<RejectionIssue>
+    ) : IssueDto<ProblemIssue>
 }
