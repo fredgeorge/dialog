@@ -6,13 +6,15 @@
 
 package com.nrkei.project.dialog.model
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.visitors.QuestionFinder
 
 // Purpose: Understands a series of questions to satisfy a need
-class Dialog internal constructor(private val questionConsequences: List<QuestionConsequences>, purpose: String = "<unspecified>") : Consequence{
-    var purpose: String = purpose
-        internal set
+class Dialog internal constructor(
+    private val purpose: DialogPurpose,
+    private val questionConsequences: List<QuestionConsequences>
+) : Consequence {
 
     override fun nextQuestionOrNull(): Question? {
         questionConsequences.forEach { consequence -> consequence.nextQuestionOrNull()?.also { return it } }
@@ -33,7 +35,7 @@ class Dialog internal constructor(private val questionConsequences: List<Questio
             }
         }
 
-    override fun clone() = Dialog(this.questionConsequences.map { it.clone()}, this@Dialog.purpose)
+    override fun clone() = Dialog(purpose, this.questionConsequences.map { it.clone() })
 
     override fun accept(visitor: DialogVisitor) {
         visitor.preVisit(this, questionConsequences)

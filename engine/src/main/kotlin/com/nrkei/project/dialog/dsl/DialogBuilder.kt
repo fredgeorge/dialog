@@ -26,7 +26,7 @@ class DialogBuilder internal constructor(private val purpose: DialogPurpose) {
     infix fun ask(question: Question) =
         QuestionBuilder(question).also { questionConsequences.add(it.result()) }
 
-    internal fun result() = Dialog(questionConsequences)
+    internal fun result() = Dialog(purpose, questionConsequences)
 }
 
 class QuestionBuilder internal constructor(question: Question) {
