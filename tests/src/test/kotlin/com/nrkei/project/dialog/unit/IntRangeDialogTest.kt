@@ -17,6 +17,7 @@ import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.positiveInt
 import com.nrkei.project.dialog.questions.IntRangeQuestion.Companion.zeroOrMoreInt
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.AgeRange.*
 import com.nrkei.project.dialog.unit.IntRangeDialogTest.NetWorthRange.*
+import com.nrkei.project.template.util.TestPurpose
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -39,14 +40,14 @@ internal class IntRangeDialogTest {
     }
 
     @Test fun `Simple valid dialog for age`() {
-        dialog {
+        (TestPurpose dialog {
             first ask age answers {
                 -INVALID conclude problem("Invalid number for age")
                 -UNDER_18 conclude problem("Age must be at least 18")
                 -ADULT conclude Acceptable
                 -SENIOR conclude problem("Not available for senior citizens")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(age, dialog.nextQuestionOrNull())
@@ -65,13 +66,13 @@ internal class IntRangeDialogTest {
     }
 
     @Test fun `Simple valid dialog for net worth`() {
-        dialog {
+        (TestPurpose dialog {
             first ask netWorth answers {
                 -POOR conclude problem("Not enough money")
                 -ACCEPTABLE conclude Acceptable
                 -WEALTHY conclude Acceptable
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(netWorth, dialog.nextQuestionOrNull())
@@ -87,7 +88,7 @@ internal class IntRangeDialogTest {
     }
 
     @Test fun `Convenience Int constructors`() {
-        dialog {
+        (TestPurpose dialog {
             first ask applicantCount answers {
                 -PositiveIntRange.INVALID conclude problem("Must have at least one applicant")
                 -PositiveIntRange.VALID conclude Acceptable
@@ -96,7 +97,7 @@ internal class IntRangeDialogTest {
                 -NonNegativeIntRange.INVALID conclude problem("Specify zero or more children")
                 -NonNegativeIntRange.VALID conclude Acceptable
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(applicantCount, dialog.nextQuestionOrNull())

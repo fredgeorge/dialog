@@ -19,6 +19,7 @@ import com.nrkei.project.dialog.questions.TextQuestion.TextResult.TOO_SHORT
 import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
+import com.nrkei.project.template.util.TestPurpose
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -38,7 +39,7 @@ internal class TextDialogTest {
     }
 
     @Test fun `Text with approval`() {
-        dialog {
+        (TestPurpose dialog {
             first ask serviceRequest answers {
                 -TOO_SHORT conclude problem("Service explanation is too short")
                 -SUFFICIENT ask isApproved answers {
@@ -46,7 +47,7 @@ internal class TextDialogTest {
                     -NO conclude problem("Service request rejected")
                 }
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(serviceRequest, dialog.nextQuestionOrNull())

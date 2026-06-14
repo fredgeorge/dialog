@@ -13,6 +13,7 @@ import com.nrkei.project.dialog.model.DialogStatus.*
 import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion
 import com.nrkei.project.dialog.questions.DoubleRangeQuestion.*
+import com.nrkei.project.template.util.TestPurpose
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -35,13 +36,13 @@ internal class DoubleRangeDialogTest {
     }
 
     @Test fun `Simple valid dialog for temperature in Celsius`() {
-        dialog {
+        (TestPurpose dialog {
             first ask temperature answers {
                 -TemperatureRange.COLD conclude problem("Too cold")
                 -TemperatureRange.WARM conclude Acceptable
                 -TemperatureRange.HOT conclude problem("Too hot")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(temperature, dialog.nextQuestionOrNull())
@@ -60,13 +61,13 @@ internal class DoubleRangeDialogTest {
     }
 
     @Test fun `Temperature boundary values are unambiguous`() {
-        dialog {
+        (TestPurpose dialog {
             first ask temperature answers {
                 -TemperatureRange.COLD conclude problem("Too cold")
                 -TemperatureRange.WARM conclude Acceptable
                 -TemperatureRange.HOT conclude problem("Too hot")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
             temperature.answer(15.0)                // exactly at COLD/WARM boundary → WARM
             assertEquals(SUCCESS, dialog.status())
@@ -77,13 +78,13 @@ internal class DoubleRangeDialogTest {
     }
 
     @Test fun `Temperature accepts Int answer without explicit cast`() {
-        dialog {
+        (TestPurpose dialog {
             first ask temperature answers {
                 -TemperatureRange.COLD conclude problem("Too cold")
                 -TemperatureRange.WARM conclude Acceptable
                 -TemperatureRange.HOT conclude problem("Too hot")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(temperature, dialog.nextQuestionOrNull())
             temperature.answer(22)                  // Int, not Double
             assertEquals(SUCCESS, dialog.status())
@@ -91,7 +92,7 @@ internal class DoubleRangeDialogTest {
     }
 
     @Test fun `Simple valid dialog for Body Mass Index`() {
-        dialog {
+        (TestPurpose dialog {
             first ask bmi answers {
                 -BmiRange.UNDERWEIGHT conclude problem("Underweight")
                 -BmiRange.NORMAL conclude Acceptable
@@ -99,7 +100,7 @@ internal class DoubleRangeDialogTest {
                 -BmiRange.OBESE conclude problem("Obese")
                 -BmiRange.MORBIDLY_OBESE conclude problem("Morbidly obese")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(bmi, dialog.nextQuestionOrNull())
@@ -121,7 +122,7 @@ internal class DoubleRangeDialogTest {
     }
 
     @Test fun `BMI boundary values are unambiguous`() {
-        dialog {
+        (TestPurpose dialog {
             first ask bmi answers {
                 -BmiRange.UNDERWEIGHT conclude problem("Underweight")
                 -BmiRange.NORMAL conclude Acceptable
@@ -129,7 +130,7 @@ internal class DoubleRangeDialogTest {
                 -BmiRange.OBESE conclude problem("Obese")
                 -BmiRange.MORBIDLY_OBESE conclude problem("Morbidly obese")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(bmi, dialog.nextQuestionOrNull())
             bmi.answer(18.5)                        // exactly at UNDERWEIGHT/NORMAL boundary → NORMAL
             assertEquals(SUCCESS, dialog.status())
@@ -146,7 +147,7 @@ internal class DoubleRangeDialogTest {
     }
 
     @Test fun `Convenience Double constructors`() {
-        dialog {
+        (TestPurpose dialog {
             first ask marginalTaxRate answers {
                 -NonNegativeDoubleRange.INVALID conclude problem("Can't have negative marginal tax rate")
                 -NonNegativeDoubleRange.VALID conclude Acceptable
@@ -155,7 +156,7 @@ internal class DoubleRangeDialogTest {
                 -PositiveDoubleRange.INVALID conclude problem("Can't cool to absolute zero")
                 -PositiveDoubleRange.VALID conclude Acceptable
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(marginalTaxRate, dialog.nextQuestionOrNull())

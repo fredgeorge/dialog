@@ -9,21 +9,14 @@ package com.nrkei.project.dialog.dsl
 import com.nrkei.project.dialog.model.*
 
 // DSL syntax to specify a series of questions
-fun dialog(block: DialogBuilder.() -> Unit): Dialog =
-    DialogBuilder().let {
-        it.block()
-        it.result()
-    }
-
-// DSL syntax to specify a series of questions
 infix fun DialogPurpose.dialog(block: DialogBuilder.() -> Unit): Dialog =
-    DialogBuilder().let {
+    DialogBuilder(this).let {
         it.block()
         it.result()
     }
 
 // Purpose: Understands defining a sequence of questions and their consequences
-class DialogBuilder internal constructor() {
+class DialogBuilder internal constructor(private val purpose: DialogPurpose) {
     private val questionConsequences = mutableListOf<QuestionConsequences>()
 
     // Syntax sugar

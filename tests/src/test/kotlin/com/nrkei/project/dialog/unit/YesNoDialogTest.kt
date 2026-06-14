@@ -14,6 +14,7 @@ import com.nrkei.project.dialog.model.problem
 import com.nrkei.project.dialog.questions.YesNoQuestion
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
+import com.nrkei.project.template.util.TestPurpose
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
@@ -38,7 +39,7 @@ internal class YesNoDialogTest {
 
     @Test
     fun `Simple valid dialog`() {
-        dialog {
+        (TestPurpose dialog {
             first ask haveSpouse answers {
                 -YES conclude problem("Can't have spouse")
                 -NO conclude Acceptable
@@ -47,7 +48,7 @@ internal class YesNoDialogTest {
                 -YES conclude Acceptable
                 -NO conclude problem("Can't have co-applicant")
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(haveSpouse, dialog.nextQuestionOrNull())
@@ -69,14 +70,14 @@ internal class YesNoDialogTest {
     @Test
     fun `Must handle all possible answers`() {
         assertThrows<IllegalArgumentException> {
-            dialog {
+            TestPurpose dialog {
                 first ask haveSpouse answers {
                     -YES conclude Acceptable // To few answers
                 }
             }
         }
         assertThrows<IllegalArgumentException> {
-            dialog {
+            TestPurpose dialog {
                 first ask haveSpouse answers {
                     -YES conclude Acceptable
                     -YES conclude Acceptable    // Duplicate answer
@@ -84,7 +85,7 @@ internal class YesNoDialogTest {
             }
         }
         assertThrows<IllegalArgumentException> {
-            dialog {
+            TestPurpose dialog {
                 first ask haveSpouse answers {
                     -YES conclude Acceptable
                     -NO conclude Acceptable
@@ -96,7 +97,7 @@ internal class YesNoDialogTest {
 
     @Test
     fun `2-level valid dialog`() {
-        dialog {
+        (TestPurpose dialog {
             first ask haveSpouse answers {
                 -YES ask haveSpouseCoApplicant answers {
                     -YES conclude Acceptable
@@ -104,7 +105,7 @@ internal class YesNoDialogTest {
                 }
                 -NO conclude Acceptable
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(haveSpouse, dialog.nextQuestionOrNull())
@@ -125,7 +126,7 @@ internal class YesNoDialogTest {
 
     @Test
     fun `3-level valid dialog`() {
-        dialog {
+        (TestPurpose dialog {
             first ask haveSpouse answers {
                 -YES ask haveSpouseCoApplicant answers {
                     -YES conclude Acceptable
@@ -139,7 +140,7 @@ internal class YesNoDialogTest {
                     -NO conclude Acceptable
                 }
             }
-        }.also { dialog ->
+        }).also { dialog ->
             assertEquals(NOT_STARTED, dialog.status())
 
             assertEquals(haveSpouse, dialog.nextQuestionOrNull())
