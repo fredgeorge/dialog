@@ -16,10 +16,8 @@ class Dialog internal constructor(
     private val questionConsequences: List<QuestionConsequences>
 ) : Consequence {
 
-    override fun nextQuestionOrNull(): Question? {
-        questionConsequences.forEach { consequence -> consequence.nextQuestionOrNull()?.also { return it } }
-        return null
-    }
+    override fun nextQuestionOrNull() =
+        questionConsequences.firstNotNullOfOrNull { consequence -> consequence.nextQuestionOrNull() }
 
     override fun status() = questionConsequences
         .map { it.status() }
