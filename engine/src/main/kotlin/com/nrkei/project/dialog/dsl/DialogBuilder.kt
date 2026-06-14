@@ -24,16 +24,16 @@ class DialogBuilder internal constructor(private val purpose: DialogPurpose) {
     val then get() = this.also { require(questionConsequences.isNotEmpty()) { "'first' keyword required for the first question in a dialog" } }
 
     infix fun ask(question: Question) =
-        QuestionBuilder(question).also { questionConsequences.add(it.result()) }
+        QuestionBuilder(purpose, question).also { questionConsequences.add(it.result()) }
 
     internal fun result() = Dialog(purpose, questionConsequences)
 }
 
-class QuestionBuilder internal constructor(question: Question) {
+class QuestionBuilder internal constructor(private val purpose: DialogPurpose, question: Question) {
     private val questionConsequences = QuestionConsequences(question, question.possibleResults)
 
     infix fun answers(block: ConsequencesBuilder.() -> Unit) =
-        ConsequencesBuilder(questionConsequences).block()
+        ConsequencesBuilder(purpose, questionConsequences).block()
             .also {
                 questionConsequences.validate()
             }
@@ -41,7 +41,10 @@ class QuestionBuilder internal constructor(question: Question) {
     internal fun result() = questionConsequences
 }
 
-class ConsequencesBuilder internal constructor(private val questionConsequences: QuestionConsequences) {
+class ConsequencesBuilder internal constructor(
+    private val purpose: DialogPurpose,
+    private val questionConsequences: QuestionConsequences
+) {
     private lateinit var result: Result
 
     operator fun Result.unaryMinus() = this@ConsequencesBuilder.also { result = this }
@@ -51,7 +54,7 @@ class ConsequencesBuilder internal constructor(private val questionConsequences:
     }
 
     infix fun ask(innerQuestion: Question) =
-        QuestionBuilder(innerQuestion).also {
+        QuestionBuilder(purpose, innerQuestion).also {
             questionConsequences[result] = it.result()
         }
 }

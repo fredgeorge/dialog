@@ -16,6 +16,11 @@ class Dialog internal constructor(
     private val questionConsequences: List<QuestionConsequences>
 ) : Consequence {
 
+    companion object {
+        internal fun MutableCollection<Dialog>.findDialogByPurpose(purpose: DialogPurpose) =
+            firstOrNull { it.purpose == purpose } ?: throw IllegalStateException("No Dialog defined for purpose $purpose")
+    }
+
     override fun nextQuestionOrNull() =
         questionConsequences.firstNotNullOfOrNull { consequence -> consequence.nextQuestionOrNull() }
 
