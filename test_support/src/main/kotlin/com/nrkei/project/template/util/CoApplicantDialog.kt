@@ -6,6 +6,7 @@
 
 package com.nrkei.project.template.util
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
@@ -20,6 +21,12 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 // Purpose: Understand if co-applicant exists/needed for Loan
 object CoApplicantDialog {
 
+    object CoApplicant : DialogPurpose {
+        private const val CO_APPLICANT = "CoApplicant ID"
+        override val name = CO_APPLICANT
+        override val issue = missing(CO_APPLICANT)
+    }
+
     const val HAVE_SPOUSE_QUESTION = "Have Spouse?"
     const val HAVE_CO_APPLICANT_QUESTION = "Have Co-applicant?"
     const val HAVE_CO_APPLICANT_ID = "CoApplicant ID"
@@ -28,7 +35,7 @@ object CoApplicantDialog {
     private val haveCoApplicant = YesNoQuestion(HAVE_CO_APPLICANT_QUESTION)
     private val coApplicantId = TextQuestion(HAVE_CO_APPLICANT_ID, 11)
 
-    val coApplicantDialog = dialog {
+    val coApplicantDialog = CoApplicant dialog {
         first ask haveSpouse answers {
             -YES ask haveCoApplicant answers {
                 -YES ask coApplicantId answers {
@@ -46,6 +53,4 @@ object CoApplicantDialog {
             }
         }
     }
-
-    val coApplicantIssue = missing("Do you have a co-applicant?")
 }

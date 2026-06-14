@@ -15,9 +15,9 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.NO
 import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 import com.nrkei.project.dialog.visitors.ExtractValues
 import com.nrkei.project.dialog.visitors.RestoreValues
-import com.nrkei.project.template.util.CoApplicantDialog.coApplicantIssue
+import com.nrkei.project.template.util.CoApplicantDialog.CoApplicant
 import com.nrkei.project.template.util.SalaryDialog.HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED
-import com.nrkei.project.template.util.SalaryDialog.salaryIssue
+import com.nrkei.project.template.util.SalaryDialog.Salary
 import com.nrkei.project.template.util.TestConversation.testConversation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
@@ -30,7 +30,7 @@ internal class DialogPersistenceTest {
     fun `Capture and restore answers for multiple questions`() {
         testConversation.also { conversation ->
             Context().also { originalContext ->
-                conversation[coApplicantIssue].also { firstDialog ->
+                conversation[CoApplicant.issue].also { firstDialog ->
                     firstDialog.nextQuestionOrNull()?.answer(YES)
                     firstDialog.nextQuestionOrNull()?.answer(YES)
                     firstDialog.nextQuestionOrNull()?.answer("01234567890")
@@ -38,7 +38,7 @@ internal class DialogPersistenceTest {
                     assertEquals(PROBLEMS, firstDialog.status())
                     ExtractValues(firstDialog, originalContext)
                 }
-                conversation[salaryIssue].also { secondDialog ->
+                conversation[Salary.issue].also { secondDialog ->
                     secondDialog.nextQuestionOrNull()?.answer(NO)
                     secondDialog.nextQuestionOrNull()?.answer(100_000)
                     assertEquals(
@@ -50,13 +50,13 @@ internal class DialogPersistenceTest {
                 }
                 val json = originalContext.toJson()
                 Context.fromJson(json).also { restoredContext ->
-                    conversation[coApplicantIssue].also { firstRestoredDialog ->
+                    conversation[CoApplicant.issue].also { firstRestoredDialog ->
                         RestoreValues(firstRestoredDialog, restoredContext)
                         ExtractValues(firstRestoredDialog, restoredContext)
                         assertEquals(PROBLEMS, firstRestoredDialog.status())
                         assertNull(firstRestoredDialog.nextQuestionOrNull())
                     }
-                    conversation[salaryIssue].also { secondRestoredDialog ->
+                    conversation[Salary.issue].also { secondRestoredDialog ->
                         ExtractValues(secondRestoredDialog, restoredContext)
                         assertEquals(
                             HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED,

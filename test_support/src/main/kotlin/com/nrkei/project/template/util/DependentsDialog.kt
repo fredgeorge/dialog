@@ -6,6 +6,7 @@
 
 package com.nrkei.project.template.util
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
@@ -17,12 +18,18 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
 // Purpose: Understands dependent counts for expenses
 object DependentsDialog {
+
+    object Dependents : DialogPurpose {
+        private const val DO_YOU_HAVE_DEPENDENTS = "Do you have dependents?"
+        override val name = DO_YOU_HAVE_DEPENDENTS
+        override val issue = missing(DO_YOU_HAVE_DEPENDENTS)
+    }
     private val haveChildren = YesNoQuestion("Do You Have Children?")
     private val howManyChildren = IntRangeQuestion.positiveInt("How Many Children?")
     private val haveOtherDependents = YesNoQuestion("Do You Have Other Dependents?")
     private val howManyDependents = IntRangeQuestion.positiveInt("How Many Other Dependents?")
 
-    val dependentDialog = dialog {
+    val dependentDialog = Dependents dialog {
         first ask haveChildren answers {
             -YES ask howManyChildren answers {
                 -IntRangeQuestion.PositiveIntRange.VALID conclude Acceptable
@@ -38,6 +45,4 @@ object DependentsDialog {
             -NO conclude Acceptable
         }
     }
-
-    val dependentIssue = missing("Do you have dependents?")
 }

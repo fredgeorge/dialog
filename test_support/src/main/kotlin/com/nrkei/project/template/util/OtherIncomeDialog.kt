@@ -6,6 +6,7 @@
 
 package com.nrkei.project.template.util
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
@@ -19,13 +20,20 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
 // Purpose: Understands possible alternative income sources
 object OtherIncomeDialog {
+
+    object OtherIncome : DialogPurpose {
+        private const val HAVE_OTHER_INCOME = "Do you have other income sources?"
+        override val name = HAVE_OTHER_INCOME
+        override val issue = missing(HAVE_OTHER_INCOME)
+    }
+
     private val rentalIncome = YesNoQuestion("Do you have rental income?")
     private val alimony = YesNoQuestion("Are you receiving alimony?")
     private val alimonyDetails = positiveInt("What is your monthly alimony amount?")
     private val documentationUploaded = YesNoQuestion("Have you uploaded documentation for alimony?")
     private val guarantorsPossible = YesNoQuestion("Do you have someone who can serve as guarantor?")
 
-    val otherIncomeDialog = dialog {
+    val otherIncomeDialog = OtherIncome dialog {
         first ask rentalIncome answers {
             -YES conclude missing("Need details on rental income(s)")
             -NO conclude Acceptable
@@ -45,6 +53,4 @@ object OtherIncomeDialog {
             -NO conclude Acceptable
         }
     }
-
-    val otherIncomeIssue = missing("Do you have other income sources?")
 }

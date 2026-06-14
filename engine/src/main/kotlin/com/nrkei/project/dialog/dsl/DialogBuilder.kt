@@ -15,6 +15,13 @@ fun dialog(block: DialogBuilder.() -> Unit): Dialog =
         it.result()
     }
 
+// DSL syntax to specify a series of questions
+infix fun DialogPurpose.dialog(block: DialogBuilder.() -> Unit): Dialog =
+    DialogBuilder().let {
+        it.block()
+        it.result()
+    }
+
 // Purpose: Understands defining a sequence of questions and their consequences
 class DialogBuilder internal constructor() {
     private val questionConsequences = mutableListOf<QuestionConsequences>()

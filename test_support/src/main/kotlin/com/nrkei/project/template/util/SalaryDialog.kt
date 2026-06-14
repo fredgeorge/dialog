@@ -6,6 +6,7 @@
 
 package com.nrkei.project.template.util
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.Acceptable
 import com.nrkei.project.dialog.model.missing
@@ -19,6 +20,12 @@ import com.nrkei.project.dialog.questions.YesNoQuestion.YesNoChoice.YES
 
 // Purpose: Understand the accuracy of salary
 object SalaryDialog {
+
+    object Salary : DialogPurpose {
+        private const val TAXABLE_INCOME = "Is your taxable income accurate?"
+        override val name = TAXABLE_INCOME
+        override val issue = missing(TAXABLE_INCOME)
+    }
     const val HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED = "Has income documentation been uploaded?"
 
     private val taxIncomeCorrect = YesNoQuestion("Is your tax income correct?")
@@ -26,7 +33,7 @@ object SalaryDialog {
     private val documentationUploaded = YesNoQuestion(HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED)
     private val beenReviewed = YesNoQuestion("Has the documentation been reviewed?")
 
-    val salaryDialog = dialog {
+    val salaryDialog = Salary dialog {
         first ask taxIncomeCorrect answers {
             -YES conclude Acceptable
             -NO ask correctIncome answers {
@@ -41,6 +48,4 @@ object SalaryDialog {
             }
         }
     }
-
-    val salaryIssue = missing("Is your taxable income accurate?")
 }

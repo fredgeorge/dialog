@@ -6,6 +6,7 @@
 
 package com.nrkei.project.template.util
 
+import com.nrkei.project.dialog.dsl.DialogPurpose
 import com.nrkei.project.dialog.dsl.dialog
 import com.nrkei.project.dialog.model.missing
 import com.nrkei.project.dialog.model.problem
@@ -23,7 +24,12 @@ import com.nrkei.project.template.util.TestConversation.NEED_SALARY_INFORMATION
 // Purpose: Understand if co-applicant exists/needed for Loan
 object LoginDialog {
 
-    const val WHO_ARE_YOU = "Who are you?"
+    object Login : DialogPurpose {
+        private const val WHO_ARE_YOU = "Who are you?"
+        override val name = WHO_ARE_YOU
+        override val issue = missing(WHO_ARE_YOU)
+    }
+
     const val WHAT_IS_YOUR_ID = "What is your ID?"
     const val SALARY_AUTHORIZATION = "May I pull salary information?"
     const val LOAN_AMOUNT = "How much are you borrowing?"
@@ -32,7 +38,7 @@ object LoginDialog {
     private val salaryAuthorization = YesNoQuestion(SALARY_AUTHORIZATION)
     private val loanAmount = positiveInt(LOAN_AMOUNT)
 
-    val loginDialog = dialog {
+    val loginDialog = Login dialog {
         first ask haveId answers {
             -SUFFICIENT ask loanAmount answers {
                 -VALID ask salaryAuthorization answers {
@@ -44,6 +50,4 @@ object LoginDialog {
             -TOO_SHORT conclude problem("National ID should be 11 digits")
             }
         }
-
-    val loginIssue = missing(WHO_ARE_YOU)
 }
