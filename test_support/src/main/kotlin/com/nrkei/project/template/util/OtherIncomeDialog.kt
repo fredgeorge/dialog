@@ -23,7 +23,7 @@ object OtherIncomeDialog {
     object OtherIncome : DialogPurpose {
         private const val HAVE_OTHER_INCOME = "Do you have other income sources?"
         override val name = HAVE_OTHER_INCOME
-        override val issue = missing(HAVE_OTHER_INCOME)
+        override val issue get() = missing(HAVE_OTHER_INCOME)
     }
 
     private val rentalIncome = YesNoQuestion("Do you have rental income?")

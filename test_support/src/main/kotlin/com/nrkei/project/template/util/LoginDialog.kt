@@ -26,7 +26,7 @@ object LoginDialog {
     object Login : DialogPurpose {
         private const val WHO_ARE_YOU = "Who are you?"
         override val name = WHO_ARE_YOU
-        override val issue = missing(WHO_ARE_YOU)
+        override val issue get() = missing(WHO_ARE_YOU)
     }
 
     const val WHAT_IS_YOUR_ID = "What is your ID?"

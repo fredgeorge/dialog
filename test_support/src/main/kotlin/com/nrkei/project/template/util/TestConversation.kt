@@ -23,10 +23,10 @@ object TestConversation {
     const val NEED_SALARY_INFORMATION = "Need salary information"
 
     var testConversation = Conversation(
-        Login.issue to loginDialog,
-        Salary.issue to salaryDialog,
-        OtherIncome.issue to otherIncomeDialog,
-        CoApplicant.issue to coApplicantDialog,
-        Dependents.issue to dependentDialog
+        Login to loginDialog,
+        Salary to salaryDialog,
+        OtherIncome to otherIncomeDialog,
+        CoApplicant to coApplicantDialog,
+        Dependents to dependentDialog
     )
 }

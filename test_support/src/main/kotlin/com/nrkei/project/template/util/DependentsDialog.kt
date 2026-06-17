@@ -23,7 +23,7 @@ object DependentsDialog {
     object Dependents : DialogPurpose {
         private const val DO_YOU_HAVE_DEPENDENTS = "Do you have dependents?"
         override val name = DO_YOU_HAVE_DEPENDENTS
-        override val issue = missing(DO_YOU_HAVE_DEPENDENTS)
+        override val issue get() = missing(DO_YOU_HAVE_DEPENDENTS)
     }
     private val haveChildren = YesNoQuestion("Do You Have Children?")
     private val howManyChildren = IntRangeQuestion.positiveInt("How Many Children?")

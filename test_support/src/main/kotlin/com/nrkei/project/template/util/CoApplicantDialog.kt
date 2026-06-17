@@ -23,7 +23,7 @@ object CoApplicantDialog {
     object CoApplicant : DialogPurpose {
         private const val CO_APPLICANT = "CoApplicant ID"
         override val name = CO_APPLICANT
-        override val issue = missing(CO_APPLICANT)
+        override val issue get() = missing(CO_APPLICANT)
     }
 
     const val HAVE_SPOUSE_QUESTION = "Have Spouse?"

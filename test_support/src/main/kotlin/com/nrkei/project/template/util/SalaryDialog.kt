@@ -23,7 +23,7 @@ object SalaryDialog {
     object Salary : DialogPurpose {
         private const val TAXABLE_INCOME = "Is your taxable income accurate?"
         override val name = TAXABLE_INCOME
-        override val issue = missing(TAXABLE_INCOME)
+        override val issue get() = missing(TAXABLE_INCOME)
     }
     const val HAS_INCOME_DOCUMENTATION_BEEN_UPLOADED = "Has income documentation been uploaded?"
 
